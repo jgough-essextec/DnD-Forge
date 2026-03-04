@@ -23,6 +23,7 @@ import { AbilityScoreStep } from '@/components/wizard/steps/abilities'
 import { BackgroundStep } from '@/components/wizard/steps/background/BackgroundStep'
 import { EquipmentStep } from '@/components/wizard/steps/equipment/EquipmentStep'
 import { SpellStep } from '@/components/wizard/steps/spells/SpellStep'
+import { ReviewStep } from '@/components/wizard/steps/review'
 import type { StepValidation } from '@/components/wizard/types'
 
 const slideVariants = {
@@ -125,8 +126,7 @@ export function CreationWizard() {
         )
       case 'review':
         return (
-          <PlaceholderStep
-            stepName="Review"
+          <ReviewStep
             onValidationChange={handleValidationChange}
           />
         )

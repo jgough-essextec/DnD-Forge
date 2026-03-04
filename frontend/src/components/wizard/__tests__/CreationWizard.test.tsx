@@ -43,13 +43,12 @@ describe('CreationWizard', () => {
     expect(screen.queryByText('Back')).not.toBeInTheDocument()
   })
 
-  it('renders placeholder only for the review step (others are now real)', () => {
-    // Review step (7) is the only remaining placeholder
+  it('renders the review step when currentStep is 7', () => {
+    // ReviewStep renders its own content (no more PlaceholderStep)
     useWizardStore.getState().setStep(7)
-    const { unmount } = renderWithProviders(<CreationWizard />)
-    expect(screen.getByRole('heading', { name: 'Review' })).toBeInTheDocument()
-    expect(screen.getByText('Coming in Round 7')).toBeInTheDocument()
-    unmount()
+    renderWithProviders(<CreationWizard />)
+    // ReviewStep renders with data-testid="review-step"
+    expect(screen.getByTestId('review-step')).toBeInTheDocument()
   })
 
   it('switches to freeform mode when Freeform Creation is clicked', async () => {
