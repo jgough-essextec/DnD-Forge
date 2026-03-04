@@ -697,6 +697,34 @@ export const handlers = [
   }),
 
   // -------------------------------------------------------------------------
+  // Character PDF export endpoint
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/characters/:id/pdf/`, ({ params }) => {
+    const { id } = params
+    if (!currentUser) {
+      return HttpResponse.json(
+        { detail: 'Authentication credentials were not provided.' },
+        { status: 403 }
+      )
+    }
+    if (id !== 'char-001') {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    // Return a minimal valid PDF blob (starts with %PDF- magic bytes)
+    const pdfContent = '%PDF-1.4 mock pdf content for testing'
+    const encoder = new TextEncoder()
+    const pdfBytes = encoder.encode(pdfContent)
+    return new HttpResponse(pdfBytes, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="Thorn_Ironforge_Level5_Fighter.pdf"',
+      },
+    })
+  }),
+
+  // -------------------------------------------------------------------------
   // Reference data stubs
   // -------------------------------------------------------------------------
 

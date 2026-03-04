@@ -1,0 +1,257 @@
+{# Page 1: Core Stats — Three-column layout #}
+<div class="pdf-page" id="page1">
+
+    {# Character Header #}
+    <div class="character-header">
+        <div class="character-header-name">
+            <span class="field-value">{{ character.name|default:"--" }}</span>
+            <span class="field-label">Character Name</span>
+        </div>
+        <div class="character-header-fields">
+            <div class="header-field">
+                <span class="field-value">{{ character.class_name|default:"--" }} {{ character.level }}</span>
+                <span class="field-label">Class &amp; Level</span>
+            </div>
+            <div class="header-field">
+                <span class="field-value">{{ character.background|default:"--" }}</span>
+                <span class="field-label">Background</span>
+            </div>
+            <div class="header-field">
+                <span class="field-value">{{ character.player_name|default:"--" }}</span>
+                <span class="field-label">Player Name</span>
+            </div>
+            <div class="header-field">
+                <span class="field-value">{{ character.race|default:"--" }}</span>
+                <span class="field-label">Race</span>
+            </div>
+            <div class="header-field">
+                <span class="field-value">{{ character.alignment|default:"--" }}</span>
+                <span class="field-label">Alignment</span>
+            </div>
+            <div class="header-field">
+                <span class="field-value">{{ character.xp|default:"0" }}</span>
+                <span class="field-label">Experience Points</span>
+            </div>
+        </div>
+    </div>
+
+    {# Three-column layout #}
+    <div class="page1-grid">
+
+        {# === LEFT COLUMN === #}
+        <div class="page1-left">
+
+            {# Ability Scores #}
+            <div class="ability-scores">
+                {% for ab in character.abilities %}
+                <div class="ability-block no-break">
+                    <span class="ability-name">{{ ab.abbreviation }}</span>
+                    <span class="ability-modifier">{{ ab.modifier_str }}</span>
+                    <span class="ability-score">{{ ab.score }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            {# Proficiency Bonus #}
+            <div class="section-box no-break" style="margin-bottom: 6pt;">
+                <div style="display: flex; align-items: center; gap: 4pt;">
+                    <span style="font-size: 14pt; font-weight: 700;">{{ character.proficiency_bonus_str }}</span>
+                    <span style="font-size: 7pt; text-transform: uppercase; color: #666;">Proficiency Bonus</span>
+                </div>
+            </div>
+
+            {# Saving Throws #}
+            <div class="section-box no-break">
+                <h3>Saving Throws</h3>
+                <div class="saves-list">
+                    {% for st in character.saving_throws %}
+                    <div class="save-row">
+                        <span class="prof-indicator{% if st.proficient %} proficient{% endif %}"></span>
+                        <span class="save-modifier">{{ st.modifier_str }}</span>
+                        <span class="save-name">{{ st.name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Skills #}
+            <div class="section-box" style="margin-top: 4pt;">
+                <h3>Skills</h3>
+                <div class="skills-list">
+                    {% for sk in character.skills %}
+                    <div class="skill-row">
+                        <span class="prof-indicator{% if sk.expertise %} expertise{% elif sk.proficient %} proficient{% endif %}"></span>
+                        <span class="skill-modifier">{{ sk.modifier_str }}</span>
+                        <span class="skill-name">{{ sk.name }}</span>
+                        <span class="skill-ability">({{ sk.ability }})</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Passive Perception #}
+            <div class="passive-perception-box">
+                <span class="passive-perception-value">{{ character.passive_perception }}</span>
+                <span class="passive-perception-label">Passive Wisdom (Perception)</span>
+            </div>
+
+        </div>
+
+        {# === CENTER COLUMN === #}
+        <div class="page1-center">
+
+            {# Combat stats: AC, Initiative, Speed #}
+            <div class="combat-stats-row">
+                <div class="combat-stat-box">
+                    <div class="combat-stat-value">{{ character.ac }}</div>
+                    <div class="combat-stat-label">Armor Class</div>
+                    {% if character.ac_formula %}
+                    <div class="combat-stat-note">{{ character.ac_formula }}</div>
+                    {% endif %}
+                </div>
+                <div class="combat-stat-box">
+                    <div class="combat-stat-value">{{ character.initiative_str }}</div>
+                    <div class="combat-stat-label">Initiative</div>
+                </div>
+                <div class="combat-stat-box">
+                    <div class="combat-stat-value">{{ character.speed }} ft</div>
+                    <div class="combat-stat-label">Speed</div>
+                </div>
+            </div>
+
+            {# Hit Points #}
+            <div class="hp-section">
+                <div class="hp-header">
+                    <span class="hp-max-label">Hit Point Maximum</span>
+                    <span class="hp-max-value">{{ character.hp_max }}</span>
+                </div>
+                <div class="hp-current">{{ character.hp_current }}</div>
+                <div class="hp-current-label">Current Hit Points</div>
+                <div class="hp-temp">
+                    <span class="hp-temp-label">Temporary Hit Points</span>
+                    <span class="hp-temp-value">{{ character.temp_hp }}</span>
+                </div>
+            </div>
+
+            {# Hit Dice & Death Saves #}
+            <div class="hitdice-deathsaves">
+                <div class="hitdice-box">
+                    <h3>Hit Dice</h3>
+                    <div style="font-size: 9pt;">
+                        Total: {{ character.hit_dice_total|join:", " }}
+                    </div>
+                </div>
+                <div class="deathsaves-box">
+                    <h3>Death Saves</h3>
+                    <div class="deathsaves-row">
+                        <span style="font-size: 7pt; flex: 0 0 42pt;">Successes</span>
+                        {% for i in character.death_save_success_range %}
+                            <span class="deathsave-circle{% if forloop.counter <= character.death_save_successes %} filled{% endif %}"></span>
+                        {% endfor %}
+                    </div>
+                    <div class="deathsaves-row">
+                        <span style="font-size: 7pt; flex: 0 0 42pt;">Failures</span>
+                        {% for i in character.death_save_failure_range %}
+                            <span class="deathsave-circle{% if forloop.counter <= character.death_save_failures %} filled{% endif %}"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {# Attacks #}
+            <div class="attacks-section">
+                <h2>Attacks &amp; Spellcasting</h2>
+                {% if character.attacks %}
+                <table class="attacks-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Atk Bonus</th>
+                            <th>Damage/Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for atk in character.attacks %}
+                        <tr>
+                            <td>{{ atk.name }}</td>
+                            <td>{{ atk.bonus }}</td>
+                            <td>{{ atk.damage }}{% if atk.damage_type %} {{ atk.damage_type }}{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="empty-placeholder">No attacks configured</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {# === RIGHT COLUMN === #}
+        <div class="page1-right">
+
+            {# Personality Traits #}
+            <div class="personality-box">
+                <div class="box-label">Personality Traits</div>
+                <div class="box-content">{{ character.personality_traits|default:"--"|linebreaksbr }}</div>
+            </div>
+
+            {# Ideals #}
+            <div class="personality-box">
+                <div class="box-label">Ideals</div>
+                <div class="box-content">{{ character.ideal|default:"--" }}</div>
+            </div>
+
+            {# Bonds #}
+            <div class="personality-box">
+                <div class="box-label">Bonds</div>
+                <div class="box-content">{{ character.bond|default:"--" }}</div>
+            </div>
+
+            {# Flaws #}
+            <div class="personality-box">
+                <div class="box-label">Flaws</div>
+                <div class="box-content">{{ character.flaw|default:"--" }}</div>
+            </div>
+
+            {# Features & Traits #}
+            <div class="section-box" style="margin-top: 4pt;">
+                <h3>Features &amp; Traits</h3>
+                {% if character.features or character.feats %}
+                <ul class="features-list">
+                    {% for feat in character.features %}
+                    <li>{{ feat }}</li>
+                    {% endfor %}
+                    {% for feat in character.feats %}
+                    <li>{{ feat }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty-placeholder">None</p>
+                {% endif %}
+            </div>
+
+            {# Proficiencies & Languages #}
+            <div class="proficiencies-box" style="margin-top: 4pt;">
+                <h3>Other Proficiencies &amp; Languages</h3>
+                {% if character.armor_proficiencies %}
+                <div><strong>Armor:</strong> {{ character.armor_proficiencies|join:", " }}</div>
+                {% endif %}
+                {% if character.weapon_proficiencies %}
+                <div><strong>Weapons:</strong> {{ character.weapon_proficiencies|join:", " }}</div>
+                {% endif %}
+                {% if character.tool_proficiencies %}
+                <div><strong>Tools:</strong> {{ character.tool_proficiencies|join:", " }}</div>
+                {% endif %}
+                {% if character.languages %}
+                <div><strong>Languages:</strong> {{ character.languages|join:", " }}</div>
+                {% endif %}
+                {% if not character.armor_proficiencies and not character.weapon_proficiencies and not character.tool_proficiencies and not character.languages %}
+                <p class="empty-placeholder">None</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</div>

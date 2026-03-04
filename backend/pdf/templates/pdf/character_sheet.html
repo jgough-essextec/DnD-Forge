@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ character.name }} - Character Sheet</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pdf/styles.css' %}">
+</head>
+<body>
+    {# Named string for @page header #}
+    <span class="character-name-string">{{ character.name }}</span>
+
+    {# Page 1: Core Stats #}
+    {% include "pdf/page1_core_stats.html" %}
+
+    {# Page 2: Backstory & Description #}
+    {% include "pdf/page2_backstory.html" %}
+
+    {# Page 3: Spellcasting (conditional) #}
+    {% if character.is_spellcaster %}
+        {% include "pdf/page3_spellcasting.html" %}
+    {% endif %}
+</body>
+</html>

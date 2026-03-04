@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'campaigns',
     'users',
     'srd',
+    'pdf',
 ]
 
 MIDDLEWARE = [

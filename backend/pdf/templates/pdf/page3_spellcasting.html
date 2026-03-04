@@ -1,0 +1,85 @@
+{# Page 3: Spellcasting (only included when character.is_spellcaster is true) #}
+<div class="pdf-page" id="page3">
+
+    <h2>Spellcasting</h2>
+
+    {# Spellcasting Header #}
+    <div class="spellcasting-header">
+        <div class="spellcasting-header-box">
+            <div class="spell-header-value">{{ character.spellcasting_class|default:"--" }}</div>
+            <div class="spell-header-label">Spellcasting Class</div>
+        </div>
+        <div class="spellcasting-header-box">
+            <div class="spell-header-value">{{ character.spellcasting_ability|default:"--" }}</div>
+            <div class="spell-header-label">Spellcasting Ability</div>
+        </div>
+        <div class="spellcasting-header-box">
+            <div class="spell-header-value">{{ character.spell_save_dc|default:"--" }}</div>
+            <div class="spell-header-label">Spell Save DC</div>
+        </div>
+        <div class="spellcasting-header-box">
+            <div class="spell-header-value">{{ character.spell_attack_bonus|default:"--" }}</div>
+            <div class="spell-header-label">Spell Attack Bonus</div>
+        </div>
+    </div>
+
+    {# Warlock Pact Magic (if applicable) #}
+    {% if character.has_pact_magic and character.pact_slots %}
+    <div class="pact-magic-section">
+        <div class="pact-magic-header">
+            Pact Magic: {{ character.pact_slots.count }} x Level {{ character.pact_slots.level }} Slots
+        </div>
+        <div class="pact-magic-note">Recovers on Short Rest</div>
+    </div>
+    {% endif %}
+
+    {# Cantrips #}
+    {% if character.cantrips %}
+    <div class="cantrips-section no-break">
+        <h3>Cantrips (at will)</h3>
+        <ul class="cantrip-list">
+            {% for spell in character.cantrips %}
+            <li>
+                {{ spell.name }}
+                {% if spell.ritual %}<span class="spell-ritual">(R)</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {# Spell Levels 1-9 #}
+    {% for level in character.spell_levels %}
+    <div class="spell-level-section">
+        <div class="spell-level-header">
+            <span class="spell-level-title">Level {{ level.level }}</span>
+            <div class="slot-indicators">
+                {% for i in level.slots_range %}
+                <span class="slot-circle"></span>
+                {% endfor %}
+            </div>
+            <span style="font-size: 7pt; color: #666;">{{ level.slots_total }} slots</span>
+        </div>
+        {% if level.spells %}
+        <ul class="spell-list">
+            {% for spell in level.spells %}
+            <li>
+                <span class="spell-prepared{% if spell.prepared %} prepared{% endif %}"></span>
+                <span>{{ spell.name }}</span>
+                {% if spell.always_prepared %}<span class="spell-always">*</span>{% endif %}
+                {% if spell.ritual %}<span class="spell-ritual">(R)</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-placeholder">No spells at this level</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {# Empty state for casters with no spells yet #}
+    {% if not character.cantrips and not character.spell_levels %}
+    <p class="empty-placeholder" style="margin-top: 8pt;">No spells known or prepared</p>
+    {% endif %}
+
+</div>

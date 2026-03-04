@@ -1,0 +1,185 @@
+{# Page 2: Backstory & Description #}
+<div class="pdf-page" id="page2">
+
+    <h2>Character Backstory &amp; Description</h2>
+
+    <div class="page2-grid">
+
+        {# === LEFT COLUMN: Appearance + Backstory === #}
+        <div class="page2-left">
+
+            {# Character Portrait #}
+            <div class="portrait-box">
+                {% if character.avatar_url %}
+                <img src="{{ character.avatar_url }}" alt="Character portrait">
+                {% else %}
+                <div class="portrait-placeholder">No Portrait</div>
+                {% endif %}
+            </div>
+
+            {# Appearance Fields #}
+            <div class="appearance-grid">
+                <div class="appearance-field">
+                    <span class="field-label">Age</span>
+                    <span class="field-value">{{ character.age|default:"--" }}</span>
+                </div>
+                <div class="appearance-field">
+                    <span class="field-label">Height</span>
+                    <span class="field-value">{{ character.height|default:"--" }}</span>
+                </div>
+                <div class="appearance-field">
+                    <span class="field-label">Weight</span>
+                    <span class="field-value">{{ character.weight|default:"--" }}</span>
+                </div>
+                <div class="appearance-field">
+                    <span class="field-label">Eyes</span>
+                    <span class="field-value">{{ character.eyes|default:"--" }}</span>
+                </div>
+                <div class="appearance-field">
+                    <span class="field-label">Skin</span>
+                    <span class="field-value">{{ character.skin|default:"--" }}</span>
+                </div>
+                <div class="appearance-field">
+                    <span class="field-label">Hair</span>
+                    <span class="field-value">{{ character.hair|default:"--" }}</span>
+                </div>
+            </div>
+
+            {# Appearance Description #}
+            {% if character.appearance %}
+            <div class="section-box" style="margin-bottom: 6pt;">
+                <h3>Appearance</h3>
+                <div class="backstory-text">{{ character.appearance }}</div>
+            </div>
+            {% endif %}
+
+            {# Personality (repeated for page 2 context) #}
+            <div class="personality-box">
+                <div class="box-label">Personality Traits</div>
+                <div class="box-content">{{ character.personality_traits|default:"--"|linebreaksbr }}</div>
+            </div>
+
+            <div class="personality-box">
+                <div class="box-label">Ideals</div>
+                <div class="box-content">{{ character.ideal|default:"--" }}</div>
+            </div>
+
+            <div class="personality-box">
+                <div class="box-label">Bonds</div>
+                <div class="box-content">{{ character.bond|default:"--" }}</div>
+            </div>
+
+            <div class="personality-box">
+                <div class="box-label">Flaws</div>
+                <div class="box-content">{{ character.flaw|default:"--" }}</div>
+            </div>
+
+            {# Backstory #}
+            <div class="backstory-section">
+                <h3>Character Backstory</h3>
+                {% if character.backstory %}
+                <div class="backstory-text">{{ character.backstory }}</div>
+                {% else %}
+                <p class="empty-placeholder">No backstory provided</p>
+                {% endif %}
+            </div>
+
+            {# Allies & Organizations #}
+            {% if character.allies_and_orgs %}
+            <div class="section-box">
+                <h3>Allies &amp; Organizations</h3>
+                <div class="backstory-text">{{ character.allies_and_orgs }}</div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        {# === RIGHT COLUMN: Equipment + Treasure === #}
+        <div class="page2-right">
+
+            {# Equipment #}
+            <div class="section-box" style="margin-bottom: 6pt;">
+                <h3>Equipment</h3>
+                {% if character.equipment %}
+                <table class="equipment-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in character.equipment %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.weight }} lb</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="equipment-total">
+                    Total Weight: {{ character.total_weight }} lb / {{ character.carrying_capacity }} lb
+                </div>
+                {% else %}
+                <p class="empty-placeholder">No equipment</p>
+                {% endif %}
+            </div>
+
+            {# Currency #}
+            <div style="margin-bottom: 6pt;">
+                <h3>Currency</h3>
+                <div class="currency-row">
+                    <div class="currency-box">
+                        <div class="currency-label">CP</div>
+                        <div class="currency-value">{{ character.cp }}</div>
+                    </div>
+                    <div class="currency-box">
+                        <div class="currency-label">SP</div>
+                        <div class="currency-value">{{ character.sp }}</div>
+                    </div>
+                    <div class="currency-box">
+                        <div class="currency-label">EP</div>
+                        <div class="currency-value">{{ character.ep }}</div>
+                    </div>
+                    <div class="currency-box">
+                        <div class="currency-label">GP</div>
+                        <div class="currency-value">{{ character.gp }}</div>
+                    </div>
+                    <div class="currency-box">
+                        <div class="currency-label">PP</div>
+                        <div class="currency-value">{{ character.pp }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {# Treasure #}
+            {% if character.treasure_notes %}
+            <div class="section-box">
+                <h3>Treasure</h3>
+                <div class="backstory-text">{{ character.treasure_notes }}</div>
+            </div>
+            {% endif %}
+
+            {# Features & Traits (overflow) #}
+            <div class="section-box" style="margin-top: 6pt;">
+                <h3>Additional Features &amp; Traits</h3>
+                {% if character.features or character.feats %}
+                <ul class="features-list">
+                    {% for feat in character.features %}
+                    <li>{{ feat }}</li>
+                    {% endfor %}
+                    {% for feat in character.feats %}
+                    <li>{{ feat }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="empty-placeholder">None</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</div>

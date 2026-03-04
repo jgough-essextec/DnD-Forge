@@ -7,4 +7,5 @@ urlpatterns = [
     path('api/', include('campaigns.urls')),
     path('api/', include('users.urls')),
     path('api/', include('srd.urls')),
+    path('api/', include('pdf.urls')),
 ]

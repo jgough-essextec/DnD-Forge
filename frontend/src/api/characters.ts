@@ -71,6 +71,28 @@ export async function exportCharacter(id: string): Promise<void> {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Export a character as a downloadable PDF file.
+ * Calls the server-side WeasyPrint endpoint and returns the PDF blob.
+ */
+export async function exportCharacterPDF(id: string): Promise<Blob> {
+  const response = await api.get(`/characters/${id}/pdf/`, {
+    responseType: 'blob',
+  })
+
+  return new Blob([response.data as BlobPart], { type: 'application/pdf' })
+}
+
+/**
+ * Extract the filename from a Content-Disposition header.
+ * Falls back to 'character_sheet.pdf' if the header is missing or unparseable.
+ */
+export function extractPDFFilename(contentDisposition: string | undefined): string {
+  if (!contentDisposition) return 'character_sheet.pdf'
+  const match = contentDisposition.match(/filename="?([^";\n]+)"?/)
+  return match ? match[1] : 'character_sheet.pdf'
+}
+
 /** Response shape for the import endpoint. */
 export interface ImportCharacterResponse {
   character: Character

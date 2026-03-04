@@ -1,0 +1,829 @@
+/*
+ * PDF Character Sheet Styles
+ *
+ * Print-optimised CSS for WeasyPrint rendering.
+ * US Letter (215.9mm x 279.4mm) page layout.
+ * Clean white theme for printing with D&D-inspired typography.
+ */
+
+/* ===================================================================
+   @page rules
+   =================================================================== */
+
+@page {
+    size: letter;
+    margin: 12mm 10mm 14mm 10mm;
+
+    @top-center {
+        content: string(character-name) " - Character Sheet";
+        font-family: serif;
+        font-size: 8pt;
+        color: #666;
+    }
+
+    @bottom-center {
+        content: "Page " counter(page) " / " counter(pages);
+        font-family: sans-serif;
+        font-size: 7pt;
+        color: #999;
+    }
+}
+
+/* ===================================================================
+   Base typography
+   =================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.35;
+    color: #1a1a1a;
+}
+
+h1, h2, h3, h4 {
+    font-family: "Cinzel", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+h1 {
+    font-size: 18pt;
+    text-align: center;
+    margin-bottom: 4pt;
+}
+
+h2 {
+    font-size: 11pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    border-bottom: 1.5pt solid #8b0000;
+    padding-bottom: 2pt;
+    margin-bottom: 4pt;
+    color: #8b0000;
+}
+
+h3 {
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    margin-bottom: 2pt;
+    color: #333;
+}
+
+/* Named string for header */
+.character-name-string {
+    string-set: character-name content();
+    display: none;
+}
+
+/* ===================================================================
+   Page breaks
+   =================================================================== */
+
+.pdf-page {
+    page-break-after: always;
+}
+
+.pdf-page:last-child {
+    page-break-after: auto;
+}
+
+.pdf-page:first-child {
+    page-break-before: auto;
+}
+
+.no-break {
+    page-break-inside: avoid;
+}
+
+/* ===================================================================
+   Page 1: Core Stats — Three-column layout
+   =================================================================== */
+
+.page1-grid {
+    display: flex;
+    gap: 8pt;
+    width: 100%;
+}
+
+.page1-left {
+    flex: 0 0 30%;
+    max-width: 30%;
+}
+
+.page1-center {
+    flex: 0 0 36%;
+    max-width: 36%;
+}
+
+.page1-right {
+    flex: 0 0 30%;
+    max-width: 30%;
+}
+
+/* ===================================================================
+   Character header
+   =================================================================== */
+
+.character-header {
+    display: flex;
+    align-items: flex-end;
+    border: 1.5pt solid #333;
+    border-radius: 4pt;
+    margin-bottom: 8pt;
+    overflow: hidden;
+}
+
+.character-header-name {
+    flex: 0 0 35%;
+    padding: 6pt 8pt;
+    background: #f5f0e6;
+    border-right: 1pt solid #ccc;
+}
+
+.character-header-name input,
+.character-header-name .field-value {
+    font-family: "Cinzel", serif;
+    font-size: 14pt;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+}
+
+.character-header-fields {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.header-field {
+    flex: 1 1 33%;
+    min-width: 0;
+    padding: 3pt 6pt;
+    border-left: 0.5pt solid #ddd;
+    border-bottom: 0.5pt solid #ddd;
+}
+
+.header-field:first-child {
+    border-left: none;
+}
+
+.field-label {
+    display: block;
+    font-size: 6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    color: #666;
+}
+
+.field-value {
+    display: block;
+    font-size: 9pt;
+    font-weight: 600;
+}
+
+/* ===================================================================
+   Ability score blocks
+   =================================================================== */
+
+.ability-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 3pt;
+    margin-bottom: 6pt;
+}
+
+.ability-block {
+    display: flex;
+    align-items: center;
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 2pt 4pt;
+    background: #faf8f2;
+    page-break-inside: avoid;
+}
+
+.ability-name {
+    flex: 0 0 32pt;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    color: #555;
+}
+
+.ability-modifier {
+    flex: 0 0 28pt;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.ability-score {
+    flex: 0 0 22pt;
+    text-align: center;
+    font-size: 8pt;
+    color: #666;
+    border: 0.5pt solid #ccc;
+    border-radius: 50%;
+    width: 20pt;
+    height: 20pt;
+    line-height: 20pt;
+}
+
+/* ===================================================================
+   Saving throws & Skills
+   =================================================================== */
+
+.saves-list,
+.skills-list {
+    margin-bottom: 6pt;
+}
+
+.save-row,
+.skill-row {
+    display: flex;
+    align-items: center;
+    gap: 3pt;
+    padding: 1pt 0;
+    font-size: 8pt;
+    line-height: 1.4;
+}
+
+.prof-indicator {
+    flex: 0 0 8pt;
+    width: 8pt;
+    height: 8pt;
+    border-radius: 50%;
+    border: 0.75pt solid #555;
+    display: inline-block;
+}
+
+.prof-indicator.proficient {
+    background: #333;
+}
+
+.prof-indicator.expertise {
+    background: #333;
+    box-shadow: 0 0 0 1.5pt #fff, 0 0 0 2.5pt #333;
+}
+
+.save-modifier,
+.skill-modifier {
+    flex: 0 0 22pt;
+    text-align: right;
+    font-weight: 600;
+    font-size: 8pt;
+}
+
+.save-name,
+.skill-name {
+    flex: 1;
+    font-size: 8pt;
+}
+
+.skill-ability {
+    flex: 0 0 20pt;
+    font-size: 6.5pt;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.passive-perception-box {
+    display: flex;
+    align-items: center;
+    gap: 4pt;
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 6pt;
+    margin-top: 4pt;
+    background: #faf8f2;
+}
+
+.passive-perception-value {
+    font-size: 12pt;
+    font-weight: 700;
+}
+
+.passive-perception-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    color: #666;
+}
+
+/* ===================================================================
+   Combat stats
+   =================================================================== */
+
+.combat-stats-row {
+    display: flex;
+    gap: 6pt;
+    margin-bottom: 6pt;
+}
+
+.combat-stat-box {
+    flex: 1;
+    text-align: center;
+    border: 1.5pt solid #333;
+    border-radius: 4pt;
+    padding: 4pt 2pt;
+    background: #faf8f2;
+    page-break-inside: avoid;
+}
+
+.combat-stat-value {
+    font-size: 18pt;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.combat-stat-label {
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    color: #666;
+    margin-top: 1pt;
+}
+
+.combat-stat-note {
+    font-size: 6pt;
+    color: #999;
+}
+
+/* ===================================================================
+   Hit points
+   =================================================================== */
+
+.hp-section {
+    border: 1.5pt solid #333;
+    border-radius: 4pt;
+    padding: 4pt 6pt;
+    margin-bottom: 6pt;
+    page-break-inside: avoid;
+}
+
+.hp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2pt;
+}
+
+.hp-max-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.hp-max-value {
+    font-size: 9pt;
+    font-weight: 700;
+}
+
+.hp-current {
+    text-align: center;
+    font-size: 22pt;
+    font-weight: 700;
+    padding: 4pt 0;
+    border-bottom: 0.5pt solid #ddd;
+}
+
+.hp-current-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    text-align: center;
+    color: #666;
+}
+
+.hp-temp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 3pt;
+    margin-top: 3pt;
+}
+
+.hp-temp-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.hp-temp-value {
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+/* Hit dice & Death saves */
+
+.hitdice-deathsaves {
+    display: flex;
+    gap: 6pt;
+    margin-bottom: 6pt;
+}
+
+.hitdice-box,
+.deathsaves-box {
+    flex: 1;
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 4pt;
+    page-break-inside: avoid;
+}
+
+.deathsaves-row {
+    display: flex;
+    align-items: center;
+    gap: 3pt;
+    font-size: 7pt;
+    margin-bottom: 1pt;
+}
+
+.deathsave-circle {
+    width: 7pt;
+    height: 7pt;
+    border-radius: 50%;
+    border: 0.75pt solid #555;
+    display: inline-block;
+}
+
+.deathsave-circle.filled {
+    background: #333;
+}
+
+/* ===================================================================
+   Attacks table
+   =================================================================== */
+
+.attacks-section {
+    margin-bottom: 6pt;
+}
+
+.attacks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+}
+
+.attacks-table th {
+    text-align: left;
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.2pt;
+    color: #666;
+    border-bottom: 1pt solid #999;
+    padding: 2pt 3pt;
+}
+
+.attacks-table td {
+    padding: 2pt 3pt;
+    border-bottom: 0.5pt solid #ddd;
+}
+
+/* ===================================================================
+   Personality, features, proficiencies
+   =================================================================== */
+
+.personality-box {
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 5pt;
+    margin-bottom: 4pt;
+    page-break-inside: avoid;
+    min-height: 22pt;
+}
+
+.personality-box .box-label {
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3pt;
+    color: #8b0000;
+    font-weight: 700;
+    margin-bottom: 1pt;
+}
+
+.personality-box .box-content {
+    font-size: 8pt;
+    line-height: 1.3;
+}
+
+.features-list {
+    margin-bottom: 4pt;
+}
+
+.features-list li {
+    font-size: 8pt;
+    line-height: 1.3;
+    margin-bottom: 1pt;
+}
+
+.proficiencies-box {
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 5pt;
+    font-size: 8pt;
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
+
+/* ===================================================================
+   Page 2: Backstory & Description
+   =================================================================== */
+
+.page2-grid {
+    display: flex;
+    gap: 8pt;
+}
+
+.page2-left {
+    flex: 0 0 55%;
+    max-width: 55%;
+}
+
+.page2-right {
+    flex: 0 0 42%;
+    max-width: 42%;
+}
+
+/* Appearance fields */
+.appearance-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4pt;
+    margin-bottom: 6pt;
+}
+
+.appearance-field {
+    flex: 1 1 30%;
+    border: 0.5pt solid #ccc;
+    border-radius: 2pt;
+    padding: 2pt 4pt;
+}
+
+.appearance-field .field-label {
+    font-size: 6pt;
+}
+
+.appearance-field .field-value {
+    font-size: 8pt;
+}
+
+/* Portrait */
+.portrait-box {
+    width: 80pt;
+    height: 80pt;
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    float: right;
+    margin: 0 0 4pt 6pt;
+    overflow: hidden;
+    background: #f0ede4;
+}
+
+.portrait-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.portrait-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 8pt;
+}
+
+/* Backstory text */
+.backstory-section {
+    margin-bottom: 6pt;
+}
+
+.backstory-text {
+    font-size: 9pt;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Equipment table */
+.equipment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin-bottom: 4pt;
+}
+
+.equipment-table th {
+    text-align: left;
+    font-size: 7pt;
+    text-transform: uppercase;
+    color: #666;
+    border-bottom: 1pt solid #999;
+    padding: 2pt 3pt;
+}
+
+.equipment-table td {
+    padding: 2pt 3pt;
+    border-bottom: 0.5pt solid #ddd;
+}
+
+.equipment-total {
+    font-size: 7pt;
+    text-align: right;
+    color: #666;
+    margin-top: 2pt;
+}
+
+/* Currency */
+.currency-row {
+    display: flex;
+    gap: 4pt;
+    margin-bottom: 6pt;
+}
+
+.currency-box {
+    flex: 1;
+    text-align: center;
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 2pt;
+}
+
+.currency-label {
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.currency-value {
+    font-size: 10pt;
+    font-weight: 700;
+}
+
+/* ===================================================================
+   Page 3: Spellcasting
+   =================================================================== */
+
+.spellcasting-header {
+    display: flex;
+    gap: 6pt;
+    margin-bottom: 6pt;
+}
+
+.spellcasting-header-box {
+    flex: 1;
+    text-align: center;
+    border: 1.5pt solid #333;
+    border-radius: 4pt;
+    padding: 4pt 2pt;
+    background: #faf8f2;
+}
+
+.spell-header-value {
+    font-size: 14pt;
+    font-weight: 700;
+}
+
+.spell-header-label {
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    color: #666;
+}
+
+/* Cantrips */
+.cantrips-section {
+    margin-bottom: 6pt;
+}
+
+.cantrip-list {
+    column-count: 2;
+    column-gap: 8pt;
+    font-size: 8pt;
+    list-style: none;
+}
+
+.cantrip-list li {
+    margin-bottom: 1pt;
+    page-break-inside: avoid;
+}
+
+/* Spell levels */
+.spell-level-section {
+    margin-bottom: 4pt;
+    page-break-inside: avoid;
+}
+
+.spell-level-header {
+    display: flex;
+    align-items: center;
+    gap: 4pt;
+    margin-bottom: 2pt;
+}
+
+.spell-level-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #8b0000;
+}
+
+.slot-indicators {
+    display: flex;
+    gap: 2pt;
+}
+
+.slot-circle {
+    width: 8pt;
+    height: 8pt;
+    border-radius: 50%;
+    border: 0.75pt solid #555;
+}
+
+.spell-list {
+    column-count: 2;
+    column-gap: 8pt;
+    font-size: 8pt;
+    list-style: none;
+}
+
+.spell-list li {
+    display: flex;
+    align-items: center;
+    gap: 2pt;
+    margin-bottom: 1pt;
+    page-break-inside: avoid;
+}
+
+.spell-prepared {
+    width: 6pt;
+    height: 6pt;
+    border-radius: 50%;
+    border: 0.5pt solid #555;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.spell-prepared.prepared {
+    background: #333;
+}
+
+.spell-always {
+    color: #8b0000;
+    font-weight: 700;
+    margin-left: 1pt;
+}
+
+.spell-ritual {
+    color: #666;
+    font-size: 7pt;
+    margin-left: 1pt;
+}
+
+/* Pact Magic */
+.pact-magic-section {
+    border: 1.5pt solid #4a0080;
+    border-radius: 4pt;
+    padding: 4pt 6pt;
+    margin-bottom: 6pt;
+    background: #f8f0ff;
+    page-break-inside: avoid;
+}
+
+.pact-magic-header {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #4a0080;
+    margin-bottom: 2pt;
+}
+
+.pact-magic-note {
+    font-size: 7pt;
+    color: #666;
+    font-style: italic;
+}
+
+/* ===================================================================
+   Utility
+   =================================================================== */
+
+.section-box {
+    border: 1pt solid #999;
+    border-radius: 3pt;
+    padding: 3pt 5pt;
+    margin-bottom: 4pt;
+}
+
+.empty-placeholder {
+    font-size: 8pt;
+    color: #999;
+    font-style: italic;
+}

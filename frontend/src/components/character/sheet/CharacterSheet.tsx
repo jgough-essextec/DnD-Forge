@@ -26,6 +26,7 @@ import { ProficiencyBonusDisplay } from './page1/ProficiencyBonusDisplay'
 import { Page2Layout } from './page2/Page2Layout'
 import { Page3Layout } from './page3/Page3Layout'
 import { PrintButton } from './PrintButton'
+import { ExportPDFButton } from './ExportPDFButton'
 import { FloatingActionBar } from './FloatingActionBar'
 
 // ---------------------------------------------------------------------------
@@ -94,9 +95,10 @@ function CharacterSheetInner({ initialTab }: CharacterSheetInnerProps) {
 
   return (
     <div className="character-sheet" data-testid="character-sheet">
-      {/* Sheet header with print button */}
-      <div className="flex items-center justify-between mb-4 print:hidden">
+      {/* Sheet header with action buttons */}
+      <div className="flex items-center justify-end gap-2 mb-4 print:hidden">
         <h2 className="sr-only">Character Sheet</h2>
+        <ExportPDFButton characterId={character.id} characterName={character.name} />
         <PrintButton />
       </div>
 
