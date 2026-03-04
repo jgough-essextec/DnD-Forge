@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 2
+## Current Round: 3
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -21,3 +21,12 @@
 - [x] Agent F (frontend-dev): Stories 2.8-2.10 (character/campaign/UI types + barrel) — COMPLETE (54 tests)
   - Master Character type, Campaign types, UI state types, barrel index.ts
 - Checkpoint: PASSED (303 frontend + 30 backend = 333 tests)
+
+### Round 3: SRD Data + Dice Engine
+- [x] Agent G (frontend-dev): Stories 3.1-3.3 (race/class/spell data) — COMPLETE
+  - 9 races with subraces, 12 classes with L1-3 features, 88 spells (cantrips-L3)
+- [x] Agent H (frontend-dev): Stories 3.4-3.7 (equipment/bg/feat/reference data) — COMPLETE (143 tests)
+  - 37 weapons, 13 armor, 7 packs, 13 backgrounds, 42 feats, full reference tables
+- [x] Agent I (frontend-dev): Story 7.1 (dice engine) — COMPLETE (92 tests, 100% coverage)
+  - crypto.getRandomValues(), notation parsing, 4d6-drop-lowest, advantage/disadvantage
+- Checkpoint: PASSED (618 frontend + 30 backend = 648 tests)
