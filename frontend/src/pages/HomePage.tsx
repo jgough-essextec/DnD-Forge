@@ -10,6 +10,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, CheckSquare } from 'lucide-react';
 import { useCharacters } from '@/hooks/useCharacters';
+import { getCharacter } from '@/api/characters';
 import { useCreateCharacter } from '@/hooks/useCharacterMutations';
 import { useUpdateCharacter } from '@/hooks/useCharacterMutations';
 import { useDeleteCharacter } from '@/hooks/useCharacterMutations';
@@ -124,38 +125,37 @@ export default function HomePage() {
   // -------------------------------------------------------------------------
 
   const handleDuplicate = useCallback(
-    (id: string) => {
+    async (id: string) => {
       const char = characters.find((c) => c.id === id);
       if (!char) return;
 
       const newName = duplicateCharacterName(char.name);
 
-      createMutation.mutate(
-        {
-          name: newName,
-          // Send minimal data; the API will fill in defaults
-        } as Parameters<typeof createMutation.mutate>[0],
-        {
-          onSuccess: (newChar) => {
-            addToast({
-              message: 'Character duplicated!',
-              type: 'success',
-            });
-            // Give user option to navigate to copy
-            setTimeout(() => {
+      try {
+        // Fetch the full character data to duplicate it properly
+        const fullChar = await getCharacter(id);
+        // Strip server-managed fields and set new name
+        const { id: _id, owner: _owner, createdAt: _ca, updatedAt: _ua, version: _v, ...charData } = fullChar as Record<string, unknown>;
+        charData.name = newName;
+
+        createMutation.mutate(
+          charData as Parameters<typeof createMutation.mutate>[0],
+          {
+            onSuccess: (newChar) => {
               addToast({
-                message: `Open "${newName}"`,
-                type: 'info',
+                message: 'Character duplicated!',
+                type: 'success',
               });
-            }, 100);
-            // Navigate to the new copy
-            navigate(`/character/${newChar.id}`);
+              navigate(`/character/${newChar.id}`);
+            },
+            onError: () => {
+              addToast({ message: 'Failed to duplicate character.', type: 'error' });
+            },
           },
-          onError: () => {
-            addToast({ message: 'Failed to duplicate character.', type: 'error' });
-          },
-        },
-      );
+        );
+      } catch {
+        addToast({ message: 'Failed to duplicate character.', type: 'error' });
+      }
     },
     [characters, createMutation, addToast, navigate],
   );
