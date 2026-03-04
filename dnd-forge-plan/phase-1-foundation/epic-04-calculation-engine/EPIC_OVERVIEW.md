@@ -23,6 +23,29 @@ A pure-function calculation module that computes every derived stat from source 
 - **D&D 5e rules:** All calculations must be SRD-accurate including edge cases
 - **Dependencies consumed:** Epic 2 types, Epic 3 SRD data, Epic 7 dice engine (for random rolls)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 4.1 — Ability Score Calculations | 15 | 0 | 0 | 15 |
+| 4.2 — Proficiency & Skill Calculations | 14 | 0 | 0 | 14 |
+| 4.3 — Combat Stat Calculations | 20 | 0 | 0 | 20 |
+| 4.4 — Spellcasting Calculations | 14 | 0 | 0 | 14 |
+| 4.5 — Level Up Calculations | 10 | 0 | 0 | 10 |
+| 4.6 — Currency & Inventory Calculations | 10 | 0 | 0 | 10 |
+| 4.7 — Rest Mechanics | 12 | 0 | 0 | 12 |
+| 4.8 — Character Validation | 16 | 0 | 0 | 16 |
+| **Totals** | **111** | **0** | **0** | **111** |
+
+### Key Gaps Found
+- Error handling for edge case inputs (negative ability scores, out-of-range values, invalid formula strings) not consistently specified
+- Multiclass spell save DC per-class support: function returns single number but multiclass may need per-class DCs
+- AC calculation with Medium Armor Master feat (+3 DEX cap) mentioned but not in acceptance criteria
+- Monk Unarmored Movement scaling table not included in test cases
+- Wizard Arcane Recovery (short rest spell slot recovery) not modeled in rest mechanics
+- Validation ordering (errors before warnings) mentioned but not in acceptance criteria
+- Performance targets for real-time validation not specified
+
 ## Dependencies
 - **Depends on:** Epic 2 (Type System), Epic 3 (SRD Data), Epic 7 (Dice Engine)
 - **Blocks:** Epic 5 (Database Layer) — stores calculated Character data; Epic 6 (Stores) — stores trigger recalculations

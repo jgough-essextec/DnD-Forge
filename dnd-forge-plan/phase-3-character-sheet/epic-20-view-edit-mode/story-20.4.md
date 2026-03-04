@@ -41,6 +41,41 @@ As a developer, I need every edit to trigger the appropriate recalculations so d
 - Changed derived values flash with a gold highlight (300ms fade)
 - Dependency map ensures efficient partial recalculation (not full recalc on every change)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should map ability score changes to dependent values (modifier, related saves, skills, AC, HP, spell DC, attacks)`
+- `should map level changes to dependent values (proficiency bonus, HP max, spell slots)`
+- `should map equipment changes to dependent values (AC, attack table, inventory weight)`
+- `should map spell list changes to spell page data only`
+- `should debounce recalculation at 300ms`
+- `should run recalculation on field blur event`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should recalculate all dependent values when an ability score changes`
+- `should recalculate proficiency-dependent values when level changes`
+- `should recalculate AC and attack table when equipment changes`
+- `should not recalculate AC when spell list changes (partial recalc)`
+- `should flash changed derived values with gold highlight (300ms fade)`
+- `should debounce recalculation (not fire on every keystroke)`
+- `should run recalculation on field blur`
+
+### Test Dependencies
+- Mock Phase 1 calculation engine with known input/output mappings
+- Mock character data for testing cascade effects
+- Mock debounce timer (use fake timers)
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Performance**: No specification for maximum acceptable recalculation time (latency budget)
+- **Error Handling**: No specification for what happens if the calculation engine throws an error during recalculation
+- **Edge Cases**: No specification for simultaneous changes to multiple fields within the same debounce window
+
 ## Dependencies
 - Phase 1 calculation engine (the core computation logic)
 - Story 20.1 (Mode Toggle) — recalculation runs in edit mode

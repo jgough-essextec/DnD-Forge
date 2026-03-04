@@ -48,6 +48,49 @@ As a player, I need quick buttons for advantage (roll 2d20, keep highest) and di
 8. Lock (pin) option keeps ADV/DIS active for multiple consecutive rolls
 9. Sheet-triggered rolls offer Normal/Advantage/Disadvantage choice
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should convert ADV toggle to 2d20kh1 roll expression with modifier`
+- `should convert DIS toggle to 2d20kl1 roll expression with modifier`
+- `should enforce mutual exclusivity (activating ADV deactivates DIS and vice versa)`
+- `should reset ADV/DIS toggle state after a roll when lock is not enabled`
+- `should maintain ADV/DIS toggle state after a roll when lock is enabled`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render ADV and DIS toggle buttons above the d20 quick-roll button`
+- `should highlight ADV button when active and dim DIS button`
+- `should deactivate ADV when DIS is clicked (mutual exclusivity)`
+- `should display both d20 results with kept die highlighted in gold for advantage`
+- `should display both d20 results with kept die highlighted in red for disadvantage`
+- `should show dropped die as dimmed with strikethrough text`
+- `should display result format "ADV: [high] / ~~[low]~~ + [mod] = [total]"`
+- `should show lock/pin icon and keep ADV/DIS active after roll when locked`
+- `should auto-reset ADV/DIS after roll when lock is not engaged`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should toggle advantage, roll d20, see both results with correct highlighting, and verify auto-reset`
+- `should lock disadvantage, make multiple rolls, and verify DIS persists across rolls`
+- `should trigger a sheet roll and see Normal/Advantage/Disadvantage choice dialog`
+
+### Test Dependencies
+- Mock dice engine to return controlled d20 pairs (e.g., [18, 5] for advantage, [3, 17] for disadvantage)
+- Mock Zustand dice store for toggle state
+- Story 26.1 panel component for integration context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if ADV/DIS is toggled during an active animation
+- **Edge Cases**: Behavior when both d20s roll the same value (e.g., two 15s) not specified; interaction with critical hit/fumble when advantage/disadvantage is active (e.g., advantage rolls [20, 1])
+- **Accessibility**: No keyboard shortcut for toggling ADV/DIS; no ARIA state for toggle buttons; screen reader announcement for which die was kept/dropped
+- **Mobile/Responsive**: Touch target size for ADV/DIS buttons not specified; long-press vs tap behavior for sheet-triggered roll options on mobile
+
 ## Dependencies
 
 - Story 26.1 (Dice Roller Panel) for button placement

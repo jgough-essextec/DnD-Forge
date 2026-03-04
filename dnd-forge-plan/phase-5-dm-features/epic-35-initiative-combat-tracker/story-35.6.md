@@ -82,6 +82,50 @@ interface Encounter {
 - Encounter summary is saved and viewable from the Encounters tab
 - Encounter can be linked to a session note
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate total XP from defeated monsters using SRD CR-to-XP mapping`
+- `should divide XP equally among all player characters in the encounter`
+- `should exclude specified characters from the XP split calculation`
+- `should detect level threshold crossings for characters receiving XP`
+- `should correctly map CR values (including fractional CRs 1/8, 1/4, 1/2) to XP values`
+- `should allow manual XP total adjustment by the DM`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should open summary modal from "End Encounter" button in combat tracker`
+- `should display rounds elapsed, defeated monsters with CR and XP, total XP, and party members`
+- `should show per-character XP preview with current, added, and new total`
+- `should highlight characters crossing level thresholds: "[Name] will advance to Level [N]!"`
+- `should allow excluding characters from XP split via checkboxes`
+- `should toggle "Milestone Level Up" to level up characters instead of awarding XP`
+- `should trigger Phase 4 level-up flow for milestone level-ups`
+- `should persist XP and encounter summary on "Apply & Save" click`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should end an encounter, distribute XP to party, and verify XP persists on character records`
+- `should end an encounter with milestone toggle, level up all characters, and verify level changes`
+- `should save encounter summary and verify it appears in the Encounters tab`
+
+### Test Dependencies
+- SRD CR-to-XP mapping data
+- Mock encounter with defeated monsters at various CRs
+- Character fixtures near level thresholds for level-up detection
+- Mock Phase 4 level-up flow
+- Mock session log for encounter-to-session linking
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling partial "Apply & Save" failure (XP applied to some characters but not others)
+- **Edge Cases**: Behavior when no monsters were defeated (0 XP encounter); behavior when all characters are excluded from XP split; level 20 characters receiving XP (no further level-ups)
+- **Dependency Issues**: Shared XP application logic between this story and Story 37.1 not explicitly defined as a shared utility
+
 ## Dependencies
 
 - Story 35.3 — Combat tracker main view ("End Encounter" button)

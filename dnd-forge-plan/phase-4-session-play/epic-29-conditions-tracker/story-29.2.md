@@ -75,6 +75,53 @@ As a player, I need to easily add and remove conditions as they're applied durin
 11. Active conditions persist in character data and survive page refresh
 12. Long rest automation reduces exhaustion by 1 level
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should add a new condition to the active conditions list`
+- `should prevent duplicate conditions (no stacking except exhaustion)`
+- `should increment exhaustion level by 1 when exhaustion is added (up to 6)`
+- `should decrement exhaustion level by 1 when exhaustion is removed (not full removal)`
+- `should detect HP reaching 0 and return "Unconscious" auto-suggestion`
+- `should persist active conditions in character data structure`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Add Condition" button with + icon at the end of the conditions strip`
+- `should open dropdown/modal showing all 14 conditions + exhaustion with names and summaries`
+- `should add condition immediately when selected from dropdown`
+- `should show "Already active" note for conditions already in the active list`
+- `should display exhaustion with +/- stepper showing current level`
+- `should show new cumulative effect when exhaustion level increments`
+- `should display dramatic death warning at Exhaustion Level 6`
+- `should remove condition via badge remove button`
+- `should toggle condition off via dropdown (toggle behavior)`
+- `should show "Unconscious" auto-suggestion when HP reaches 0`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add Poisoned condition, see it appear as orange badge, then remove it via badge remove button`
+- `should increment exhaustion from 0 to 3, verify cumulative effects at each level, then decrement back`
+- `should take damage to 0 HP and see "Unconscious" condition auto-suggestion, confirm to add`
+- `should verify conditions persist after page refresh`
+
+### Test Dependencies
+- Mock Phase 1 SRD conditions data
+- Mock character data with active conditions and HP state
+- Mock HP change event for auto-suggestion triggers
+- Mock Zustand character store for condition persistence
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if condition data is corrupted on load; no undo for accidental condition removal
+- **Edge Cases**: Behavior when removing Unconscious condition manually while at 0 HP; interaction between auto-suggestion and conditions already present; what happens to exhaustion data if character dies at Level 6
+- **Accessibility**: No keyboard navigation for the Add Condition dropdown; no ARIA labels for the exhaustion stepper; auto-suggestion dismiss mechanism not specified for screen readers
+- **Mobile/Responsive**: Dropdown vs modal choice for Add Condition not specified per viewport; touch target size for +/- exhaustion stepper
+
 ## Dependencies
 
 - Story 29.1 (Active Conditions Display) for the badge strip UI

@@ -40,6 +40,39 @@ As a developer, I need the Race Step to validate all selections and persist them
 - Back-navigating to the Race Step restores all prior selections and renders the detail panel correctly
 - The wizard progress sidebar shows the selected race/subrace summary (e.g., "High Elf", "Hill Dwarf", "Variant Human")
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false with error when no race is selected`
+- `should return valid:false with error when race with subraces has no subrace selected (Dwarf, Elf, Gnome, Halfling)`
+- `should return valid:false with error for incomplete Dragonborn ancestry selection`
+- `should return valid:false with error for incomplete Half-Elf ability bonuses or skill choices`
+- `should return valid:false with error for incomplete High Elf cantrip or language choice`
+- `should return valid:false with error for incomplete Variant Human abilities, skill, or feat selection`
+- `should return valid:true with empty errors when all selections are complete for each race type`
+- `should generate user-friendly validation error messages (e.g., "Please select a subrace for your Dwarf")`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist the complete RaceSelection object to the wizard store on Next click`
+- `should restore all previous selections from the wizard store on back-navigation including detail panel state`
+- `should display selected race/subrace summary in the progress sidebar (e.g., "High Elf", "Hill Dwarf")`
+- `should clear race-specific choices when switching race (e.g., Elf -> High Elf choices cleared when changing to Dwarf)`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Test fixtures for each race's complete and incomplete RaceSelection objects
+- Mock validation scenarios for each race type
+
+## Identified Gaps
+
+- **Edge Cases**: Switching race after filling all choices should clear stale data from previous race; mentioned in notes but not in acceptance criteria
+- **Error Handling**: No specification for handling corrupted RaceSelection objects in the wizard store
+- **Dependency Issues**: Progress sidebar summary for races without subraces (just race name) vs. with subraces is specified, but display for Variant Human with feat name is not specified
+
 ## Dependencies
 
 - **Depends on:** Stories 9.1-9.4 (all race selection UI must be built for validation to check), Story 8.1 (wizard shell consumes the validate function and manages step navigation), Phase 1 Zustand wizard store

@@ -31,6 +31,35 @@ As a player on a tablet, I need a readable sheet that balances information densi
 - Layout transitions smoothly from desktop (3-column) to tablet (2-column)
 - Content remains readable and usable on tablet-sized screens
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Page 1 in two-column layout at 640-1024px with correct width ratios (40/60)`
+- `should render skills list in compact format with abbreviations on tablet`
+- `should render Page 2 in single column with sections stacked vertically`
+- `should reduce portrait area to thumbnail size (~80px) on tablet`
+- `should render Page 3 in single column with spell levels stacked vertically`
+- `should render spell slot trackers above spell lists on tablet`
+- `should ensure all interactive elements meet 44x44px minimum touch target`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render two-column Page 1 layout at 768px viewport width with touch-friendly targets`
+
+### Test Dependencies
+- Mock character data with full content
+- Viewport size mocking (640px, 768px, 1024px)
+- Touch target size measurement utilities
+
+## Identified Gaps
+
+- **Accessibility**: No specification for touch target size verification tooling, no ARIA labels adapted for tablet
+- **Edge Cases**: No specification for transition behavior at exact 640px and 1024px boundaries
+- **Performance**: No specification for layout reflow performance during viewport resize
+
 ## Dependencies
 - Story 24.1 (Desktop Layout) — tablet layout adapts from desktop
 - Epic 17-19 (Sheet components) — layout targets

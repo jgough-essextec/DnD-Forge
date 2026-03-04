@@ -112,6 +112,55 @@ At ASI levels, the player may optionally replace one known cantrip with another 
 11. All derived stats recalculate after ASI/feat selection with a summary
 12. Optional cantrip replacement is available as a sub-step
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct ASI levels for each class (Fighter: 4,6,8,12,14,16,19; Rogue: 4,8,10,12,16,19; others: 4,8,12,16,19)`
+- `should enforce ability score cap of 20 for ASI increases`
+- `should calculate +2 to one ability correctly with cap enforcement`
+- `should calculate +1 to two abilities correctly with cap enforcement`
+- `should validate feat prerequisites (e.g., Grappler requires STR 13+)`
+- `should cascade recalculate all derived stats after ability score change (modifier, skills, saves, spell DC, AC, HP)`
+- `should calculate retroactive HP change when CON modifier increases`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render ASIStep only at correct ASI level for the character's class`
+- `should display two mode cards: "Ability Score Increase" and "Choose a Feat"`
+- `should show +2 to one ability dropdown with all 6 abilities and prevent exceeding 20`
+- `should show +1 to two abilities with two dropdowns`
+- `should display modifier change preview (e.g., "STR: 16 (+3) -> 18 (+4)")`
+- `should reuse FeatPicker from Phase 2 with prerequisite validation`
+- `should disable ineligible feats with explanation`
+- `should show ability selector for feats that grant +1 to an ability`
+- `should display cascade recalculation summary after selection`
+- `should offer optional cantrip replacement sub-step at ASI levels`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select +2 STR at ASI level, verify modifier change preview and cascade recalculation summary`
+- `should select Alert feat and verify +5 initiative in recalculation summary`
+- `should attempt to increase an ability already at 20 and verify cap enforcement`
+- `should select Resilient feat, choose an ability, and verify save proficiency added`
+
+### Test Dependencies
+- Mock character data at ASI levels for Fighter (7 ASIs), Rogue (6 ASIs), standard class (5 ASIs)
+- Mock Phase 2 FeatPicker component
+- Mock Phase 1 feat data with prerequisites
+- Mock Phase 1 calculation engine for cascade recalculation
+- Character with various ability scores near breakpoints and cap
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if character already has all abilities at 20 (no valid ASI choice); no undo for ASI/feat selection within the wizard step
+- **Edge Cases**: Feats that grant +1 to a choice of abilities and that ability is already at 20; "same ability twice" option for +1/+1 should be explicitly tested; interaction between Tough feat (retroactive +2 HP per level) and HP calculation
+- **Accessibility**: Mode card selection should be keyboard navigable; ability score dropdowns need ARIA labels; feat prerequisites explanation should be screen-reader accessible
+- **Performance**: Cascade recalculation may be computationally expensive -- no performance target specified
+
 ## Dependencies
 
 - Story 31.1 (Level Up Entry & Overview) for the wizard container

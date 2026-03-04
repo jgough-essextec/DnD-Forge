@@ -31,6 +31,39 @@ As a player, I need to track my currency across all five denominations with auto
 - Total wealth in GP equivalent displays at the bottom
 - Currency values persist to IndexedDB
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute total wealth in GP equivalent: (CP/100) + (SP/10) + (EP/5) + GP + (PP*10)`
+- `should auto-convert currency up when enabled (10 SP -> 1 GP)`
+- `should apply conversion rates correctly: 1 PP = 10 GP = 20 EP = 100 SP = 1000 CP`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render five currency fields (CP, SP, EP, GP, PP) horizontally with denomination labels`
+- `should always allow currency editing even in view mode`
+- `should provide +/- buttons for quick adjustment on each denomination`
+- `should allow direct numeric input for larger changes`
+- `should toggle auto-convert on/off and convert currency up when enabled`
+- `should display conversion rates tooltip on hover`
+- `should display total wealth in GP equivalent at the bottom`
+- `should persist currency changes to IndexedDB via auto-save`
+
+### Test Dependencies
+- Mock character data with starting currency
+- Mock character data with zero currency (empty state)
+- Mock auto-save system from Epic 20
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for negative currency values or non-numeric input
+- **Edge Cases**: No specification for auto-convert behavior with Electrum (EP has awkward conversion: 2 EP = 1 GP)
+- **Accessibility**: No ARIA labels for currency fields, no keyboard increment/decrement support
+
 ## Dependencies
 - Phase 2 character data (starting currency from equipment selection)
 - Epic 20 auto-save system for persisting currency changes

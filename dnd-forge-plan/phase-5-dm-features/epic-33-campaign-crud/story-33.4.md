@@ -49,6 +49,44 @@ Auto-save follows the same debounce pattern used in Phase 3 character editing (s
 - Auto-save persists changes to IndexedDB on field blur with debounce
 - All edits are reflected immediately in the campaign list and dashboard
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should debounce auto-save calls at the correct interval matching Phase 3 pattern`
+- `should generate a new 6-character join code with no ambiguous characters on regeneration`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render edit modal pre-populated with the campaign's current values`
+- `should display three tabs: Details, House Rules, and Invite`
+- `should show informational banner when editing house rules mid-campaign`
+- `should show confirmation dialog when "Generate New Code" button is clicked`
+- `should auto-save changes on field blur with debounce`
+- `should reflect edits immediately in the campaign list and dashboard`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open edit modal from campaign dashboard, modify house rules, and verify changes persist after page refresh`
+- `should regenerate join code and verify old code no longer appears`
+
+### Test Dependencies
+- Mock Zustand campaign store pre-loaded with an existing campaign
+- Mock debounce timer for auto-save testing
+- Confirmation dialog mock
+- Phase 3 auto-save pattern reference for debounce timing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for auto-save failure handling (network/storage errors)
+- **Loading/Empty States**: No saving indicator (e.g., "Saving..." or checkmark) specified during auto-save
+- **Accessibility**: No keyboard navigation spec for tab switching or form fields within tabs
+- **Mobile/Responsive**: No mobile layout specified for the tabbed edit modal
+- **Edge Cases**: Behavior when two rapid edits conflict during debounce not specified
+
 ## Dependencies
 
 - Story 33.1 — Campaign data model and Zustand store

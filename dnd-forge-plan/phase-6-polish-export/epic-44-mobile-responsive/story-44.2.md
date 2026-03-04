@@ -39,6 +39,35 @@ As a player using a tablet at the game table, I need the app to use the extra sc
 - Dice roller side panel stays visible while interacting with the character sheet
 - No horizontal scrolling or overlapping elements at any tablet width
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render all screens at 768px width with two-column layouts where appropriate`
+- `should render all screens at 810px width with no horizontal scrolling`
+- `should render all screens at 1024px width approaching desktop layout`
+- `should show campaign dashboard party stats grid without horizontal scrolling at 1024px`
+- `should collapse less important columns (conditions, notes) at 768px if grid is too wide`
+- `should render combat tracker in side-by-side layout (60% initiative list, 40% detail) on tablet`
+- `should use detail panel (not full-screen modal) for HP editing on tablet combat tracker`
+- `should render dice roller as side panel (30% width, right edge) on tablet`
+- `should keep dice roller side panel visible while interacting with character sheet on tablet`
+
+### Test Dependencies
+- Playwright viewport configuration for 768px, 810px, 1024px widths
+- Campaign dashboard with party stats grid data
+- Combat tracker with multiple combatants
+- Dice roller component with character sheet interaction
+- All app screens rendered with full data
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior when party stats grid has many columns at exactly 768px boundary not specified
+- **Performance**: No specification for tablet rendering performance targets
+- **Mobile/Responsive**: CSS container queries mentioned as a consideration but not required (browser support concerns)
+- **Accessibility**: Tablet layout changes may affect tab order — not explicitly addressed
+
 ## Dependencies
 
 - All Phase 1-5 features complete (audit covers every screen)

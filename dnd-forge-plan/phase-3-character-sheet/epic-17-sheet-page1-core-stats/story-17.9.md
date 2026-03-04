@@ -34,6 +34,46 @@ As a player, I need to see my personality traits, ideals, bonds, flaws, and feat
 - Features with limited uses show usage counter circles (filled/empty)
 - The right column scrolls independently if content overflows
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should group features by source (Racial Traits, Class Features, Background Feature, Feats)`
+- `should parse feature usage notation ("1/short rest", "2/long rest") into usage counter data`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render four personality sections (Personality Traits, Ideals, Bonds, Flaws) with correct labels`
+- `should display personality text in styled parchment-background boxes in view mode`
+- `should convert personality text blocks to editable text areas in edit mode`
+- `should render features and traits list grouped by source with collapsible sections`
+- `should display each feature with name in bold and description below`
+- `should toggle feature groups collapsed/expanded on click`
+- `should allow reordering features via drag handle in edit mode`
+- `should allow deleting individual features in edit mode`
+- `should show "Add Feature" button with name and description fields in edit mode`
+- `should display usage counter circles (filled/empty) for features with limited uses`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add a custom feature in edit mode, reorder it via drag, and verify it persists`
+
+### Test Dependencies
+- Mock character data with personality traits from background selection
+- Mock character data with features from racial, class, background, and feat sources
+- Mock features with limited uses (e.g., Second Wind, Rage)
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Loading/Empty States**: No specification for empty personality sections (no text entered)
+- **Accessibility**: No ARIA labels for collapsible sections, no keyboard support for drag-and-drop reordering, no screen reader announcement for usage counter changes
+- **Edge Cases**: No specification for very long feature descriptions (text truncation or overflow behavior)
+- **Mobile/Responsive**: Right column scroll behavior mentioned but no specification for mobile stacking order
+
 ## Dependencies
 - Phase 1 SRD data for racial traits, class features, and background features
 - Phase 2 character data (personality traits from background selection, features from class/race)

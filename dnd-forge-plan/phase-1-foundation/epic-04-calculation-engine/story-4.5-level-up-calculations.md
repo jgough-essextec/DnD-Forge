@@ -48,6 +48,33 @@ As a developer, I need functions to determine what a character gains at each new
 - `getAverageHPRoll()` returns correct averages for all hit die types (d6=4, d8=5, d10=6, d12=7)
 - Unit tests verify level-up gains for specific class/level combinations
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return ASI/feat flag for Fighter leveling to 4 via getLevelUpGains`
+- `should return subclass selection for Wizard leveling to 2 via getLevelUpGains`
+- `should return Channel Divinity feature for Cleric leveling to 2 via getLevelUpGains`
+- `should return new spell slots for Wizard leveling from 2 to 3 via getLevelUpGains`
+- `should return proficiency bonus change for character leveling to 5 via getLevelUpGains`
+- `should return correct XP threshold 0 for level 1, 300 for level 2, 355000 for level 20 via getXPForLevel`
+- `should return level 5 for 7000 XP via getLevelForXP`
+- `should return level 1 for 0 XP via getLevelForXP`
+- `should return average HP 4 for d6, 5 for d8, 6 for d10, 7 for d12 via getAverageHPRoll`
+- `should correctly roundtrip XP-to-level for all 20 levels`
+
+### Test Dependencies
+- Character type fixtures with various class/level configurations
+- Class data from Story 3.2 for feature progression lookup
+- XP threshold table from Story 3.7
+
+## Identified Gaps
+
+- **Edge Cases**: getLevelUpGains for multiclass does not specify which class level is being gained; function signature may need classId parameter
+- **Edge Cases**: First level in a multiclass gives limited proficiencies, not full first-level benefits; this distinction is mentioned in notes but not in test cases
+- **Edge Cases**: getLevelForXP with XP between thresholds (e.g., 500 XP) should return level 1, not level 2
+
 ## Dependencies
 - **Depends on:** Story 2.3 (HitDie, Class, Feature types), Story 2.8 (Character type), Story 3.2 (class data with feature progression, ASI levels, subclass levels), Story 3.7 (XP threshold table), Story 4.4 (spell slot calculations for new slots gained)
 - **Blocks:** Epic 6 Store layer (level-up flow uses these calculations), Phase 3 (Level Up UI)

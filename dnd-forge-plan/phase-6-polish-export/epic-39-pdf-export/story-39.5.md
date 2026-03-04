@@ -49,6 +49,51 @@ As a player, I need a clear export dialog that lets me choose what to include in
 - Error handling shows a user-friendly message on failure and offers print stylesheet as fallback
 - Filename format is `[CharacterName]_Level[N]_[Class].pdf` with sanitized characters
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should sanitize filename removing special characters invalid across OS platforms`
+- `should generate correct filename format: [CharacterName]_Level[N]_[Class].pdf`
+- `should default Page 3 to off for non-caster characters`
+- `should default DM notes toggle to off and only make it visible in DM context`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render PDFExportModal with all export options (page selection, paper size, avatar, DM notes, color scheme)`
+- `should show PDF preview thumbnail in the modal for Page 1`
+- `should display progress indicator "Generating PDF..." during export`
+- `should show error message with fallback to print stylesheet when PDF generation fails`
+- `should persist export option choices across modal openings`
+- `should hide DM notes toggle when not in DM context`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open PDFExportModal from character sheet quick-action bar and download valid PDF`
+- `should open PDFExportModal from gallery card context menu`
+- `should batch export multiple characters as individual PDFs in a ZIP file`
+- `should open browser print dialog when Print button is clicked`
+
+### Test Dependencies
+- Mock PDF generation functions (for unit/functional tests)
+- Level 5 Fighter and Level 3 Wizard fixtures
+- Non-caster character fixture (for Page 3 default behavior)
+- DM context mock (for DM notes toggle visibility)
+- JSZip mock for batch export testing
+- Multiple character fixtures for batch export testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for batch export partial failures (what if 1 of 12 characters fails?)
+- **Loading/Empty States**: No loading state specified for the PDF preview thumbnail generation
+- **Edge Cases**: Maximum number of characters for batch export not defined
+- **Performance**: No target for batch export time per character
+- **Accessibility**: Modal accessibility (focus trap, ARIA labels) not explicitly mentioned
+- **Mobile/Responsive**: PDF export modal layout on mobile not specified
+
 ## Dependencies
 
 - Stories 39.1-39.4 (PDF generation architecture and all three page layouts)

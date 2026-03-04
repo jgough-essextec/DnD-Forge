@@ -100,6 +100,52 @@ Some features' max uses change with level. The level-up flow (Epic 31) must upda
 9. Level-up flow updates maxUses when level thresholds are crossed
 10. Usage counter state persists in character data (auto-saved)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should extend Feature type with maxUses, usesRemaining, recoversOn, and currentLevel fields`
+- `should return correct recovery type for each mapped feature (e.g., Second Wind=short_rest, Rage=long_rest)`
+- `should correctly switch Bardic Inspiration from long_rest to short_rest at Bard level 5`
+- `should return correct maxUses for scaling features at each level (Rage: 2 at Lv1, 3 at Lv3, 4 at Lv6)`
+- `should applyShortRest() recover only short-rest features and return summary`
+- `should applyLongRest() recover all features + HP + slots + dice + exhaustion and return summary`
+- `should decrement usesRemaining by 1 when a feature is expended`
+- `should increment usesRemaining by 1 when an expended feature is manually recovered`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display limited-use features with filled/empty circle usage counters`
+- `should render correct number of circles matching maxUses (e.g., Rage at Lv3: 3 circles)`
+- `should toggle filled circle to empty on click (expend a use)`
+- `should toggle empty circle to filled on click (manual recovery override)`
+- `should persist usage counter state in character data (auto-saved)`
+- `should update circle count after level-up when maxUses threshold is crossed`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should expend 2 of 3 Rage uses, take a short rest (no recovery), then long rest and verify all uses restored`
+- `should expend Ki Points, take short rest, and verify full recovery`
+- `should verify Bardic Inspiration recovers on short rest at Bard level 5+ but only long rest below`
+- `should manually recover an expended use by clicking an empty circle`
+
+### Test Dependencies
+- Mock character data for each class with limited-use features at various levels
+- Mock Phase 1 SRD class feature data with recovery type mapping
+- Mock Zustand character store for feature usage persistence
+- `applyShortRest` and `applyLongRest` pure function test fixtures
+- Level-up threshold test data for scaling features
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if usesRemaining becomes negative or exceeds maxUses; no validation on corrupted feature data from IndexedDB
+- **Edge Cases**: Barbarian Rage at Level 20 is "unlimited" -- how to display unlimited uses with the circle pattern; subclass features with special recovery rules (e.g., Arcane Ward) not fully mapped; features with "special" recovery type lack specific recovery logic
+- **Accessibility**: No ARIA labels for usage counter circles (e.g., "2 of 3 Rage uses remaining"); no keyboard interaction for expend/recover circles; screen reader should announce use expend/recover events
+- **Dependency Issues**: Task T30.3.5 depends on Epic 31 (Level Up Flow) but this story is listed as a dependency OF Epic 31 -- bidirectional dependency needs ordering clarification
+
 ## Dependencies
 
 - Phase 1 character data model (Feature type base)

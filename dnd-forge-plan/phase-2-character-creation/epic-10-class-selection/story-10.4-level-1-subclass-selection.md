@@ -47,6 +47,38 @@ As a Cleric, Sorcerer, or Warlock player, I need to choose my subclass at level 
 - Classes with subclass at higher levels show an informational note (e.g., "You'll choose your Martial Archetype at level 3")
 - The subclass must be selected for Cleric/Sorcerer/Warlock before the step can be validated
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render subclass selector only for Cleric, Sorcerer, and Warlock`
+- `should show Life Domain for Cleric with domain spells, heavy armor proficiency, and Disciple of Life feature`
+- `should show Draconic Bloodline for Sorcerer with dragon ancestry choice, HP bonus, and natural AC feature`
+- `should show The Fiend for Warlock with expanded spell list and Dark One's Blessing feature`
+- `should capture subclass features that modify the character (heavy armor proficiency, HP bonus, natural AC) in wizard store`
+- `should show informational note for classes with subclass at higher levels (e.g., "You'll choose your Martial Archetype at level 3")`
+- `should require subclass selection for Cleric, Sorcerer, and Warlock before step validation passes`
+- `should hide subclass selector entirely for classes without level-1 subclass`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select Cleric, choose Life Domain, and see heavy armor proficiency added to character data`
+- `should select Sorcerer, choose Draconic Bloodline with dragon ancestry, and see HP bonus and natural AC applied`
+- `should select Fighter and see informational note about Martial Archetype at level 3`
+
+### Test Dependencies
+- Mock SRD class data with subclass data for Cleric, Sorcerer, and Warlock
+- Mock wizard store for capturing subclass feature modifications
+- Test fixtures for each level-1 subclass and their mechanical effects
+
+## Identified Gaps
+
+- **Edge Cases**: Sorcerer Draconic Bloodline dragon ancestry choice is different from Dragonborn ancestry; UI should clarify this distinction
+- **Accessibility**: No keyboard navigation specified for subclass cards or dragon ancestry chooser
+- **Dependency Issues**: Only SRD subclasses are available (1 per class); no specification for how to handle future homebrew or expanded subclass additions
+
 ## Dependencies
 
 - **Depends on:** Story 10.1 (class must be selected to determine if subclass is needed), Story 10.2 (detail panel provides context for subclass choice), Phase 1 SRD class data with subclass data

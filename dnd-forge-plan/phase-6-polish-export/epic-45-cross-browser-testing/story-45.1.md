@@ -48,6 +48,36 @@ As a developer, I need the app to work on all target browsers. This story covers
 - PostCSS autoprefixer is configured in Vite build for vendor prefixes
 - Known browser-specific discrepancies are documented with workarounds
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should pass all 10 core flows on Chrome 90+`
+- `should pass all 10 core flows on Firefox 90+`
+- `should pass all 10 core flows on Safari 15+ (WebKit)`
+- `should pass all 10 core flows on Edge 90+`
+- `should pass all 10 core flows on iOS Safari`
+- `should pass all 10 core flows on Chrome Android`
+- `should verify Safari IndexedDB data persistence across sessions without corruption`
+- `should verify crypto.getRandomValues() works correctly for dice rolling in all browsers`
+- `should verify backdrop-filter renders correctly for modals in Safari`
+- `should verify PostCSS autoprefixer generates correct vendor prefixes for browserslist targets`
+
+### Test Dependencies
+- Playwright multi-browser configuration (chromium, firefox, webkit)
+- BrowserStack or similar for real mobile browser testing
+- 10 core flow test scripts (character creation, sheet rendering, dice rolling, HP tracking, rest, level-up, campaign management, combat tracker, PDF export, import/export)
+- Cross-browser compatibility report template
+- PostCSS autoprefixer configuration verification
+
+## Identified Gaps
+
+- **Error Handling**: No specification for priority of browser-specific bug fixes (which browser takes precedence?)
+- **Edge Cases**: Samsung Internet testing mentioned as worthwhile but not required in acceptance criteria
+- **Mobile/Responsive**: Virtual keyboard handling on mobile (layout shifts) difficult to test with Playwright alone
+- **Dependency Issues**: Story 40.3 (print testing) may overlap with this story — scope boundary unclear
+
 ## Dependencies
 
 - All Phase 6 epics (39-44, 46) should be complete before cross-browser testing

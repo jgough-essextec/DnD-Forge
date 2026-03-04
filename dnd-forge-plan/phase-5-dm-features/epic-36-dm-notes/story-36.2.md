@@ -77,6 +77,52 @@ The session log supports both a list view and a visual timeline view with sessio
 - Encounters can be linked to sessions with inline summary display
 - Session route `/campaign/:id/session/:sessionId` shows individual session detail
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should auto-increment session number based on existing sessions`
+- `should default date to today when creating a new session note`
+- `should search across session titles and summaries for matching text`
+- `should filter sessions by tag`
+- `should sort sessions newest-first or oldest-first based on toggle`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render session log as a vertical timeline in the "Sessions" tab`
+- `should display each session with number, date, title, summary, and tags`
+- `should open editor with pre-filled session number and today's date on "Add Session" click`
+- `should render structured fields: NPCs Encountered, Locations Visited, Loot Awarded, XP Awarded`
+- `should autocomplete NPC names from previously entered NPCs in tag input`
+- `should display visual timeline with session markers that expand on click`
+- `should filter sessions by text search and tag`
+- `should toggle between newest-first and oldest-first ordering`
+- `should allow inline editing and deletion with confirmation dialog`
+- `should display linked encounter summary inline within a session`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should create a new session note, add NPCs and loot, save, and verify it appears in the timeline`
+- `should search for a session by title and verify correct result is shown`
+- `should navigate to session detail view at /campaign/:id/session/:sessionId`
+
+### Test Dependencies
+- Mock campaign with 3-5 existing session notes
+- NPC name fixtures for autocomplete testing
+- Encounter summary fixture for linking tests
+- Mock date for consistent "today" in tests
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling session deletion when the session has linked encounters
+- **Loading/Empty States**: No empty state for the session log when no sessions exist
+- **Accessibility**: No ARIA labels for timeline markers; no keyboard navigation for timeline expand/collapse
+- **Mobile/Responsive**: No mobile-specific layout for the session timeline view
+- **Edge Cases**: Behavior when session numbers are non-contiguous (after deletion); maximum number of sessions not specified
+
 ## Dependencies
 
 - Epic 34 Story 34.1 — Campaign dashboard ("Sessions" tab host)

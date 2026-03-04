@@ -55,6 +55,50 @@ As a player who prefers to buy equipment with gold, I need to roll starting gold
 - "Add" buttons are disabled or warn when insufficient gold remains
 - "Essentials Kit" quick-buy adds common adventuring gear to the cart
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute correct starting gold dice formula for each of the 12 classes`
+- `should compute total cost of items in shopping cart correctly`
+- `should compute remaining gold after purchases`
+- `should expand equipment pack into individual items with correct total cost`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display two-panel layout with equipment catalog and shopping cart when gold buy mode is selected`
+- `should display class starting gold dice formula with Roll Gold button and animated dice roll`
+- `should allow manual gold entry as an alternative to rolling`
+- `should render tabbed equipment catalog with categories (Weapons, Armor, Gear, Tools, Packs)`
+- `should show items with name, cost, weight, and key properties in each catalog tab`
+- `should add items to shopping cart with quantity adjusters, cost, and Remove button`
+- `should show Remaining Gold at top of cart with color coding (green positive, red negative)`
+- `should expand equipment packs into individual items when added to cart`
+- `should disable Add buttons when insufficient gold remains`
+- `should add common adventuring gear to cart when Essentials Kit quick-buy is clicked`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should roll starting gold for Fighter, browse equipment catalog, add items to cart, and stay within budget`
+- `should add Dungeoneer's Pack and see individual items expanded in cart`
+
+### Test Dependencies
+- Mock Phase 1 dice engine for deterministic gold roll results
+- Mock SRD equipment data with all categories and pack contents
+- Mock class starting gold formulas
+- Shopping cart state fixtures
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if dice engine fails during gold roll
+- **Loading/Empty States**: No loading state for equipment catalog tabs
+- **Edge Cases**: Currency conversion (GP, SP, CP) for items costing less than 1 GP is mentioned in notes but not in acceptance criteria
+- **Accessibility**: No ARIA labels for catalog tabs, cart quantity adjusters, or search/sort controls
+- **Performance**: No specification for catalog search/filter performance with large item lists
+
 ## Dependencies
 
 - **Depends on:** Story 13.1 (EquipmentStep container with mode toggle, WeaponPicker and ArmorPicker components), Epic 10 Story 10.6 (class determines starting gold dice), Phase 1 dice engine (for gold rolls), Phase 1 SRD equipment data

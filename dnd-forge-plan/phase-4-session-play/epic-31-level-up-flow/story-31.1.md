@@ -95,6 +95,52 @@ Some DMs use milestone leveling and may grant 2+ levels at once. The wizard shou
 9. Multi-level advancement walks through each level sequentially with clear level indicators
 10. Wizard can be cancelled at any point without applying changes
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should determine if character XP meets the next level threshold (e.g., 2700 XP = Level 4)`
+- `should dynamically generate correct step list for non-caster at non-ASI level (HP + Features + Review)`
+- `should dynamically generate correct step list for caster at ASI level (HP + Features + ASI + Spells + Review)`
+- `should include subclass step only when character reaches class-specific subclass level`
+- `should correctly identify multi-level advancement scenarios and generate steps for each level`
+- `should return all gains for a specific class/level combination (features, proficiency bonus, slots, etc.)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Level Up" button on the character sheet quick-action bar`
+- `should display pulsing notification badge when character XP meets next level threshold`
+- `should render Level Up wizard as a modal reusing Phase 2 wizard framework`
+- `should show overview screen with all gains for the new level`
+- `should mark items requiring decisions with "(Choose)" badge`
+- `should dynamically show correct number of steps based on class and level`
+- `should allow cancellation at any point without applying changes`
+- `should walk through each level sequentially for multi-level advancement`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click Level Up button, see overview of gains for next level, verify correct step count`
+- `should open Level Up for a caster at ASI level and verify all 5 steps are present`
+- `should cancel Level Up wizard mid-flow and verify no changes were applied`
+- `should advance 2 levels via milestone and walk through both levels sequentially`
+
+### Test Dependencies
+- Mock character data at various levels for different classes
+- Mock Phase 1 class data (features by level, subclass levels, ASI levels)
+- Mock Phase 2 wizard framework component
+- XP threshold lookup table test data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for Level Up at max level (20); no error handling if class data for the next level is missing
+- **Loading/Empty States**: No specification for loading state while generating the step list from class data
+- **Edge Cases**: Multi-level advancement through an ASI level + subclass level simultaneously; behavior when Gallery card context menu Level Up button is pressed for a character not currently viewed
+- **Accessibility**: No keyboard shortcut for opening Level Up wizard; no ARIA labels for the step navigation; wizard modal focus trapping not specified
+- **Mobile/Responsive**: Wizard modal sizing on mobile not specified; overview screen layout for characters with many gains
+
 ## Dependencies
 
 - Phase 2 wizard framework pattern (modal wizard component)

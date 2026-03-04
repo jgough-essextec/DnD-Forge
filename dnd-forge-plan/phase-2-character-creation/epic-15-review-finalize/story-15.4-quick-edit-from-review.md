@@ -32,6 +32,39 @@ As a player reviewing my character, I need to make last-minute tweaks without na
 - Character name is directly editable in the review header via inline text editing
 - After any edit, all derived stats are recalculated and the preview updates
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display an edit icon on each section of the character preview`
+- `should open a modal with the corresponding wizard step component when edit icon is clicked`
+- `should render the modal step component with the same data and interactions as the wizard flow`
+- `should update wizard store and immediately recalculate derived stats when Save Changes is clicked in modal`
+- `should discard changes and close the modal when Cancel is clicked`
+- `should make character name directly editable in the review header via inline text editing`
+- `should recalculate all derived stats after any edit and update the preview`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click edit on ability scores section, change a score in the modal, save, and see updated modifiers in preview`
+- `should edit character name inline in the review header and see it updated`
+- `should click edit on equipment, change armor, and see AC recalculated in the preview`
+
+### Test Dependencies
+- Mock all step components (9-14) for modal rendering
+- Mock Phase 1 calculation engine for recalculation on edit
+- Mock wizard store for state updates from modal edits
+- Complete character preview state fixture
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if a cascade effect from editing one section invalidates another section
+- **Accessibility**: No keyboard focus management for modal open/close; no ARIA labels for edit icons or inline name editing
+- **Mobile/Responsive**: Modal is specified as 80% viewport on desktop, full screen on mobile, but no detail on scroll behavior within the modal
+- **Edge Cases**: Editing race in the modal may cascade to ability scores, skills, and spells; the cascade warning behavior inside the modal is not specified
+
 ## Dependencies
 
 - **Depends on:** Story 15.1 (character preview — edit icons are added to the preview sections), All step component stories (9-14 — modal renders these components), Phase 1 calculation engine (for recalculation after edits)

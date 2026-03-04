@@ -56,6 +56,39 @@ As a developer, I need automated tests that verify critical user flows work corr
 - Offline test verifies the PWA loads and basic operations work when network is disabled
 - All tests pass consistently (no flaky tests)
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should create characters for all 12 classes with correct ability scores, proficiencies, HP, AC, features, and spells`
+- `should render all three character sheet pages and verify edit mode cascade recalculation`
+- `should roll d20 with result in [1,20], roll with advantage keeping higher, and apply skill check modifiers`
+- `should take damage consuming temp HP first, expend spell slot, add condition badge, complete short and long rest with correct recovery`
+- `should level up character verifying HP increase, new features, spell slot updates, and ASI/feat selection`
+- `should export valid PDF file containing character name (verify %PDF- header and text extraction)`
+- `should create campaign, add characters, start encounter, roll initiative, advance turns, and distribute XP`
+- `should export character as JSON, delete, import, and verify complete data restoration`
+- `should load app and perform basic operations (gallery, character view, dice roll) fully offline`
+- `should run all tests consistently with no flaky failures`
+
+### Test Dependencies
+- Playwright test suite with project configuration
+- Pre-created Level 5 Fighter fixture
+- Pre-created Level 3 Wizard fixture
+- Campaign fixture with 4 characters
+- PDF validation utility (header byte check, text extraction via pdf-parse)
+- IndexedDB state cleanup between tests
+- Playwright network emulation for offline testing
+- CI/CD configuration (GitHub Actions with Playwright support)
+
+## Identified Gaps
+
+- **Performance**: Character creation tests for all 12 classes will be long-running — parallelization strategy not specified
+- **Error Handling**: No specification for handling flaky test detection and retry strategy
+- **Edge Cases**: Test isolation when IndexedDB state is shared between tests not fully specified
+- **Dependency Issues**: pdf-parse library for PDF text extraction adds to test dependencies but not to app bundle — needs clarification
+
 ## Dependencies
 
 - Story 45.1 (manual testing should verify flows before automating them)

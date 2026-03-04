@@ -41,6 +41,45 @@ As a player, I need to see if anything is missing or incorrect so I can go back 
 - The "Save Character" button is enabled when there are no errors (warnings are acceptable)
 - The validation section is collapsible to avoid cluttering the preview
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should correctly categorize validation results into errors (red), warnings (yellow), and info (blue)`
+- `should map each validation error to the correct wizard step for Fix link navigation`
+- `should detect all error types: missing race, missing class, invalid ability scores, incorrect proficiency counts`
+- `should detect all warning types: missing backstory, no character name, low primary ability, empty personality`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should run full validateCharacter() and display results on entering the Review Step`
+- `should show errors in red, warnings in yellow, and info in blue sections`
+- `should render Fix link/button on each validation message that navigates to the relevant wizard step`
+- `should disable Save Character button when errors exist with tooltip showing error count`
+- `should enable Save Character button when there are no errors (warnings acceptable)`
+- `should make validation section collapsible, defaulting to expanded when errors exist`
+- `should show celebratory info message when character is fully valid with no warnings`
+- `should re-run validation after navigating back, fixing an issue, and returning`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should show validation errors for incomplete character, click Fix link, fix the issue, return, and see errors resolved`
+- `should show only warnings for a nearly complete character and enable the Save button`
+
+### Test Dependencies
+- Mock Phase 1 calculation engine validateCharacter() function
+- Mock wizard state with various completeness levels (errors, warnings only, fully valid)
+- Mock wizard shell step navigation for Fix link testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if validateCharacter() throws an error or crashes
+- **Accessibility**: No ARIA live region for validation result announcements; no keyboard focus management for Fix links
+- **Edge Cases**: Summary count display format ("0 errors, 2 warnings" or "3 errors must be fixed") is in notes but not in acceptance criteria
+
 ## Dependencies
 
 - **Depends on:** Story 15.1 (character preview — validation summary appears above/alongside), Phase 1 calculation engine (`validateCharacter()` function), Story 8.1 (wizard shell for step navigation via "Fix" links)

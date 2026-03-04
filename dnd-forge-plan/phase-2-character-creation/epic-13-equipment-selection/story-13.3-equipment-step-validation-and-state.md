@@ -37,6 +37,40 @@ As a developer, I need equipment selections persisted and validated with invento
 - Encumbrance warning appears if total weight exceeds carrying capacity
 - Equipped armor and shield are identified for AC calculation in the Review Step
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false when starting equipment choice group is incomplete (including unresolved generic items)`
+- `should return valid:false when gold buy mode total cost exceeds available gold`
+- `should return valid:true when all selections are valid in starting equipment mode`
+- `should return valid:true when all selections are valid in gold buy mode`
+- `should compute carrying capacity correctly as STR score x 15`
+- `should compute AC correctly from equipped armor + shield + DEX modifier per armor type`
+- `should detect encumbrance when total weight exceeds carrying capacity`
+- `should handle special AC calculations (Monk unarmored, Barbarian unarmored, Draconic Resilience)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist all equipment data to wizard store (items, armor, weapons, currency, mode)`
+- `should display total inventory weight alongside carrying capacity`
+- `should show encumbrance warning when weight exceeds STR x 15`
+- `should identify equipped armor and shield for AC calculation`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Mock STR/DEX ability scores for carrying capacity and AC computation
+- Mock equipment data with weights and armor AC values
+- Test fixtures for complete/incomplete equipment selections in both modes
+
+## Identified Gaps
+
+- **Edge Cases**: Recursive validation for nested equipment choices (top-level option valid only if specific weapon chosen) is complex and not fully specified
+- **Error Handling**: No specification for handling equipment data with missing weight or cost values
+- **Performance**: AC calculation with multiple armor types and class-specific formulas could be complex; no computation time budget specified
+
 ## Dependencies
 
 - **Depends on:** Stories 13.1-13.2 (equipment UI must be built), Story 8.1 (wizard shell consumes the validate function), Epic 11 Story 11.6 (STR for carrying capacity, DEX for AC), Phase 1 SRD equipment data, Phase 1 calculation engine

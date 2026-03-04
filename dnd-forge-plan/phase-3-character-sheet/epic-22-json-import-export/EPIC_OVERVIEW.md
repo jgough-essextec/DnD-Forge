@@ -32,3 +32,18 @@ Allow players to export their characters as portable JSON files and import chara
 - Share via URL uses pako (gzip) compression for base64-encoded character data
 - URL share has 8,000 character size guard with fallback to JSON export
 - Version migration framework in place for future schema changes
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 22.1 — JSON Export | 8 | 5 | 0 | 13 |
+| 22.2 — JSON Import | 10 | 9 | 2 | 21 |
+| 22.3 — Share via URL | 5 | 9 | 1 | 15 |
+| **Totals** | **23** | **23** | **3** | **49** |
+
+### Key Gaps Found
+- **Error Handling**: Missing specification for file size limits on import, export Blob creation failures, and corrupted URL handling
+- **Loading/Empty States**: No loading indicator specified during the 5-stage validation pipeline
+- **Accessibility**: Missing keyboard alternatives for drag-and-drop import, no ARIA labels for validation result sections
+- **Edge Cases**: Large avatar data inflating JSON export size, duplicate name handling on import, and very old format version migration not fully specified

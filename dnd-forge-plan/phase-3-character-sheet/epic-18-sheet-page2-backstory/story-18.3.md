@@ -39,6 +39,54 @@ As a player, I need to see my full equipment list with quantities, weights, and 
 - Attunement badges display on eligible items with a counter showing "N / 3 slots used"
 - Attempting to attune a 4th item shows an error
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute total weight as sum of (quantity * weight per unit) for all items`
+- `should compute carrying capacity as STR * 15 lbs`
+- `should determine encumbrance state: normal (< STR*5), encumbered (>= STR*5), heavily encumbered (>= STR*10)`
+- `should compute total wealth in GP equivalent from currency and item values`
+- `should enforce single armor and single shield equip constraint`
+- `should track attunement count against maximum of 3`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render equipment table with columns: Equipped, Name, Quantity, Weight, Total Weight, Notes/Properties`
+- `should pre-populate starting equipment from the creation wizard`
+- `should show SRD item properties on hover tooltip`
+- `should recalculate AC when toggling armor equip checkbox`
+- `should update Attacks section when toggling weapon equip checkbox`
+- `should enforce single armor/shield equip constraint with warning`
+- `should provide "Add Item" button with SRD search and custom item tabs in edit mode`
+- `should show remove button on each row with confirmation dialog in edit mode`
+- `should adjust quantity with +/- buttons and update total weight`
+- `should display footer with Total Inventory Weight, Carrying Capacity, and color-coded encumbrance indicator`
+- `should display attunement badge on eligible items with "N / 3 slots used" counter`
+- `should show error when attempting to attune a 4th item`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add an item from SRD catalog, equip it, and verify AC or attacks update accordingly`
+- `should toggle equip on weapons and armor, verifying cross-page updates on Page 1`
+
+### Test Dependencies
+- Mock character data with starting equipment (armor, weapons, items)
+- Mock SRD equipment data catalog
+- Mock equipment picker component from Phase 2
+- Mock calculation engine for carrying capacity and AC
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens when IndexedDB storage fails during item operations
+- **Loading/Empty States**: No specification for empty equipment list display (character with no starting equipment)
+- **Accessibility**: No keyboard navigation for equipment table, no ARIA labels for equip checkboxes, no screen reader support for attunement counter
+- **Performance**: No specification for performance with large equipment lists (50+ items)
+
 ## Dependencies
 - Story 17.5 (Combat Stats) — equipment equip state affects AC computation
 - Story 17.8 (Attacks) — equipped weapons generate attack rows

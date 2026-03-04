@@ -39,6 +39,37 @@ As a developer, I need functions to compute modifiers, apply racial bonuses, and
 - `rollAbilityScore()` returns 4 rolls, identifies the dropped die (lowest), and sums the kept 3
 - Unit tests cover: modifier table boundary values, point buy exact budget (27 points), point buy over budget, standard array with valid/invalid permutations, rolled score distribution check (10,000 rolls averaging ~12.2)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return modifier -5 for score 1 via getModifier`
+- `should return modifier 0 for score 10 via getModifier`
+- `should return modifier +4 for score 18 via getModifier`
+- `should return modifier +5 for score 20 via getModifier`
+- `should return modifier +10 for score 30 via getModifier`
+- `should cap total ability score at 20 by default via getTotalAbilityScore`
+- `should respect cap override of 24 for Barbarian Primal Champion via getTotalAbilityScore`
+- `should apply racial, ASI, feat, and misc bonuses in getEffectiveAbilityScores`
+- `should accept valid permutation of [15, 14, 13, 12, 10, 8] via validateStandardArray`
+- `should reject invalid standard array values (e.g., [15, 14, 13, 12, 10, 9]) via validateStandardArray`
+- `should validate point buy total of exactly 27 points via validatePointBuy`
+- `should reject point buy totaling 28 points via validatePointBuy`
+- `should return correct point buy costs (8=0, 9=1, 14=7, 15=9) via getPointBuyCost`
+- `should return 4 rolls with dropped die and sum of kept 3 via rollAbilityScore`
+- `should produce 10,000-roll average approximately 12.2 (+/-0.5) via rollAbilityScore distribution test`
+
+### Test Dependencies
+- Character type fixture from Story 2.8 with varying ability scores and race/class selections
+- Dice engine from Story 7.1 for rollAbilityScore
+- Point buy cost table from Story 3.7
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what getPointBuyCost returns for out-of-range scores (below 8 or above 15)
+- **Edge Cases**: getEffectiveAbilityScores does not specify handling of negative ability scores (score + bonuses could theoretically go below 1)
+
 ## Dependencies
 - **Depends on:** Story 2.1 (AbilityName, AbilityScores types), Story 2.8 (Character type), Story 3.7 (point buy cost table, standard array constant), Story 7.1 (dice engine for rollAbilityScore)
 - **Blocks:** Story 4.2 (skill calculations use ability modifiers), Story 4.3 (combat calculations use ability modifiers), Story 4.4 (spellcasting uses ability modifiers)

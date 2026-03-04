@@ -35,3 +35,20 @@ A standalone, always-accessible dice roller with animated 3D dice, support for c
 - `components/dice/DiceAnimation.tsx`
 - `components/dice/RollHistory.tsx`
 - Dice store additions (Zustand)
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 26.1 — Dice Roller Panel | 4 | 10 | 4 | 18 |
+| 26.2 — Dice Animation | 4 | 9 | 4 | 17 |
+| 26.3 — Advantage & Disadvantage Rolling | 5 | 9 | 3 | 17 |
+| 26.4 — Roll History Log | 5 | 9 | 4 | 18 |
+| 26.5 — Character Sheet Roll Integration | 6 | 10 | 5 | 21 |
+| **Totals** | **24** | **47** | **20** | **91** |
+
+### Key Gaps Found
+- Accessibility gaps across all stories: missing ARIA labels for die buttons, roll results, history entries, ADV/DIS toggles; no keyboard navigation within the dice panel; no screen reader announcements for roll outcomes
+- Mobile/responsive gaps: exact breakpoint for panel desktop/mobile behavior unclear; swipe gestures in history may conflict with scroll; touch targets for ADV/DIS not specified
+- Edge cases: behavior during active animation when new roll is triggered; very large roll expressions (100d100); clipboard permission failures for long-press copy
+- Performance: no render time targets for panel open animation, dice animation frame rate, or roll execution

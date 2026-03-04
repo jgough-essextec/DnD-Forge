@@ -27,6 +27,22 @@ A two-mode equipment selection experience -- choosing from class/background star
 - Carrying capacity computation (STR x 15)
 - SRD equipment data (static JSON from Phase 1)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 13.1 — Starting Equipment Packages | 5 | 8 | 2 | 15 |
+| 13.2 — Gold Buy Mode | 4 | 10 | 2 | 16 |
+| 13.3 — Equipment Step Validation & State | 8 | 4 | 0 | 12 |
+
+### Key Gaps Found
+- Missing error handling for incomplete/missing equipment data
+- No loading states for equipment catalog loading
+- Currency conversion (GP/SP/CP) for sub-1-GP items mentioned in notes but not in acceptance criteria
+- ARIA labels not specified for equipment choices, weapon/armor pickers, catalog tabs, or cart controls
+- Recursive validation for nested equipment choices is complex and not fully specified
+- Equipment data with missing weight/cost values not addressed
+
 ## Dependencies
 
 - **Depends on:** Epic 8 (Wizard Shell), Epic 10 (class determines starting equipment options and gold formula), Epic 11 (DEX for AC computation, STR for carrying capacity), Epic 12 (background equipment), Phase 1 SRD equipment data, Phase 1 dice engine, Phase 1 calculation engine

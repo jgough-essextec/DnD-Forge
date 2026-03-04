@@ -37,6 +37,41 @@ As a player, I need to see all available races at a glance with key information 
 - Trait badges show full descriptions on hover/tap via tooltips
 - The grid is responsive: 2 columns on mobile, 3 on tablet, 4-5 on desktop
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 9 SRD races as selectable cards in a responsive grid`
+- `should display race name in Cinzel font, placeholder avatar, 2-3 trait badges, size/speed icons, and tagline on each card`
+- `should select a card with gold border and accent glow when clicked and deselect previously selected card`
+- `should filter races by name using the search bar`
+- `should filter races by size (Small/Medium) using filter chips`
+- `should filter races by primary ability bonus (STR, DEX, etc.)`
+- `should toggle darkvision filter and show only races with darkvision`
+- `should show Recommended for your class badge on synergistic races when class was previously selected`
+- `should show full trait descriptions in tooltips on badge hover/tap`
+- `should render 2 columns on mobile, 3 on tablet, 4-5 on desktop`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select a race card and see the detail panel open`
+- `should filter races using search and chip filters and see correct results`
+- `should preserve filter state when returning to the Race Step via back-navigation`
+
+### Test Dependencies
+- Mock SRD race data (all 9 races with traits, bonuses, subraces)
+- Mock wizard store with pre-selected class for synergy badge testing
+- Mock Epic 16 shared components (SelectableCardGrid, SearchFilterBar)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if SRD race data fails to load or is empty
+- **Loading/Empty States**: No loading state defined while race data is being read; no empty state for zero filter results
+- **Accessibility**: No ARIA labels specified for race cards, filter controls, or trait tooltips
+- **Mobile/Responsive**: Responsive column counts are specified but no minimum card width or touch target sizes
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 1), Epic 16 Story 16.1 (SelectableCardGrid, SearchFilterBar), Phase 1 SRD race data

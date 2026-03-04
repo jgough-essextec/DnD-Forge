@@ -42,6 +42,50 @@ As a player opening the app, I need to see all my characters displayed as visual
 - Empty state shows welcoming illustration and "Create Character" CTA
 - "Create New Character" floating action button is visible
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should format relative timestamps ("2 hours ago", "Yesterday", "3 days ago")`
+- `should filter out archived characters from default gallery view`
+- `should compute quick stats (HP, AC, passive Perception) for card display`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render HomePage with gallery grid loading all non-archived characters`
+- `should render responsive grid (1 column mobile, 2 tablet, 3 desktop, 4 wide)`
+- `should render CharacterCard with avatar, name, race/class/level, quick stats, last edited`
+- `should display character name in Cinzel font`
+- `should display quick stats row with HP, AC, and passive Perception icons`
+- `should display relative "last edited" timestamp in muted text`
+- `should apply hover effect (lift + shadow + gold border glow) on card hover`
+- `should navigate to character sheet view on card click`
+- `should show context menu with View, Edit, Duplicate, Export, Archive, Delete on right-click/kebab`
+- `should display empty state with welcoming illustration and "Create Character" CTA when no characters exist`
+- `should render "Create New Character" floating action button`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should load gallery with multiple characters, click a card, and navigate to the character sheet`
+- `should see empty state on first launch and navigate to create a character via CTA`
+
+### Test Dependencies
+- Mock IndexedDB with multiple character records
+- Mock IndexedDB with zero characters (empty state)
+- Mock calculation engine for quick stats
+- Mock avatar system from Epic 23
+- Mock React Router for navigation
+
+## Identified Gaps
+
+- **Loading/Empty States**: No specification for loading spinner/skeleton while characters load from IndexedDB
+- **Error Handling**: No specification for IndexedDB read failure (database corruption, permission denied)
+- **Accessibility**: No ARIA labels for gallery grid, no keyboard navigation between cards, no screen reader support for card content
+- **Performance**: No specification for render time with many characters (100+ cards)
+
 ## Dependencies
 - Phase 1 IndexedDB database layer for loading characters
 - Phase 1 calculation engine for computing quick stats (AC, HP, passive Perception)

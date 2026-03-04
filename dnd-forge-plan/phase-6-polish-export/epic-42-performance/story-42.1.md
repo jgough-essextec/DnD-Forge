@@ -48,6 +48,39 @@ As a developer, I need the production bundle to be under 500KB gzipped (excludin
 - Avatar images are optimized to <=100KB per image
 - Race/class placeholder images use inline SVGs instead of PNGs
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should verify lucide-react imports only individual icons (not full icon set) via import analysis`
+- `should verify lodash uses lodash-es for tree-shaking`
+- `should verify Cinzel font is subsetted to uppercase + digits (~30KB not ~100KB)`
+- `should verify avatar image resize produces optimized JPEGs at <=100KB per image`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should produce production bundle under 500KB gzipped (excluding SRD data)`
+- `should split app into at minimum 7 route-based chunks (Core, Gallery, Sheet, Wizard, DM, Dice, PDF)`
+- `should load PDF chunk only when export action is triggered (not at initial page load)`
+- `should load Dice chunk only on first dice roll trigger (not at initial page load)`
+- `should render gallery page without loading Sheet, Wizard, DM, Dice, or PDF chunks`
+- `should use font-display: swap for all self-hosted fonts`
+
+### Test Dependencies
+- Vite bundle visualizer output for size verification
+- Production build artifacts for chunk analysis
+- Route-level chunk loading verification via network monitoring
+- Font file size measurement utility
+
+## Identified Gaps
+
+- **Performance**: No specification for maximum acceptable initial bundle (Core chunk) size
+- **Error Handling**: No fallback specified if code-split chunk fails to load (network error during lazy import)
+- **Edge Cases**: Three.js dice upgrade decision not finalized (impacts bundle budget significantly: ~150KB)
+- **Dependency Issues**: framer-motion (~60KB) replacement with CSS animations not decided
+
 ## Dependencies
 
 - All Phase 1-5 features complete (need final bundle to measure)

@@ -63,6 +63,50 @@ This story creates the Party Stats Grid — a sortable data table showing all pa
 - Quick HP buttons allow fast damage/healing using Phase 4 HP logic
 - Table remains usable with 8+ characters (soft cap from Story 33.5)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should sort characters alphabetically by name (default sort)`
+- `should sort characters by any column in ascending and descending order`
+- `should calculate HP bar color gradient correctly (green >50%, yellow 25-50%, red <25%)`
+- `should display "---" for spell save DC on non-caster characters`
+- `should apply Phase 4 damage logic (temp HP first, overflow to 0) for quick HP buttons`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 10+ columns: avatar, name, race, class/level, AC, HP, speed, passive perception, spell save DC, initiative modifier`
+- `should display sort indicator arrow on active column header`
+- `should render HP mini progress bar with correct color gradient and skull icon at 0 HP`
+- `should show blue badge for temp HP when present`
+- `should display active condition badges with hover tooltips`
+- `should expand row on chevron click showing proficient skills, languages, class features, and DM notes preview`
+- `should render quick HP +/- buttons on each character's HP cell`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should sort party stats grid by different columns and verify order changes`
+- `should apply quick damage to a character via HP buttons and see HP bar update in real-time`
+- `should click a character row and open character sheet in side panel (desktop)`
+- `should remain usable with 8+ characters in the party`
+
+### Test Dependencies
+- Mock campaign with 4-8 characters with varied stats (casters, non-casters, conditions, temp HP)
+- Mock Phase 4 HP tracker damage/heal logic
+- Mock conditions system with sample active conditions
+- Character fixture at 0 HP for death state testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling missing character data fields (null AC, null HP)
+- **Loading/Empty States**: No skeleton/loading state for the grid while character data resolves
+- **Accessibility**: No ARIA table roles specified; no screen reader support for HP bar percentages or condition badges
+- **Mobile/Responsive**: Side panel vs full page character sheet breakpoint not defined; table horizontal scroll behavior not specified
+- **Performance**: No render time targets for the grid; virtual scrolling recommendation for 8+ characters not confirmed as requirement
+
 ## Dependencies
 
 - Story 34.1 — Campaign dashboard layout (Party tab host)

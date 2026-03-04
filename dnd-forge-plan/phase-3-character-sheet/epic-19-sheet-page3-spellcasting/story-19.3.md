@@ -42,6 +42,57 @@ As a spellcaster, I need to see my spell slots and spell lists organized by spel
 - Edit mode provides "Add Spell" and "Remove Spell" buttons per level
 - Wizard spellbook distinguishes between "In Spellbook" and "Prepared" states
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute spell slot counts by class and level from SRD spell slot table`
+- `should compute prepared spell maximum for Cleric/Druid (WIS mod + level)`
+- `should compute prepared spell maximum for Wizard (INT mod + level)`
+- `should compute prepared spell maximum for Paladin (CHA mod + half level, min 1)`
+- `should differentiate prepared casters from known casters by class`
+- `should compute Warlock Pact Magic slot level and count`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render spell level sections only for levels the character has access to`
+- `should display level header, slot tracker with fillable circles, and spell list per section`
+- `should allow clicking empty/expended spell slot circles for tracking (always interactive)`
+- `should display spell rows with prepared checkbox, name, school icon, casting time, concentration badge, ritual badge`
+- `should show prepared checkbox for prepared casters with count/maximum enforcement`
+- `should show "Known" badge instead of checkbox for known casters (Bard, Sorcerer, Warlock)`
+- `should disable prepared checkboxes when maximum prepared spells is reached`
+- `should display Warlock Pact Magic slots separately with "Recharge on short rest" note`
+- `should expand spell detail when clicking a spell name`
+- `should show quick-preview tooltip on spell hover with name, components, first sentence`
+- `should provide "Add Spell" and "Remove Spell" buttons per level in edit mode`
+- `should distinguish "In Spellbook" vs "Prepared" for Wizard class`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should track spell slot usage by clicking circles, prepare/unprepare spells, and verify limits enforced`
+- `should add a spell via the spell browser in edit mode and see it appear in the correct level section`
+
+### Test Dependencies
+- Mock character data for prepared casters (Cleric, Wizard, Paladin)
+- Mock character data for known casters (Bard, Sorcerer, Warlock)
+- Mock Warlock character data with Pact Magic slots
+- Mock SRD spell data with school, components, concentration, ritual flags
+- Mock SpellDetailCard and spell browser components from Phase 2
+- Mock calculation engine for spell slot counts
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling corrupted or missing spell data references
+- **Loading/Empty States**: No specification for display when a spell level section has no known spells (empty level)
+- **Accessibility**: No keyboard navigation for spell slot circles, no ARIA labels for prepared checkboxes, no screen reader support for hover tooltips
+- **Performance**: No specification for rendering performance with many spell levels and spells (full 9-level caster)
+- **Edge Cases**: No specification for multiclass spellcasting with mixed prepared/known classes
+
 ## Dependencies
 - Story 19.1 (Spellcasting Header) — spell levels are part of the spellcasting page
 - Story 19.2 (Cantrips) — cantrips section precedes spell level sections

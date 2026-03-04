@@ -34,3 +34,18 @@ An interactive hit point management system that correctly applies 5e damage/heal
 
 - Enhanced `components/character/page1/HitPointBlock.tsx` (damage/heal overlay)
 - `components/session/CompactHPWidget.tsx`
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 27.1 — Damage & Healing Input | 9 | 10 | 4 | 23 |
+| 27.2 — Temporary HP Management | 4 | 6 | 3 | 13 |
+| 27.3 — Compact HP Widget | 2 | 9 | 3 | 14 |
+| **Totals** | **15** | **25** | **10** | **50** |
+
+### Key Gaps Found
+- Accessibility gaps: missing ARIA labels for damage/heal modal tabs, temp HP field, widget shield/heart tap targets; no keyboard equivalents for swipe gestures; no screen reader HP change announcements
+- Edge cases: damage application when already at 0 HP; rounding for resistance with odd values; temp HP set to 0 explicitly vs depleted to 0; widget behavior on tablet viewports
+- Mobile/responsive: widget desktop hiding behavior not explicitly in acceptance criteria; modal and widget sizing on mobile; numeric keyboard input type
+- Dependency issues: widget breakpoint (640px) alignment with Session View (Story 32.1)

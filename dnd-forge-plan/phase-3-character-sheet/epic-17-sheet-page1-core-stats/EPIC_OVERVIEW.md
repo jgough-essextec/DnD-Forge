@@ -45,3 +45,26 @@ A pixel-accurate digital recreation of the D&D 5e character sheet Page 1, showin
 - Left column (~30%): 6 ability score blocks, saving throws, skills list, passive Perception
 - Center column (~35%): AC/Initiative/Speed row, HP block, hit dice + death saves, attacks & spellcasting
 - Right column (~35%): Personality traits, ideals, bonds, flaws, features & traits
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 17.1 — Page 1 Layout Shell & Top Banner | 3 | 10 | 2 | 15 |
+| 17.2 — Ability Score Blocks | 4 | 9 | 1 | 14 |
+| 17.3 — Saving Throws List | 4 | 8 | 1 | 13 |
+| 17.4 — Skills List | 6 | 8 | 1 | 15 |
+| 17.5 — Combat Stats Block | 9 | 9 | 1 | 19 |
+| 17.6 — Hit Points Block | 6 | 11 | 1 | 18 |
+| 17.7 — Hit Dice & Death Saves | 6 | 10 | 1 | 17 |
+| 17.8 — Attacks & Spellcasting | 7 | 10 | 2 | 19 |
+| 17.9 — Personality & Features | 2 | 10 | 1 | 13 |
+| 17.10 — Proficiency Bonus Display | 6 | 5 | 0 | 11 |
+| **Totals** | **53** | **90** | **11** | **154** |
+
+### Key Gaps Found
+- **Accessibility**: Pervasive across all stories -- missing ARIA labels, keyboard navigation, and screen reader support for ability scores, proficiency dots, dice rolls, tooltips, and interactive elements
+- **Error Handling**: Missing error states for IndexedDB load failure, invalid numeric inputs in edit mode, and empty states for many sections
+- **Loading States**: No loading skeleton or spinner specified for initial character sheet load from IndexedDB
+- **Performance**: No render time targets for the most complex page (Page 1 has 10+ distinct sections)
+- **Edge Cases**: Boundary value handling not specified for ability scores (3-30 range), HP (negative values), and hit dice usage counts

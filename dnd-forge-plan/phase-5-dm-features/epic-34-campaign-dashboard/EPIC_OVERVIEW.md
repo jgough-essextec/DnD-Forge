@@ -38,3 +38,21 @@ A DM's command center for a campaign showing the party at a glance — stats gri
 - `components/dm/SkillMatrix.tsx`
 - `components/dm/LanguageCoverage.tsx`
 - `components/dm/PartyComposition.tsx`
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 34.1 — Campaign Dashboard Layout | 2 | 7 | 3 | 12 |
+| 34.2 — Party Stats Grid | 5 | 7 | 4 | 16 |
+| 34.3 — Skill Proficiency Matrix | 5 | 7 | 3 | 15 |
+| 34.4 — Language Coverage | 4 | 5 | 0 | 9 |
+| 34.5 — Party Composition Analysis | 5 | 6 | 2 | 13 |
+| **Totals** | **21** | **32** | **12** | **65** |
+
+### Key Gaps Found
+- **Accessibility** is the most prevalent gap: no ARIA roles for tables, grids, or interactive badges; no screen reader support for HP bars, proficiency indicators, or role coverage icons
+- **Mobile/Responsive** layouts lack specific breakpoint definitions for desktop vs mobile; side panel vs full page behavior undefined
+- **Performance** targets missing for Party Stats Grid and Skill Matrix rendering with 8+ characters (144+ cells)
+- **Loading/Empty States** missing skeleton/loading states while campaign and character data resolves
+- **Edge Cases** around empty party (0 characters), corrupted character data, and non-SRD custom languages not addressed

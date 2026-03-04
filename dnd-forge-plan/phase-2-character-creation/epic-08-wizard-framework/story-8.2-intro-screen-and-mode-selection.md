@@ -37,6 +37,41 @@ As a player, I need to choose between guided wizard mode and freeform mode so I 
 - Clicking "Resume" restores the wizard to the last active step with all prior selections intact
 - Clicking "Start Fresh" clears the wizard store and shows the default Intro Step
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render the Intro Step with welcoming header and two mode selection cards`
+- `should display Guided Creation and Freeform Creation cards side-by-side on desktop and stacked on mobile`
+- `should advance to Step 1 (Race Selection) when Start Guided Creation is clicked`
+- `should navigate to Freeform Creation view when Start Freeform is clicked`
+- `should render optional Character Name and Player Name text inputs`
+- `should persist Character Name and Player Name to the wizard store on input`
+- `should pre-populate Player Name from user preferences if available`
+- `should show resume banner when in-progress wizard state is found in sessionStorage`
+- `should restore wizard to last active step with all prior selections when Resume is clicked`
+- `should clear wizard store and show default Intro Step when Start Fresh is clicked`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete the guided creation flow from intro through mode selection to Step 1`
+- `should enter freeform mode from intro and see the freeform creation view`
+- `should detect in-progress wizard state, resume, and land on the correct step`
+
+### Test Dependencies
+- Mock Zustand wizard store with pre-populated state for resume testing
+- Mock user preferences store for Player Name pre-population
+- Test fixture for in-progress wizard state in sessionStorage
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if sessionStorage data is malformed or from an incompatible version
+- **Loading/Empty States**: No loading state defined while checking for in-progress wizard state
+- **Accessibility**: No ARIA labels specified for mode selection cards or resume banner actions
+- **Mobile/Responsive**: Card stacking on mobile is mentioned but no breakpoint or touch target sizes specified
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 0 rendered by the wizard controller), Phase 1 Zustand wizard store with sessionStorage persistence

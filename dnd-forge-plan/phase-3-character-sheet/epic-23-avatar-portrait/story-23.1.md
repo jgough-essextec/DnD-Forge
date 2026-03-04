@@ -37,6 +37,49 @@ As a player, I need to upload an image for my character's portrait and have it s
 - Default avatar shows a race-based silhouette icon with class-themed color background
 - Upload is triggered from the character sheet portrait area and gallery card edit action
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should validate accepted file types (JPEG, PNG only)`
+- `should reject files exceeding 2MB size limit`
+- `should reject non-image file types with clear error message`
+- `should resize image to max 400x400 pixels maintaining aspect ratio`
+- `should convert image to JPEG at 80% quality`
+- `should generate base64 data URL string from processed image`
+- `should generate default avatar based on race silhouette and class color`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render upload dialog accepting JPEG and PNG files`
+- `should display clear error message when file exceeds 2MB`
+- `should display clear error message for non-image files`
+- `should show crop interface after uploading with drag-to-position square selection`
+- `should save cropped image when "Confirm" is clicked in cropper`
+- `should clear avatar and show default placeholder when "Remove Avatar" is clicked`
+- `should display default avatar with race silhouette icon and class-themed color background`
+- `should trigger upload dialog from character sheet portrait area in edit mode`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should upload an image, crop it, confirm, and see the avatar display on the character sheet and gallery card`
+
+### Test Dependencies
+- Mock image files (valid JPEG, valid PNG, oversized, wrong type)
+- Mock canvas API for image processing
+- Mock IndexedDB for avatar storage
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for canvas API failure during image processing (corrupt image data)
+- **Accessibility**: No ARIA labels for upload dialog, no keyboard support for crop interface, no screen reader support for crop region selection
+- **Performance**: No specification for image processing time limits (large images may take time to resize)
+- **Mobile/Responsive**: No specification for touch-based crop interaction on mobile
+
 ## Dependencies
 - Phase 1 Character type system (avatar field on Character model)
 - Phase 1 IndexedDB database layer for storing avatar data

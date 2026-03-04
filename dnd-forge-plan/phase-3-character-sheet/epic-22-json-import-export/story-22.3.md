@@ -35,6 +35,49 @@ As a player, I need a quick way to share a read-only view of my character withou
 - "Import to My Characters" button creates the character in the viewer's IndexedDB with a new ID
 - The pako compression library is used for efficient encoding
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compress character data using pako gzip compression`
+- `should base64-encode compressed data for URL hash`
+- `should decode base64 URL hash and decompress to character data`
+- `should detect when encoded data exceeds 8,000 character URL length limit`
+- `should handle corrupted/invalid URL data gracefully with error`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render SharedCharacterView in read-only mode with no edit toggle`
+- `should display banner "Shared Character -- [Character Name]" on shared view`
+- `should render "Import to My Characters" button on shared view`
+- `should create character in viewer's IndexedDB with new ID when "Import to My Characters" is clicked`
+- `should copy shareable URL to clipboard when "Share Link" button is clicked`
+- `should show success toast "Share link copied!" after copying`
+- `should show warning about URL containing full character data`
+- `should show size guard warning when data exceeds 8,000 characters and suggest JSON export`
+- `should display error message when URL data is corrupted or invalid`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should generate share link, navigate to it, view the shared character sheet in read-only mode, and import it`
+
+### Test Dependencies
+- Mock pako compression library
+- Mock character data of various sizes (within and exceeding URL limit)
+- Mock clipboard API
+- Mock IndexedDB for "Import to My Characters"
+- Mock React Router for share route
+
+## Identified Gaps
+
+- **Error Handling**: No specification for graceful handling of browser URL length limits beyond 8,000 characters
+- **Accessibility**: No ARIA labels for shared view banner, no screen reader support for clipboard copy confirmation
+- **Edge Cases**: No specification for shared URLs with very old format versions (future migration concern)
+- **Mobile/Responsive**: No specification for how the shared view renders on mobile
+
 ## Dependencies
 - Story 22.1 (JSON Export) — share uses similar serialization logic
 - Story 22.2 (JSON Import) — "Import to My Characters" uses import logic

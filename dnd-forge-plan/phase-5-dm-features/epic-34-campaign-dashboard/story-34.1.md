@@ -49,6 +49,46 @@ The "Party" tab is the default view and hosts the Party Stats Grid (Story 34.2),
 - Empty party state shows helpful message with "Add Character" CTA
 - All action buttons are wired to their respective features (Start Encounter, Award XP, Long Rest All)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return 404 state when campaign ID does not exist in IndexedDB`
+- `should default to "Party" tab when no tab query parameter is provided`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render campaign dashboard with header bar showing campaign name, setting tag, and player count`
+- `should display four tabs: Party (default), Sessions, Encounters, Notes`
+- `should render campaign name in Cinzel font with collapsible description`
+- `should display join code badge with copy button and action buttons (Start Encounter, Award XP, Long Rest All)`
+- `should render 404 page with "Campaign not found" message and "Go to Campaigns" button when ID is invalid`
+- `should display empty party state with "Add Character" CTA when no characters are assigned`
+- `should switch between tabs and render correct content for each`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should load campaign dashboard at /campaign/:id and display party stats grid by default`
+- `should navigate between all four tabs and verify content loads correctly`
+- `should render mobile layout with horizontal scrollable tabs and collapsed header`
+
+### Test Dependencies
+- Mock useCampaign hook returning campaign with characters
+- Mock React Router params for campaign ID
+- Sample campaign fixture with linked characters
+- Empty campaign fixture for empty state testing
+
+## Identified Gaps
+
+- **Loading/Empty States**: No loading spinner specified while campaign and characters load from IndexedDB
+- **Accessibility**: No ARIA labels specified for tab navigation or action buttons; no keyboard shortcut for tab switching
+- **Mobile/Responsive**: Breakpoint for mobile vs desktop layout not explicitly defined
+- **Performance**: No specification for lazy-loading tab content or initial render time targets
+- **Edge Cases**: Behavior when campaign has characters but character data is corrupted or missing from IndexedDB
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model and `useCampaign` hook

@@ -58,6 +58,52 @@ Each roll history entry should contain:
 9. History section is collapsible with an "N rolls" counter header
 10. Mobile: swipe gestures expand/collapse the history section
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should create a roll history entry with correct timestamp, expression, results, total, and sourceLabel`
+- `should enforce 50-roll limit by evicting oldest entry when capacity is exceeded`
+- `should determine correct color coding: green for nat 20, red for nat 1, gold for max damage`
+- `should detect maximum possible damage roll (all dice rolled maximum value)`
+- `should format result text for clipboard copy`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render a scrollable list of roll history entries in the dice panel`
+- `should display timestamp, expression, individual die results, total, and source label per entry`
+- `should color-code entries with green border for natural 20`
+- `should color-code entries with red border for natural 1`
+- `should color-code entries with gold border for max damage`
+- `should show "N rolls" counter in the collapsible section header`
+- `should re-roll the same expression when a history entry is clicked`
+- `should clear all history when "Clear History" button is clicked`
+- `should collapse and expand the history section`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should make multiple rolls, see them appear in history in reverse chronological order, and re-roll by clicking an entry`
+- `should clear history with the Clear History button and see empty state`
+- `should verify history is cleared on page reload (session-scoped)`
+- `should long-press a history entry and verify clipboard copy on mobile`
+
+### Test Dependencies
+- Mock Zustand dice store with pre-populated roll history entries
+- Mock clipboard API for long-press copy testing
+- Mock timer/date for consistent timestamps
+- Roll history entry factory for generating test data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for clipboard copy failure handling (e.g., permissions denied)
+- **Loading/Empty States**: No specification for what the history section shows when empty (zero rolls made)
+- **Edge Cases**: Behavior when exactly 50 rolls exist and a 51st is added; scroll position behavior when new entries are added
+- **Accessibility**: No ARIA labels for history entries; no keyboard navigation within history list; screen reader support for color-coded entries
+- **Mobile/Responsive**: Swipe gesture direction (up/down) for expand/collapse may conflict with scroll behavior; minimum touch target for re-roll click vs long-press copy
+
 ## Dependencies
 
 - Story 26.1 (Dice Roller Panel) provides the container (bottom ~30% of panel)

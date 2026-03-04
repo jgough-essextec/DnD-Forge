@@ -46,6 +46,36 @@ As a player on a phone, I need every screen in the app to be usable without hori
 - "Next Turn" button is large and full-width at bottom of combat tracker on mobile
 - HP editing uses bottom sheet on mobile (not modal)
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render every screen at 360px width with no horizontal scrolling or overlapping elements`
+- `should render every screen at 390px width with no horizontal scrolling or overlapping elements`
+- `should render every screen at 428px width with no horizontal scrolling or overlapping elements`
+- `should render gallery as single-column card layout at <640px with consistent card heights`
+- `should truncate long character names with ellipsis in gallery cards on mobile`
+- `should collapse gallery filter/sort controls into dropdown or bottom sheet on mobile`
+- `should render creation wizard with horizontal progress bar (not sidebar) on mobile`
+- `should render wizard Back/Next buttons as sticky at bottom for thumb reach`
+- `should render character sheet mobile layout with Phase 4 additions without overlap`
+- `should render combat tracker with full-width initiative list and large Next Turn button at bottom on mobile`
+
+### Test Dependencies
+- Playwright viewport configuration for 360px, 390px, 428px widths
+- All app screens rendered with full data
+- Character with long name (40+ characters) for truncation testing
+- Combat tracker with multiple combatants for mobile layout
+- Creation wizard at various steps for progress bar testing
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior with very long content (long spell names, feature descriptions) at 360px not specified
+- **Accessibility**: Touch target sizes on mobile not re-verified here (covered in 44.3 but may interact)
+- **Performance**: No specification for mobile rendering performance targets (slower devices)
+- **Edge Cases**: Safe area inset handling for devices with bottom notches/gesture bars mentioned in notes but not in acceptance criteria
+
 ## Dependencies
 
 - All Phase 1-5 features complete (audit covers every screen)

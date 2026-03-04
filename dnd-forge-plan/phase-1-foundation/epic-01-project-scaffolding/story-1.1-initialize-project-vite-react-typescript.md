@@ -28,6 +28,32 @@ As a developer, I need a properly configured React TypeScript project so I can b
 - Directory structure matches the defined architecture layout
 - Formatting rules are applied consistently via `.editorconfig` and `.prettierrc`
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compile TypeScript with zero errors under strict mode`
+- `should resolve path alias @/ to src/ in TypeScript files`
+- `should have all required directories present in src/`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should start Vite dev server and load the application shell`
+- `should render the root App component without errors`
+- `should display no console errors on initial page load`
+
+### Test Dependencies
+- No mock data or fixtures needed
+- Vite dev server must be running for E2E smoke tests
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if Vite config is malformed or path aliases fail to resolve at runtime
+- **Performance**: No build time or HMR speed targets specified
+- **Dependency Issues**: Story does not specify minimum Node.js version required for Vite compatibility
+
 ## Dependencies
 - **Depends on:** None — this is the first story in the first epic
 - **Blocks:** Story 1.2 (Tailwind/shadcn), Story 1.3 (Dependencies), Story 1.4 (Testing), Story 1.5 (Routing)

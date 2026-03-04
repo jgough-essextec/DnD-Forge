@@ -42,3 +42,17 @@ A mobile-optimized compact character view designed specifically for at-the-table
 
 - `components/session/SessionView.tsx`
 - Session view customization modal
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 32.1 — Compact Session Mode | 3 | 13 | 5 | 21 |
+| 32.2 — Pinned Skills & Customization | 4 | 9 | 4 | 17 |
+| **Totals** | **7** | **22** | **9** | **38** |
+
+### Key Gaps Found
+- Accessibility gaps: missing ARIA labels for quick action buttons, interactive elements, pin star icon; no keyboard alternative for long-press tooltip; grouped display needs ARIA group roles; checkboxes in modal need labels
+- Edge cases: fitting all 8 sections on single screen for characters with many attacks/features; non-caster characters with empty spell slot section; class change affecting default pinned skills; 640px auto-activation may not cover all tablets
+- Performance: session view initialization render time; layout jank with all 8 sections rendering simultaneously; interaction with dice roller FAB positioning
+- Loading/empty states: initial render during data load; empty sections for characters without attacks, spell slots, or conditions

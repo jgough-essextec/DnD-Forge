@@ -47,6 +47,48 @@ As a player using Standard Array, I need a drag-and-drop interface to assign eac
 - A completion indicator shows how many of 6 values have been assigned
 - Cannot proceed until all 6 values are assigned
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute optimal suggested assignment for each of the 12 classes (e.g., Wizard: 15 to INT)`
+- `should calculate modifier correctly as Math.floor((total - 10) / 2) for all score values`
+- `should verify Standard Array values are exactly [15, 14, 13, 12, 10, 8]`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display six Standard Array values [15, 14, 13, 12, 10, 8] as draggable chips`
+- `should render six ability slots (STR, DEX, CON, INT, WIS, CHA) as drop targets`
+- `should assign a value when dragging a chip to an ability slot`
+- `should swap values when dropping a chip on an already-occupied slot`
+- `should support click-to-assign as an alternative: click value then click slot`
+- `should clear all assignments and return values to pool when Reset is clicked`
+- `should auto-assign values optimally for selected class when Suggested Assignment is clicked`
+- `should display racial bonus as +N badge next to each ability slot`
+- `should show final total (base + racial) and resulting modifier for each assigned ability`
+- `should show completion indicator (e.g., "4 of 6 assigned") and prevent proceeding until all 6 assigned`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should drag-and-drop all 6 values to ability slots and see correct totals with racial bonuses`
+- `should use click-to-assign on mobile to assign all values`
+- `should use Suggested Assignment for Wizard and verify INT gets highest value`
+
+### Test Dependencies
+- Mock @dnd-kit/core and @dnd-kit/sortable for drag-and-drop testing
+- Mock racial bonuses from wizard store (e.g., Elf +2 DEX)
+- Mock class data for suggested assignment computation
+- Test fixtures for each class's optimal assignment
+
+## Identified Gaps
+
+- **Accessibility**: Click-to-assign is mentioned as accessibility alternative but no screen reader announcements for drag-drop outcomes
+- **Mobile/Responsive**: Drag-and-drop on mobile noted as potentially less intuitive, but no fallback UX or minimum touch target sizes specified
+- **Edge Cases**: What happens if user tries to assign the same value to two slots simultaneously via rapid clicking
+
 ## Dependencies
 
 - **Depends on:** Story 11.1 (Method Selection — this renders when Standard Array is selected), Epic 9 Story 9.5 (racial ability bonuses from race selection), Epic 10 (class for suggested assignment), @dnd-kit/core and @dnd-kit/sortable packages

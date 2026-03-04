@@ -34,6 +34,35 @@ As a developer, I need background selections and personality data persisted and 
 - All background, personality, and description data is persisted to the Zustand wizard store
 - Progress sidebar shows background name and character name
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false with error when background is not selected`
+- `should return valid:false with error when skill overlap exists but replacement is not chosen`
+- `should return valid:true with warning when personality traits have fewer than 1 entry`
+- `should return valid:true with warning when character name is empty`
+- `should return valid:true with empty errors when background is selected and all overlaps resolved`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist all background, personality, and description data to wizard store`
+- `should display background name and character name in progress sidebar`
+- `should restore all previously entered personality and description text on back-navigation`
+- `should auto-save long text fields (backstory, allies) to wizard store on change/blur`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Test fixtures for complete/incomplete background selection with overlap scenarios
+- Mock validation scenarios for warnings vs. errors
+
+## Identified Gaps
+
+- **Edge Cases**: Default character name "Unnamed Adventurer" for unnamed characters is mentioned in notes but not in acceptance criteria
+- **Error Handling**: No specification for handling corrupted long text data restored from wizard store
+
 ## Dependencies
 
 - **Depends on:** Stories 12.1-12.3 (all background UI must be built), Story 8.1 (wizard shell consumes the validate function), Phase 1 Zustand wizard store

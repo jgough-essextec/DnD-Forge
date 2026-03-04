@@ -35,6 +35,40 @@ As a player, I need to export a character as a JSON file so I can back it up, sh
 - "Include session state" toggle allows full export when needed
 - Exported JSON is formatted (pretty-printed) for readability
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should serialize character to JSON with metadata wrapper (formatVersion, appVersion, exportedAt)`
+- `should generate sanitized filename as "[CharacterName]_[Class]_Level[N].json"`
+- `should replace special characters (/, \, :, *, ?, ", <, >, |) with underscores in filename`
+- `should generate batch export filename as "DnD_Forge_Export_[date].json"`
+- `should exclude transient session state (hitPointCurrent, usedSpellSlots, hitDiceUsed, deathSaves, tempHitPoints) by default`
+- `should include session state when "Include session state" option is enabled`
+- `should produce pretty-printed JSON output`
+- `should wrap batch export in array format with characters array`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should trigger browser download of .json file when export is invoked`
+- `should be accessible from gallery card context menu`
+- `should be accessible from character sheet header export button`
+- `should handle batch export of multiple selected characters as single JSON file`
+- `should show "Include session state" toggle option`
+
+### Test Dependencies
+- Mock character data for single and batch export
+- Mock URL.createObjectURL and Blob APIs
+- Mock download trigger mechanism
+
+## Identified Gaps
+
+- **Error Handling**: No specification for export failure (Blob creation failure, URL creation failure)
+- **Edge Cases**: No specification for exporting character with very large avatar data (base64 image inflating JSON size)
+- **Accessibility**: No screen reader announcement for successful export download
+
 ## Dependencies
 - Phase 1 Character type system for serialization
 - Story 21.1 (Gallery) — export accessible from gallery card context menu

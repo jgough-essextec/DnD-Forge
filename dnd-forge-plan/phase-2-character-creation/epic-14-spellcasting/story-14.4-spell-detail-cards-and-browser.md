@@ -52,6 +52,46 @@ As a player browsing spells, I need to see full details — casting time, range,
 - "Recommended Spells" section appears at the top with class-appropriate suggestions
 - "Compare" feature allows pinning up to 3 spells for side-by-side comparison
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should map each of the 8 schools of magic to the correct icon`
+- `should filter spells by name, school, casting time, ritual, and concentration`
+- `should sort spells by name, level, and school`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display spell detail card with header (name, level badge, school icon), properties, components, description`
+- `should show concentration and ritual badges when applicable`
+- `should display V/S/M component icons with material descriptions`
+- `should show At Higher Levels section when applicable`
+- `should filter spells using filter bar by name, school, casting time, ritual, and concentration`
+- `should render spell list with virtualized rendering for smooth performance with 100+ spells`
+- `should show Recommended Spells section at top with class-appropriate suggestions`
+- `should allow pinning up to 3 spells for side-by-side comparison`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should browse Wizard spell list, filter by Evocation school, and view spell detail card`
+- `should pin 3 spells for comparison and see them side-by-side`
+
+### Test Dependencies
+- Mock SRD spell data (100+ spells with full detail: components, descriptions, schools)
+- Mock recommended spell lists per class
+- Virtualization library mock (react-window or @tanstack/react-virtual)
+- School of magic icon mapping fixtures
+
+## Identified Gaps
+
+- **Performance**: List virtualization is specified but no frame rate or scroll performance targets defined
+- **Accessibility**: No ARIA labels for spell detail cards, filter controls, comparison view, or virtualized list
+- **Mobile/Responsive**: Spell comparison (3 side-by-side) likely doesn't fit on mobile; no responsive layout specified for comparison view
+- **Edge Cases**: Spell descriptions longer than 500 words truncation behavior is in notes but not in acceptance criteria
+
 ## Dependencies
 
 - **Depends on:** Stories 14.2-14.3 (spell selection UI that this detail/browser enhances), Phase 1 SRD spell data

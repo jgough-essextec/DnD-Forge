@@ -159,3 +159,25 @@ Before release, ALL of the following must be true:
 | Empty States | 10+ |
 | Loading Skeletons | 5 major screens |
 | Keyboard Shortcuts | 9 |
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 39 — PDF Character Sheet Export | 37 | 11 | 19 | 67 | 5 |
+| 40 — Print Stylesheet Optimization | 2 | 9 | 14 | 25 | 5 |
+| 41 — Accessibility Audit & Remediation | 8 | 41 | 18 | 67 | 6 |
+| 42 — Performance Optimization | 17 | 8 | 32 | 57 | 7 |
+| 43 — Progressive Web App (PWA) | 9 | 14 | 14 | 37 | 6 |
+| 44 — Mobile Responsive Final Polish | 0 | 5 | 33 | 38 | 6 |
+| 45 — Cross-Browser Testing & Bug Fixes | 0 | 0 | 20 | 20 | 6 |
+| 46 — Final Polish & UX Refinements | 16 | 48 | 19 | 83 | 8 |
+| **Totals** | **89** | **136** | **169** | **394** | **49** |
+
+### Testing Infrastructure Needed
+- **Test Fixtures**: Pre-created Level 5 Fighter, Level 3 Wizard, Level 5 Cleric (domain spells), Warlock (Pact Magic), multiclass Warlock/Wizard, non-caster Fighter, high-level Wizard (50+ spells), campaign with 4 characters, campaign with 8 characters, 100+ character generation script
+- **Mock Data**: Empty IndexedDB state, corrupt/invalid import files, large backstory (10,000+ chars), large inventory (100+ items), characters with/without avatars
+- **Test Utilities**: PDF header byte validator, PDF text extraction (pdf-parse), color contrast calculation utility, touch target measurement, animation fps profiler, bundle size measurement, Lighthouse CI integration
+- **Environment Mocks**: navigator.onLine, prefers-reduced-motion media query, beforeinstallprompt event, requestIdleCallback, navigator.vibrate, window.matchMedia, print media query emulation
+- **Playwright Configuration**: Multi-browser (chromium, firefox, webkit), viewport presets (360px, 390px, 428px, 640x360, 768px, 810px, 1024px, 1024x768, 1440px), offline mode emulation, network request monitoring, service worker verification
+- **Library Mocks**: jsPDF mock, html2canvas mock, JSZip mock, Dexie.js IndexedDB mock, framer-motion mock, @dnd-kit mock

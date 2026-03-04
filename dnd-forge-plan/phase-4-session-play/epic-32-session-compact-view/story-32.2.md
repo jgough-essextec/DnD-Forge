@@ -86,6 +86,49 @@ Pinned skills in the session view show:
 9. Pinned skills are grouped by ability score with abbreviation headers
 10. Tapping a pinned skill modifier triggers a dice roll (1d20 + modifier)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct default pinned skills for each class (e.g., Rogue: Stealth, Perception, Sleight of Hand, Deception, DEX Save, INT Save)`
+- `should enforce maximum of 8 pinned items`
+- `should group pinned skills by ability score`
+- `should add and remove skills from the pinned list`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Customize Session View" settings modal with checkboxes for all 18 skills and 6 saves`
+- `should show class-appropriate defaults pre-checked`
+- `should enforce 8-item limit: disable unchecked items when 8 are selected`
+- `should persist pinned selections per-character (not globally)`
+- `should render pin star icon on skills in full character sheet`
+- `should toggle pin state when star icon is clicked`
+- `should display pinned skills in session view with: name, modifier (large), proficiency dot`
+- `should group pinned skills by ability score with abbreviation headers`
+- `should trigger dice roll when pinned skill modifier is tapped`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open Customize Session View modal, change pinned skills, and verify session view updates`
+- `should pin a skill via star icon on full sheet and verify it appears in session view`
+- `should verify pinned selections persist after page refresh`
+- `should tap a pinned skill modifier in session view and see dice roll result`
+
+### Test Dependencies
+- Mock character data for each class with skill proficiencies
+- Mock Zustand character store for pinned selections persistence
+- Mock Phase 3 auto-save system
+- Class-to-default-pins mapping test data
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior when a character changes class (multiclass) and defaults no longer match; what happens if a pinned save or skill is removed from the character (edge case with homebrew); count indicator "5/8 pinned" mentioned in notes but not in tasks
+- **Accessibility**: Checkboxes in modal need ARIA labels; star icon on full sheet needs ARIA state (pinned/unpinned); "8/8 pinned" limit should be announced to screen readers; grouped display needs ARIA group roles
+- **Mobile/Responsive**: Settings modal sizing on mobile; pin star touch target size on full sheet
+
 ## Dependencies
 
 - Story 32.1 (Compact Session Mode) for the session view container

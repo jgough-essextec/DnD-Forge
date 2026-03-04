@@ -52,6 +52,49 @@ As a player, I want the app to feel alive and responsive with satisfying micro-i
 - All animations only use `transform` and `opacity` for GPU-accelerated rendering
 - All animations respect reduced motion preferences (instant or disabled when reduced motion is on)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define toast notification config: success (green, 3s), error (red, persistent), info (blue, 5s)`
+- `should use only transform and opacity properties in all animation definitions (no layout-triggering properties)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should apply scale(0.98) on mousedown and return to scale(1) on mouseup for primary buttons`
+- `should render disabled buttons with visual dimming and cursor: not-allowed`
+- `should position toasts at bottom-right on desktop and bottom-center on mobile`
+- `should flash green on HP healing and red on HP damage`
+- `should animate HP bar smoothly from old to new width`
+- `should display "Welcome to Level [N]!" banner on level-up confirmation that auto-dismisses`
+- `should disable all micro-interactions when reduced motion preference is active`
+- `should apply translateY(-2px) and shadow increase on gallery card hover (desktop)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should show gold particle effect and "Welcome to Level [N]!" banner on level-up`
+- `should show gold glow and screen-edge flash on natural 20 dice roll (under 1 second total)`
+- `should maintain 60fps on all page transitions and modal animations`
+- `should show gallery card hover lift effect on desktop`
+
+### Test Dependencies
+- Level-up trigger mechanism for celebration testing
+- Dice roll result mock (nat 20 and nat 1) for celebration effects
+- Reduced motion preference mock
+- Animation performance profiling (fps measurement)
+- Sound effects toggle mock (for optional sound testing)
+- Gallery card hover event simulation
+
+## Identified Gaps
+
+- **Error Handling**: No specification for behavior if sound effect files fail to load
+- **Performance**: Sound effect file size limit (<10KB each) mentioned in notes but not in acceptance criteria
+- **Edge Cases**: "Sound Effects" toggle mentioned as needed in settings but not included in acceptance criteria
+- **Accessibility**: Screen-edge flash for nat-20 could be a vestibular trigger even under 1 second — not explicitly addressed for reduced motion
+
 ## Dependencies
 
 - Story 41.4 (reduced motion — all animations must respect the preference)

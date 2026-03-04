@@ -30,6 +30,28 @@ As a developer, I need types for backgrounds and the personality/roleplaying sys
 - `CharacterDescription` includes all physical and personality description fields
 - `PersonalityTrait` is generic enough to represent personality traits, ideals, bonds, and flaws
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define Background interface with skillProficiencies as SkillName array`
+- `should define Background.languages supporting both fixed string[] and choice-based { choose: number } patterns`
+- `should define PersonalityTrait interface with id and text fields`
+- `should define BackgroundSelection with optional chosenSkills, chosenLanguages, and chosenTools`
+- `should define CharacterDescription with all physical description fields as strings`
+- `should define Background.personalityTraits as PersonalityTrait array (d8 table)`
+- `should define Background.ideals as PersonalityTrait array (d6 table)`
+
+### Test Dependencies
+- No mock data needed — these are type compilation tests
+- Depends on SkillName from Story 2.1, Feature from Story 2.3
+
+## Identified Gaps
+
+- **Edge Cases**: PersonalityTrait for ideals should have optional alignment tag (Good, Evil, Lawful, etc.) but this field is not explicitly required in the type definition
+- **Dependency Issues**: Background.feature uses Feature type from Story 2.3, but background features have no mechanicalEffect — should clarify whether Feature type works for both
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses SkillName), Story 2.3 (uses Feature type for background feature)
 - **Blocks:** Story 2.8 (Character master type includes BackgroundSelection and CharacterDescription), Story 3.5 (Background data files)

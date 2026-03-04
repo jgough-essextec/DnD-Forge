@@ -49,6 +49,38 @@ As a developer, I need a pure-function dice engine that all rolling throughout t
 - Distribution test: 10,000 d20 rolls average approximately 10.5 (tolerance +/-0.5)
 - All die types (d4, d6, d8, d10, d12, d20, d100) produce values in their valid range
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should produce values in range [1, sides] for d4, d6, d8, d10, d12, d20, d100 via rollDie`
+- `should use crypto.getRandomValues, not Math.random via rollDie`
+- `should return array of correct length with valid values via rollDice`
+- `should drop the lowest die and sum remaining via rollWithDropLowest`
+- `should return both d20 rolls and use the higher one via rollWithAdvantage`
+- `should return both d20 rolls and use the lower one via rollWithDisadvantage`
+- `should produce 6 ability scores from 4d6-drop-lowest via rollAbilityScoreSet`
+- `should return d20 + modifier via rollInitiative`
+- `should return hit die roll + CON mod with minimum 1 via rollHitPoints`
+- `should return minimum 1 HP even with negative CON modifier via rollHitPoints`
+- `should parse and roll "5d4x10" formula correctly via rollStartingGold`
+- `should parse and roll "5d4" (no multiplier) for Monk via rollStartingGold`
+- `should produce 10,000 d20 rolls averaging approximately 10.5 (+/-0.5) distribution test`
+- `should produce 10,000 ability score rolls averaging approximately 12.2 (+/-0.5) distribution test`
+- `should never produce values outside valid range across 10,000 rolls for all die types`
+
+### Test Dependencies
+- crypto.getRandomValues must be available in test environment (jsdom or polyfill)
+- HitDie type from Story 2.3
+- DieType type from Story 2.10
+
+## Identified Gaps
+
+- **Edge Cases**: Modulo bias handling is described in notes but not in acceptance criteria as a testable requirement
+- **Edge Cases**: rollStartingGold formula parsing does not specify behavior for invalid formula strings
+- **Error Handling**: No specification for rollDie behavior with invalid sides (0, negative, non-integer)
+
 ## Dependencies
 - **Depends on:** Story 2.3 (HitDie type), Story 2.10 (DieType type)
 - **Blocks:** Story 4.1 (ability score rolling), Story 4.3 (initiative rolling), Story 4.6 (starting gold rolling), Story 4.7 (hit die rolling for rest mechanics), Story 6.4 (Dice store delegates to this engine)

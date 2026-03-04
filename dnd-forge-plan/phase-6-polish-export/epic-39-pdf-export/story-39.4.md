@@ -42,6 +42,42 @@ As a spellcaster, I need Page 3 to show my spellcasting stats, spell slots, and 
 - Non-caster characters show "No Spellcasting" or the page is omitted per export options
 - All spell data is correctly sourced from the character's known/prepared spells
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should render spellcasting header with correct class, ability, save DC, and attack bonus`
+- `should render cantrips in compact format without slot circles`
+- `should render spell level sections 1-9 with slot circles and prepared/unprepared indicators`
+- `should mark domain/always-prepared spells with a star indicator`
+- `should render Warlock Pact Magic in a visually distinct section with short rest recovery note`
+- `should switch to two-column layout when spell count exceeds single-column capacity`
+- `should render spell names at 7-8pt font size for maximum density`
+- `should display "No Spellcasting" for non-caster characters`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should generate Page 3 PDF with full spell list for a Level 3 Wizard`
+- `should omit Page 3 for a non-caster Fighter when page is excluded in export options`
+- `should render Warlock Pact Magic separately from regular spell slots for a multiclass Warlock`
+
+### Test Dependencies
+- Level 3 Wizard fixture with prepared spells and cantrips
+- Level 5 Cleric fixture with domain spells (always-prepared, star indicator)
+- Warlock fixture with Pact Magic slots
+- Multiclass Warlock/Wizard fixture for testing separate slot display
+- Non-caster Fighter fixture
+- High-level Wizard fixture with 50+ spells for two-column layout testing
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for how ritual-only spells are indicated (mentioned as "(R)" in notes but not in acceptance criteria)
+- **Edge Cases**: Behavior for multiclass casters with multiple spellcasting classes not clearly specified
+- **Error Handling**: No fallback specified if spell data fails to load from SRD
+- **Accessibility**: PDF tagged structure for spellcasting page not mentioned
+
 ## Dependencies
 
 - Story 39.1 (PDF generation architecture)

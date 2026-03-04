@@ -46,6 +46,31 @@ As a developer, I need types covering the three spellcasting systems (prepared, 
 - `MULTICLASS_SPELL_SLOT_TABLE` provides the correct spell slots for combined caster levels 1-20
 - `activeConcentration` field on `SpellcastingData` tracks the currently concentrated-on spell
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define SpellSchool enum with all 8 schools (Abjuration through Transmutation)`
+- `should define SpellLevel type with values 0-9 where 0 is cantrip`
+- `should define Spell interface with concentration and ritual boolean flags`
+- `should define SpellComponents with materialCost using CurrencyAmount and materialConsumed flag`
+- `should define PactMagic interface with slotLevel, totalSlots, usedSlots, and mysticArcanum`
+- `should define SpellcastingData supporting all three spellcasting systems (prepared, known, pact)`
+- `should define SpellcastingData.activeConcentration as optional string for tracking concentrated spell`
+- `should define MULTICLASS_SPELL_SLOT_TABLE as 20-row lookup table`
+- `should define CastingTime supporting action, bonus action, reaction with trigger, and minute/hour`
+- `should define SpellRange with self, touch, ranged, sight, unlimited and optional area shape`
+
+### Test Dependencies
+- No mock data needed — these are type compilation and constant verification tests
+- Depends on AbilityName, DamageType, SpellcastingType, CurrencyAmount from earlier stories
+
+## Identified Gaps
+
+- **Edge Cases**: SpellDuration does not distinguish between rounds in combat vs rounds out of combat
+- **Edge Cases**: MULTICLASS_SPELL_SLOT_TABLE must handle edge case of combined caster level 0 (no spellcasting classes contribute)
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses AbilityName), Story 2.2 (uses DamageType via DamageDice), Story 2.3 (uses SpellcastingType), Story 2.4 (uses CurrencyAmount, DamageDice)
 - **Blocks:** Story 2.8 (Character master type includes SpellcastingData), Story 3.3 (Spell database), Story 4.4 (Spellcasting calculations)

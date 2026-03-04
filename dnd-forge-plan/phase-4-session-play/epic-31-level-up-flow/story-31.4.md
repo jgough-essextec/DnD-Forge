@@ -84,6 +84,47 @@ After subclass selection, the character's class display updates to include the s
 9. Cleric, Sorcerer, and Warlock skip this step (subclass chosen at creation)
 10. For classes with level 1 subclass, higher-level subclass features are applied automatically
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct subclass selection level for each class (e.g., Barbarian=3, Cleric=1, Wizard=2)`
+- `should detect if character already has a subclass chosen`
+- `should skip subclass step for classes with level 1 subclass (Cleric, Sorcerer, Warlock) during level-up`
+- `should return available subclass options for a given class from SRD data`
+- `should auto-apply higher-level subclass features for classes with pre-chosen subclass`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render SubclassSelectionStep only at the correct class-specific subclass level`
+- `should not render SubclassSelectionStep if subclass has already been chosen`
+- `should display all available subclass options with name, description, and features`
+- `should show current-level features prominently and future-level features as preview`
+- `should reuse SubclassSelector from Phase 2 in modal context`
+- `should update class display to include subclass name on selection (e.g., "Level 3 Champion Fighter")`
+- `should skip step for Cleric, Sorcerer, Warlock (level 1 subclass chosen at creation)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should level up Fighter to Level 3, see subclass selection step, choose Champion, and verify class display updates`
+- `should level up Cleric beyond Level 1 and verify subclass step is skipped (chosen at creation)`
+- `should level up Druid to Level 2, select Circle of the Land, and verify features are applied`
+
+### Test Dependencies
+- Mock character data for each class at their subclass selection level
+- Mock Phase 2 SubclassSelector component
+- Mock Phase 1 subclass data with features by level
+- Mock character data with pre-chosen subclass (for skip scenarios)
+
+## Identified Gaps
+
+- **Edge Cases**: Subclass selection is permanent -- no undo mechanism specified; SRD only includes one subclass per class but data model should support multiple; level-up that crosses a subclass feature level for a class with pre-chosen subclass should auto-apply features silently
+- **Accessibility**: SubclassSelector reuse from Phase 2 should maintain accessibility features; focus should move to the selection interface; screen reader should announce subclass options
+- **Mobile/Responsive**: Future feature preview list may be long for some subclasses; scrollable area sizing on mobile not specified
+
 ## Dependencies
 
 - Story 31.1 (Level Up Entry & Overview) for the wizard container

@@ -41,6 +41,40 @@ As a player on a phone during a session, I need a usable character sheet that I 
 - Spell page uses accordion sections with only the relevant level expanded
 - All content is accessible via scrolling on mobile
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Page 1 in single column at <640px with combat stats at top`
+- `should order sections for play: combat stats, attacks, ability scores, skills, personality (collapsed), features (collapsed)`
+- `should render ability scores as 2 rows of 3 compact blocks showing modifiers only`
+- `should expand ability score to show full breakdown on tap`
+- `should render skills section collapsed by default with proficient count in header`
+- `should render attacks as card-style layout instead of table`
+- `should render floating action bar at bottom with Roll d20, HP +/-, Spell Slots, Edit toggle`
+- `should render spell page with accordion sections per spell level`
+- `should expand only the relevant spell level (has unused slots) by default`
+- `should use sticky section headers as jump links for mobile navigation`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render mobile layout at 375px viewport, scroll through combat-first sections, and use floating action bar`
+- `should tap ability score on mobile to expand breakdown, then collapse it`
+
+### Test Dependencies
+- Mock character data with full content for all sections
+- Viewport size mocking (375px, 414px, <640px)
+- Touch event simulation for mobile interactions
+
+## Identified Gaps
+
+- **Accessibility**: No specification for floating action bar ARIA labels, no screen reader support for collapsible sections, no focus management on expand/collapse
+- **Edge Cases**: No specification for landscape mobile orientation behavior
+- **Performance**: No specification for scroll performance with all sections rendered in single column
+- **Mobile/Responsive**: Swipe gestures for page navigation mentioned in notes but not in acceptance criteria
+
 ## Dependencies
 - Story 24.1 (Desktop Layout) — mobile layout adapts from desktop
 - Story 24.2 (Tablet Layout) — progressive adaptation

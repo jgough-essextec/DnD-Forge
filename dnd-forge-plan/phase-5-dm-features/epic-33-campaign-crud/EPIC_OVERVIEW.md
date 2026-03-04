@@ -40,3 +40,21 @@ This epic defines the foundational data types for all DM features:
 - `stores/useCampaignStore.ts`
 - `hooks/useCampaign.ts`
 - `types/campaign.ts`
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 33.1 — Campaign Data Model & Store | 10 | 3 | 0 | 13 |
+| 33.2 — Create Campaign Flow | 4 | 7 | 2 | 13 |
+| 33.3 — Campaign List & Selection | 3 | 7 | 3 | 13 |
+| 33.4 — Edit Campaign & House Rules | 2 | 6 | 2 | 10 |
+| 33.5 — Character-Campaign Assignment | 4 | 8 | 3 | 15 |
+| **Totals** | **23** | **31** | **10** | **64** |
+
+### Key Gaps Found
+- **Accessibility** is consistently unspecified across all stories: keyboard navigation for modals, pickers, card grids, and kebab menus not defined
+- **Mobile/Responsive** layouts missing for multi-step modals (33.2), character picker (33.5), and edit modal tabs (33.4)
+- **Error Handling** gaps in duplicate campaign names, joinCode collisions, auto-save failures, and IndexedDB quota scenarios
+- **Loading/Empty States** missing loading spinners during IndexedDB operations across all stories
+- **Edge Cases** around campaign deletion during active encounters and partial state from cancelled wizards not addressed

@@ -39,6 +39,46 @@ As a player, I need to know when I'm offline and be assured that my data is safe
 - Caching progress is tracked and a completion indicator shows when all SRD data is cached
 - Network status detection works correctly across all supported browsers
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should detect online/offline status using navigator.onLine and online/offline events`
+- `should track SRD caching progress and calculate completion percentage`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should hide network status badge when online (no visual noise)`
+- `should show "Offline" badge with cloud-slash icon in app header when offline`
+- `should transition badge smoothly when network status changes (no flicker)`
+- `should show "Changes saved locally" reassurance message when making changes while offline`
+- `should auto-dismiss the reassurance message after a brief display`
+- `should show helpful message when SRD data is not fully cached and user goes offline`
+- `should show caching progress indicator when SRD data is being cached`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display Offline badge when network is disabled and hide it when reconnected`
+- `should show "Changes saved locally" when editing a character while offline`
+- `should keep all features fully functional when offline (no disabled or grayed out elements)`
+
+### Test Dependencies
+- navigator.onLine property mock
+- online/offline event simulation
+- Playwright network emulation (setOffline)
+- Service worker caching progress tracking mock
+- Toast notification system for reassurance messaging
+
+## Identified Gaps
+
+- **Edge Cases**: navigator.onLine can give false positives (connected to network without internet) — mentioned in notes but no mitigation
+- **Loading/Empty States**: Caching progress indicator design not specified (bar, percentage, or indicator style)
+- **Error Handling**: No specification for behavior when caching progress stalls (network drops during caching)
+- **Accessibility**: Offline badge needs ARIA announcement for screen reader users when status changes
+
 ## Dependencies
 
 - Story 43.1 (service worker must be working for offline functionality)

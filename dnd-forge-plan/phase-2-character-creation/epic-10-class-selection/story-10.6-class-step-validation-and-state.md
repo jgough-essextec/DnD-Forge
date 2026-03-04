@@ -39,6 +39,42 @@ As a developer, I need the Class Step to persist all class selections and valida
 - Progress sidebar displays the class with subclass if applicable
 - Changing class after prior selection shows a cascade warning identifying affected downstream steps
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false with error when no class is selected`
+- `should return valid:false with error when skill proficiency count does not match class requirement`
+- `should return valid:false with error when level-1 subclass is required but not selected (Cleric, Sorcerer, Warlock)`
+- `should return valid:false with error when fighting style is required but not selected (Fighter, Paladin, Ranger)`
+- `should return valid:true with empty errors when all selections are complete`
+- `should correctly build the ClassSelection object with classId, subclassId, chosenSkills, chosenFightingStyle, level=1`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist ClassSelection to wizard store on Next click`
+- `should display class with subclass in progress sidebar (e.g., "Level 1 Life Domain Cleric")`
+- `should show cascade warning when changing class after prior selection, identifying affected downstream steps`
+- `should mark affected steps as incomplete in progress sidebar after cascade reset`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete class selection for Cleric with subclass and skills, advance to next step, and verify state persistence`
+- `should change class from Wizard to Fighter and see cascade warning about spell and equipment reset`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Test fixtures for complete and incomplete ClassSelection objects for each class type
+- Mock cascade dependency map for downstream step identification
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling invalid ClassSelection data restored from sessionStorage
+- **Edge Cases**: Cascade reset when switching between two classes that both have subclasses (e.g., Cleric -> Warlock) should preserve common fields but reset class-specific ones
+
 ## Dependencies
 
 - **Depends on:** Stories 10.1-10.5 (all class UI must be built for validation), Story 8.1 (wizard shell consumes the validate function), Phase 1 Zustand wizard store

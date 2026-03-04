@@ -41,6 +41,40 @@ As a player, I need to see a clear summary of my final ability scores with modif
 - Derived combat stats preview shows estimated AC, HP, and initiative modifier
 - The summary updates dynamically as ability scores change (e.g., during drag-and-drop assignment)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute correct modifier for each ability score (e.g., 15 -> +2, 10 -> +0, 8 -> -1)`
+- `should identify notably high (15+) and low (8-9) scores for gameplay implications`
+- `should compute estimated AC based on class armor type and DEX modifier`
+- `should compute estimated HP as hit die max + CON modifier`
+- `should compute initiative modifier as DEX modifier`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display summary table with all 6 abilities showing Base Score, Racial Bonus, Total, and Modifier`
+- `should highlight modifier prominently in accent-gold with large font`
+- `should show gameplay implications for notably high or low scores in What This Means panel`
+- `should highlight class primary ability with recommendation message`
+- `should show warning when primary ability score is below 13`
+- `should display derived combat stats preview (estimated AC, HP, initiative modifier)`
+- `should update summary dynamically as ability scores change during drag-and-drop or Point Buy`
+
+### Test Dependencies
+- Mock ability score data for various configurations (high/low/balanced)
+- Mock class data for primary ability and hit die
+- Mock racial bonuses from wizard store
+- Mock Phase 1 calculation engine
+- Mock Epic 16 AbilityScoreDisplay and ModifierBadge components
+
+## Identified Gaps
+
+- **Edge Cases**: Estimated AC uses "most common armor" assumption per class but no specification for what to show if the class has multiple common armor types
+- **Performance**: Live-updating summary during drag-and-drop must be performant but no debounce or render budget specified
+
 ## Dependencies
 
 - **Depends on:** Stories 11.2-11.4 (ability scores must be assigned by one of the methods), Epic 9 Story 9.5 (racial bonuses), Epic 10 (class for primary ability and hit die), Phase 1 calculation engine, Epic 16 Story 16.3 (AbilityScoreDisplay, ModifierBadge)

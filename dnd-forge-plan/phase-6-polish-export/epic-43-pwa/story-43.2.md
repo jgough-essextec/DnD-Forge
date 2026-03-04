@@ -76,6 +76,45 @@ As a player, I need to install the app on my device's home screen with a proper 
 - Dismissed install prompt does not reappear on subsequent visits
 - App is installable on Chrome, Edge, and iOS Safari
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define manifest with correct name "D&D Character Forge" and short_name "Char Forge"`
+- `should define manifest with display: standalone, background_color: #1a1a2e, theme_color: #e8b430`
+- `should include all required icon sizes: 192x192, 512x512, 180x180, 32x32, 16x16`
+- `should include a maskable icon variant with proper safe zone`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render InstallPWA component when beforeinstallprompt event fires`
+- `should show "Install" and "Not now" buttons in install banner`
+- `should dismiss install banner and not show again after "Not now" is clicked`
+- `should persist install prompt dismissal in IndexedDB preferences across sessions`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should include iOS-specific meta tags in HTML head (apple-mobile-web-app-capable, status-bar-style, title, touch-icon)`
+- `should install as standalone PWA removing browser chrome on Chrome/Edge`
+- `should generate valid web app manifest with all required fields`
+
+### Test Dependencies
+- beforeinstallprompt event mock
+- IndexedDB preferences mock for dismissal persistence
+- Manifest validation utility
+- Icon file size and dimension verification
+- iOS meta tag presence verification
+
+## Identified Gaps
+
+- **Mobile/Responsive**: iOS Safari doesn't support beforeinstallprompt — no custom install prompt possible, only manual "Add to Home Screen"
+- **Edge Cases**: Behavior when manifest generation by vite-plugin-pwa fails not specified
+- **Edge Cases**: Apple splash screen generation for all iOS device sizes is complex and may not cover all devices
+- **Accessibility**: Install prompt banner accessibility (focus management, ARIA) not specified
+
 ## Dependencies
 
 - Story 43.1 (service worker must be configured for the app to be installable)

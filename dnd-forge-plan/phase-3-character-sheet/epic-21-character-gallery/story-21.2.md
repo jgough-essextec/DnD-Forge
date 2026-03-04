@@ -44,6 +44,52 @@ As a player with many characters, I need to search by name and filter by class, 
 - List view displays a sortable data table with all key character fields
 - Sort/filter preferences persist to IndexedDB and restore on next visit
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should filter characters by name with case-insensitive substring match`
+- `should filter characters by class (multi-select, AND logic)`
+- `should filter characters by race (multi-select, AND logic)`
+- `should filter characters by level range (1-4, 5-10, 11-16, 17-20)`
+- `should combine multiple filters with AND logic`
+- `should sort characters by all 7 sort options correctly`
+- `should compute filter counts dynamically from character data`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render gallery toolbar with search, filters, sort, and view toggle`
+- `should filter characters by name as user types with 200ms debounce`
+- `should show "No characters match your search" when search returns no results`
+- `should render class filter dropdown with character counts per class`
+- `should render race filter dropdown with character counts per race`
+- `should render level range toggle chips (1-4, 5-10, 11-16, 17-20)`
+- `should show "Show Archived" toggle that includes archived characters with muted styling`
+- `should render sort dropdown with 7 options and "Last Edited" as default`
+- `should switch between Grid View (cards) and List View (table) with view toggle`
+- `should render sortable data table in List view with key character fields`
+- `should persist sort/filter preferences to IndexedDB and restore on next visit`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should search for a character by name, apply class filter, sort by level, and verify filtered results`
+- `should switch between grid and list views and verify both display correctly`
+
+### Test Dependencies
+- Mock IndexedDB with diverse character set (multiple classes, races, levels, campaigns)
+- Mock IndexedDB preferences table for persistence testing
+- Mock debounce timer for search
+- Fixture data with archived characters
+
+## Identified Gaps
+
+- **Accessibility**: No keyboard navigation for filter chips, no ARIA labels for filter dropdowns, no screen reader support for dynamic filter counts
+- **Edge Cases**: No specification for behavior when all filters exclude all characters (combined empty state)
+- **Performance**: No specification for filter/sort performance with large character collections (100+ characters)
+
 ## Dependencies
 - Story 21.1 (Gallery Grid Layout) — toolbar integrates with the gallery grid
 - Phase 1 IndexedDB database layer for loading and querying characters

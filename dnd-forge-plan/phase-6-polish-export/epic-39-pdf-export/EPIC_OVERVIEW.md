@@ -39,3 +39,22 @@ Generate a downloadable PDF character sheet that faithfully reproduces the offic
 - `utils/pdfStyles.ts` — typography and color constants
 - `components/export/PDFExportModal.tsx` — export options dialog
 - Campaign summary PDF generation
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 39.1 — PDF Generation Architecture | 7 | 1 | 3 | 11 |
+| 39.2 — Page 1: Core Stats Layout | 7 | 1 | 3 | 11 |
+| 39.3 — Page 2: Backstory & Description Layout | 8 | 0 | 3 | 11 |
+| 39.4 — Page 3: Spellcasting Layout | 8 | 0 | 3 | 11 |
+| 39.5 — PDF Export Options & UI | 4 | 6 | 4 | 14 |
+| 39.6 — Campaign Export to PDF | 3 | 3 | 3 | 9 |
+| **Totals** | **37** | **11** | **19** | **67** |
+
+### Key Gaps Found
+- PDF accessibility (tagged PDF, reading order) not specified across all page layout stories
+- Error handling for partial failures (e.g., one character failing in batch export, one page failing in campaign binder) not defined
+- PDF generation performance targets (time per page) not specified
+- Edge cases for missing/null character fields, corrupt avatar images, and empty optional sections not addressed
+- Multiclass character handling in PDF headers and spellcasting not fully specified

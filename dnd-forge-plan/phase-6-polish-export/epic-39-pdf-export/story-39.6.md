@@ -35,6 +35,43 @@ As a DM, I need to export a campaign summary PDF showing all party members' key 
 - Campaign binder PDF (with full sheets) generates correctly for parties of 4-8 characters
 - PDF downloads with a descriptive filename (e.g., `[CampaignName]_Party_Summary.pdf`)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate party overview page with summary table matching party stats grid data`
+- `should generate one-page condensed summary per character with name, race, class, level, ability scores, AC, HP, key features, spell save DC`
+- `should generate correct filename format: [CampaignName]_Party_Summary.pdf`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Export Party Summary" option on campaign dashboard`
+- `should show progress indicator during campaign PDF generation for large parties`
+- `should provide option to include full three-page character sheets in the campaign binder`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should export campaign summary PDF with overview page and per-character condensed summaries`
+- `should generate campaign binder PDF with full three-page character sheets for a 4-character party`
+- `should generate campaign binder PDF correctly for a party of 8 characters (24+ pages)`
+
+### Test Dependencies
+- Campaign fixture with 4 characters (varied classes and levels)
+- Campaign fixture with 8 characters for large party testing
+- Party stats grid mock data matching Phase 5 format
+- PDF generation mocks for unit/functional tests
+
+## Identified Gaps
+
+- **Error Handling**: No specification for behavior when one character in the party fails PDF generation
+- **Performance**: No target for campaign binder generation time (8 characters x 3 pages = 24 pages)
+- **Edge Cases**: Behavior for campaigns with no characters or single character not specified
+- **Edge Cases**: NPC stat blocks mentioned as future enhancement but not addressed
+- **Loading/Empty States**: No specification for progress UI during large campaign PDF generation
+
 ## Dependencies
 
 - Stories 39.1-39.4 (PDF generation architecture and all three page layouts for full sheet option)

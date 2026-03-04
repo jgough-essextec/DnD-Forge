@@ -62,6 +62,52 @@ This story enhances the Phase 3 `SpellLevelSection.tsx` component to make spell 
 8. Ritual spells show a "Cast as Ritual" option that doesn't expend a slot
 9. Ritual casting shows the "+10 minutes" duration note
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should toggle spell slot state between available and expended`
+- `should calculate running slot summary with correct available/total per level`
+- `should determine color code for slot summary: green (>50%), yellow (<=50%), red (0)`
+- `should determine if a spell can be upcast to available higher-level slots`
+- `should identify ritual-tagged spells from spell data`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render clickable slot circles: filled for available, crossed/dimmed for expended`
+- `should toggle slot state on click (expend and recover)`
+- `should be interactive even in view mode (session tracking)`
+- `should prompt "Expend a level [N] slot?" with upcast options when a spell name is clicked`
+- `should show running slot summary at top of spell page with color coding`
+- `should dim spells with "No slots available" tooltip when no slots of required level remain`
+- `should allow player to override no-slots restriction`
+- `should show "Cast as Ritual" button for ritual-tagged spells`
+- `should display "+10 minutes" duration note for ritual casting`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click a spell, choose a slot level to expend, verify slot circle becomes expended and summary updates`
+- `should expend all slots of one level, verify spells are dimmed, then override to cast`
+- `should cast a spell as a ritual without expending a slot`
+- `should upcast a 1st level spell using a 3rd level slot`
+
+### Test Dependencies
+- Mock character data with spell slot configuration for a full caster (e.g., Level 5 Wizard)
+- Mock spell data with ritual and non-ritual spells at various levels
+- Phase 3 SpellLevelSection.tsx component stub
+- Mock Zustand character store for slot state persistence
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if slot state becomes inconsistent (e.g., more expended than total)
+- **Loading/Empty States**: No specification for non-caster characters visiting the spell page
+- **Edge Cases**: Behavior when all slots at every level are expended; upcasting to a level with no available slots; slot recovery interaction with manual toggle vs rest recovery
+- **Accessibility**: No ARIA labels for slot circles (available/expended state); no keyboard interaction for toggling slots; screen reader should announce slot expend/recover events
+- **Performance**: No specification for slot state auto-save frequency to IndexedDB
+
 ## Dependencies
 
 - Phase 3 SpellLevelSection.tsx component

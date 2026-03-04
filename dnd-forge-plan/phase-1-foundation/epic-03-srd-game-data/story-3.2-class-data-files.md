@@ -44,6 +44,32 @@ As a developer, I need complete class data for all 12 SRD classes with level-by-
 - Feature descriptions for complex features (Rage, Wild Shape, etc.) are complete and accurate
 - Starting equipment choices are structured as option groups matching SRD
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export classes array with exactly 12 classes`
+- `should have each class with correct hit die (Barbarian d12, Wizard d6, Fighter d10, etc.)`
+- `should have Fighter with ASI levels at 4, 6, 8, 12, 14, 16, 19`
+- `should have Rogue with ASI levels at 4, 8, 10, 12, 16, 19`
+- `should have standard classes with ASI levels at 4, 8, 12, 16, 19`
+- `should have all 12 SRD subclasses (Berserker, College of Lore, Life Domain, etc.)`
+- `should have Warlock Pact Magic spell progression separate from standard progression`
+- `should have spell slot progression tables accurate for full, half, third, and pact casters`
+- `should have multiclass spell slot table with 20 rows matching SRD`
+- `should have Monk starting gold as 5d4 (not 5d4x10)`
+
+### Test Dependencies
+- Class, Subclass, Feature type interfaces from Story 2.3
+- Import via `@/data/classes` path alias
+
+## Identified Gaps
+
+- **Edge Cases**: Complex features like Wild Shape and Rage have long descriptions that may need separate files but the linking mechanism is not specified
+- **Edge Cases**: Multiclass proficiency restrictions (limited proficiencies when multiclassing into a new class) not explicitly modeled in class data
+- **Dependency Issues**: Class feature mechanicalEffect fields must be populated for the calculation engine but the complete set of needed effects is not enumerated
+
 ## Dependencies
 - **Depends on:** Story 2.3 (Class, Subclass, Feature, ClassProficiencies, SpellcastingType, ClassSpellcasting, SpellSlotProgression types), Story 2.1 (AbilityName, SkillName)
 - **Blocks:** Story 4.1 (Ability calculations use class data), Story 4.2 (Skill calculations use proficiencies), Story 4.3 (Combat calculations use hit dice, features), Story 4.4 (Spell calculations use spell slot progression), Story 4.5 (Level up uses feature progression)

@@ -65,6 +65,48 @@ Arcane Recovery is a 1st-level Wizard feature that allows the Wizard to recover 
 8. Long rest resets the "used today" flag
 9. Short rest flow prompts to use Arcane Recovery if not yet used today
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate Arcane Recovery budget as ceil(Wizard level / 2) for various levels (Lv1=1, Lv5=3, Lv10=5, Lv20=10)`
+- `should reject slot selections exceeding the recovery budget`
+- `should reject slots of 6th level or higher from selection`
+- `should only allow recovery of expended slots (not already-available slots)`
+- `should validate total selected slot levels against budget (e.g., 2nd + 1st = 3 levels, within budget of 3)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Arcane Recovery (1/day, during Short Rest)" button only for Wizard characters`
+- `should open selection modal showing recovery budget and available expended slots`
+- `should display "Budget remaining: X levels" that updates dynamically with each slot selection`
+- `should disable slots 6th level and higher in the selection interface`
+- `should disable the Arcane Recovery button when already used today (checkbox checked)`
+- `should reset "used today" checkbox after long rest`
+- `should prevent selecting more slot levels than the remaining budget`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open Arcane Recovery modal, select a combination of slots within budget, confirm, and verify slots recovered`
+- `should verify Arcane Recovery is unavailable after use, then take long rest and verify it resets`
+- `should trigger short rest and see "Use Arcane Recovery?" prompt for a Wizard who hasn't used it today`
+
+### Test Dependencies
+- Mock Wizard character data at various levels with expended spell slots
+- Mock multiclass Wizard character (use Wizard class level, not total character level)
+- Mock Zustand character store for daily usage flag
+- Mock short rest and long rest flow integration
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if no slots are expended (no recovery needed); behavior if the modal is opened but no selections are made (cancel vs empty apply)
+- **Edge Cases**: Multiclass Wizard must use Wizard class level, not total character level -- acceptance criteria should verify this explicitly; behavior when budget allows recovering more slots than are expended
+- **Accessibility**: No keyboard navigation for the slot selection modal; no ARIA labels for the recovery budget display; focus management when modal opens/closes
+- **Performance**: No specification for modal open/render time
+
 ## Dependencies
 
 - Story 28.1 (Spell Slot Expend & Recover UI) for spell slot state management

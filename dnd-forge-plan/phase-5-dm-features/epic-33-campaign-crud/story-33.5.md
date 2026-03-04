@@ -46,6 +46,49 @@ This story manages the campaign-character relationship. Key data model constrain
 - Campaign deletion unlinks all characters and removes all campaign data with confirmation
 - The campaign's `characterIds` array and each character's `campaignId` field stay in sync
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should filter gallery characters to exclude those already in another campaign`
+- `should keep campaign.characterIds and character.campaignId in sync on add/remove`
+- `should unlink all characters (set campaignId to null) when campaign is deleted`
+- `should enforce soft cap warning at 7+ characters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render character picker showing only characters not in another campaign`
+- `should grey out characters in another campaign with that campaign's name shown`
+- `should support multi-select in the character picker`
+- `should open JSON import flow when "Import Player Character" is selected`
+- `should open character creation wizard with house rules pre-applied when "Create New Character" is selected`
+- `should show confirmation dialog when removing a character from campaign`
+- `should show warning badge when party reaches 7+ characters`
+- `should show delete confirmation dialog with correct messaging about data loss`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add a character from gallery to campaign and verify it appears in party stats grid`
+- `should remove a character from campaign and verify it still exists in the gallery`
+- `should delete a campaign and verify all characters are unlinked but preserved`
+
+### Test Dependencies
+- Mock Zustand campaign store and character store
+- Sample character fixtures (free characters, characters in other campaigns)
+- Mock Phase 2 character creation wizard
+- Mock Phase 3 JSON import flow
+- Confirmation dialog mock
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling import failures or invalid character JSON
+- **Edge Cases**: Behavior when creating a new character and wizard is cancelled (partial assignment state); behavior when character is in an encounter and removed from campaign
+- **Accessibility**: No keyboard navigation spec for multi-select character picker
+- **Mobile/Responsive**: No mobile layout specified for the character picker modal
+
 ## Dependencies
 
 - Story 33.1 — Campaign data model and store (character assignment actions)

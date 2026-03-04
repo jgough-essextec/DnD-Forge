@@ -36,6 +36,41 @@ As a developer, I need consistent visual components for displaying ability score
 - All components are responsive and accessible
 - All components use the app's dark fantasy visual theme
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should format modifier display correctly (+3 for positive, +0 for zero, -1 for negative)`
+- `should map modifier values to correct color coding (positive=green, zero=neutral, negative=red)`
+- `should parse dice notation strings (e.g., "2d6 + 3") for rendering`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render AbilityScoreDisplay with modifier prominently (+3), score below (16), ability label (STR)`
+- `should render AbilityScoreDisplay variant with racial bonus indicator when applicable`
+- `should render ProficiencyDot as filled (proficient), double-filled (expertise), half-filled (Jack of All Trades), or empty`
+- `should render DiceNotation with styled dice icons for notation like "2d6 + 3"`
+- `should trigger dice roll via dice engine and display result in popup when DiceNotation is clicked`
+- `should render ModifierBadge with +N/-N and correct color coding (green/neutral/red)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click DiceNotation "2d6+3", see animated roll result, and verify result stored in dice history`
+
+### Test Dependencies
+- Mock Phase 1 dice engine for click-to-roll testing
+- Mock Phase 1 dice store for roll result storage
+- Test fixtures for various modifier values, proficiency states, and dice notation strings
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for AbilityScoreDisplay block, ProficiencyDot states, or DiceNotation interactive element
+- **Mobile/Responsive**: AbilityScoreDisplay block sizing on mobile not specified; DiceNotation click-to-roll popup positioning not defined
+- **Performance**: DiceNotation click-to-roll popup should appear quickly but no latency target specified
+
 ## Dependencies
 
 - **Depends on:** Phase 1 project scaffolding (React, TypeScript, Tailwind CSS), Phase 1 dice engine (for DiceNotation click-to-roll), Phase 1 dice store (for storing roll results)

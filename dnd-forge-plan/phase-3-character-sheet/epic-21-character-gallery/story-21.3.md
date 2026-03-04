@@ -37,6 +37,50 @@ As a player, I need quick-access actions for each character without opening the 
 - "Select" mode enables multi-select with checkbox overlay on cards
 - Batch action bar appears with count and Archive/Delete/Export All options
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should create deep copy of character with new ID and "(Copy)" name suffix`
+- `should handle existing copies: "Gandalf (Copy)" -> "Gandalf (Copy 2)"`
+- `should set fresh timestamps (createdAt, updatedAt) on duplicated character`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render dropdown menu from kebab icon with all action options`
+- `should duplicate character with new ID, "(Copy)" suffix, and fresh timestamps`
+- `should show success toast with "Open Copy" link after duplicate`
+- `should archive character (set isArchived: true) and remove from default gallery view`
+- `should show undo toast with 5-second timer after archive`
+- `should undo archive action within 5-second window`
+- `should show archived characters with muted overlay in "Show Archived" view`
+- `should show confirmation dialog with character name for permanent delete`
+- `should remove character from IndexedDB on confirmed permanent delete`
+- `should show "Character deleted" toast after permanent delete`
+- `should enable multi-select mode with checkbox overlay on cards`
+- `should show batch action bar with count and Archive/Delete/Export All options when cards selected`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should duplicate a character via context menu, see it appear in the gallery, and open the copy`
+- `should archive a character, undo within 5 seconds, and verify the character reappears`
+- `should select multiple characters, batch archive, and verify they are removed from gallery`
+
+### Test Dependencies
+- Mock IndexedDB with multiple character records for CRUD operations
+- Mock toast notification system (shadcn/ui)
+- Mock export utility from Story 22.1
+- Mock timer for 5-second undo window
+
+## Identified Gaps
+
+- **Error Handling**: No specification for failure during duplicate (IndexedDB write failure), archive, or delete operations
+- **Accessibility**: No keyboard shortcuts for quick actions, no ARIA labels for context menu items, no screen reader support for batch selection
+- **Edge Cases**: No specification for batch delete confirmation (individual confirmation per character or single bulk confirmation?)
+
 ## Dependencies
 - Story 21.1 (Gallery Grid Layout) — actions integrate with gallery cards
 - Story 21.2 (Search, Filter & Sort) — "Show Archived" filter reveals archived characters

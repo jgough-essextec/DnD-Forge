@@ -44,6 +44,48 @@ As a player, I need to save my completed character and be taken to the character
 - "Go Back & Edit" keeps the review open without saving
 - Save errors show a user-friendly message with retry and JSON export fallback options
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should assemble a complete Character object from wizard state matching the Phase 1 Character interface`
+- `should include all required fields: id, name, race, class, abilityScores, equipment, spells, personality, metadata`
+- `should compute all derived stats during assembly (modifiers, AC, HP, initiative, proficiency bonus)`
+- `should generate a UUID for the character id`
+- `should set metadata fields (createdAt, updatedAt, creationMethod)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should call wizard store finalize() and createCharacter() on Save Character click`
+- `should show saving animation/progress indicator during IndexedDB write`
+- `should clear wizard store, show success celebration, and navigate to /character/:id on successful save`
+- `should save character and return to Intro Step with fresh state on Save & Create Another click`
+- `should keep review open without saving on Go Back & Edit click`
+- `should show error message with retry and JSON export fallback on save failure`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should save a complete character, see celebration animation, and land on character sheet view`
+- `should save and create another, returning to fresh Intro Step`
+- `should handle IndexedDB save failure gracefully with retry option`
+
+### Test Dependencies
+- Mock Zustand wizard store with finalize() method
+- Mock Dexie.js createCharacter() for IndexedDB writes (success and failure scenarios)
+- Mock React Router navigation
+- Mock Phase 1 calculation engine for derived stat computation
+- Complete character wizard state fixture
+
+## Identified Gaps
+
+- **Error Handling**: JSON export fallback on save failure is mentioned but no specification for the export format or download mechanism
+- **Edge Cases**: Storage quota exceeded scenario is mentioned in notes but no handling beyond the generic error message
+- **Performance**: No specification for acceptable save duration or animation timing
+- **Accessibility**: No ARIA announcements for save progress, success celebration, or error states
+
 ## Dependencies
 
 - **Depends on:** Story 15.1 (character preview provides the data to save), Story 15.2 (validation must pass before save is enabled), Phase 1 calculation engine (for derived stat computation), Phase 1 Dexie.js database layer (`createCharacter()`), Phase 1 Zustand wizard store (`finalize()` method), React Router (for navigation to `/character/:id`)

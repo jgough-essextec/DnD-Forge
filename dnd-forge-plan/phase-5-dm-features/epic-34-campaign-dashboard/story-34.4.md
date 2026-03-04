@@ -41,6 +41,36 @@ A separate "Tools" subsection shows tool proficiencies with the same format (agg
 - Tool proficiencies are shown in a separate "Tools" subsection with the same badge format
 - Panel is compact and readable as part of the Party tab
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should aggregate unique languages across all party characters with correct speaker counts`
+- `should categorize languages into Common (8 languages) and Exotic (8 languages) correctly`
+- `should identify SRD language gaps (languages with 0 speakers in the party)`
+- `should aggregate tool proficiencies across all party characters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render language badges with speaker counts in Common and Exotic sections`
+- `should display "Gaps" section with SRD languages not spoken by any party member`
+- `should reveal which characters speak a language when clicking a badge`
+- `should display tool proficiencies in a separate "Tools" subsection`
+- `should render as a compact panel within the Party tab`
+
+### Test Dependencies
+- Mock campaign with characters having varied language and tool proficiencies
+- SRD language reference data (8 Common + 8 Exotic)
+- Character fixtures with edge cases (no languages beyond Common, many exotic languages)
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for language badges; no keyboard interaction specified for expanding speaker lists
+- **Mobile/Responsive**: No mobile-specific layout mentioned for the language panel
+- **Edge Cases**: Behavior when a character has a non-SRD custom language not specified; behavior with empty party not addressed
+
 ## Dependencies
 
 - Story 34.1 — Campaign dashboard layout (Party tab host)

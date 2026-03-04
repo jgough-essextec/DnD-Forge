@@ -19,6 +19,24 @@ A fully functional offline-first persistence layer for characters, campaigns, an
 - **Features:** CRUD operations, soft delete (archive), deep clone (duplicate), JSON export/import, debounced auto-save, optimistic concurrency
 - **Testing:** Integration tests covering full CRUD lifecycle, concurrent updates, export/import roundtrip
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 5.1 — Database Schema & Initialization | 8 | 0 | 0 | 8 |
+| 5.2 — Character CRUD Operations | 17 | 0 | 0 | 17 |
+| 5.3 — Campaign CRUD Operations | 11 | 0 | 0 | 11 |
+| 5.4 — Auto-Save & Preferences | 8 | 2 | 0 | 10 |
+| **Totals** | **44** | **2** | **0** | **46** |
+
+### Key Gaps Found
+- Error handling for database failures (quota exceeded, corrupted IndexedDB, transaction aborted) not specified
+- Import validation behavior for unrecognized formatVersion not specified
+- Concurrent update error message format not specified
+- Campaign deletion behavior for associated characters not explicit in acceptance criteria
+- Auto-save failure retry mechanism described in notes but not in acceptance criteria
+- No "save in progress" indicator specified
+
 ## Dependencies
 - **Depends on:** Epic 2 (Type System) — stores Character, Campaign, and Preferences types; Epic 4 (Calculation Engine) — calculation results stored on Character
 - **Blocks:** Epic 6 (State Management Stores) — stores bridge to the database layer

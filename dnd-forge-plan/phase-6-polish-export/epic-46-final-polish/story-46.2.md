@@ -63,6 +63,41 @@ As a new user or a DM with a fresh campaign, I need helpful empty states that gu
 - Empty states are visually consistent across the app (same icon style, typography, spacing)
 - CTA buttons navigate to or trigger the appropriate action
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render gallery empty state with icon, "No characters yet" message, and "Create Your First Character" CTA`
+- `should render campaign list empty state with icon, "No campaigns yet" message, and "Create Your First Campaign" CTA`
+- `should render campaign party empty state with "No characters in this campaign" and "Add Characters" CTA`
+- `should render session log empty state with "No sessions recorded" and "Add Your First Session" CTA`
+- `should render NPC tracker empty state with "No NPCs tracked" and "Add an NPC" CTA`
+- `should render loot tracker empty state with "No loot recorded" and "Add Loot" CTA`
+- `should render roll history empty state with "No rolls yet" and "Roll some dice!" CTA that opens dice roller`
+- `should render encounter list empty state with "No encounters yet" and "Start an Encounter" CTA`
+- `should render spell page empty state as "This character doesn't cast spells" with no action button`
+- `should render DM notes empty state with "No DM notes for this character" and "Add Notes" CTA`
+- `should navigate to correct action when CTA button is clicked in each empty state`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display gallery empty state for a new user with no characters and navigate to wizard on CTA click`
+- `should display consistent empty state styling (icon, typography, spacing) across all zero-content views`
+
+### Test Dependencies
+- Empty IndexedDB state for all zero-content views
+- Non-caster character fixture for spell page empty state
+- Empty campaign fixture for campaign-related empty states
+- Navigation verification for CTA button actions
+
+## Identified Gaps
+
+- **Accessibility**: Empty state CTA buttons need proper ARIA labels and focus management — not specified
+- **Mobile/Responsive**: Empty state layout on mobile (360px) not specified — centering and spacing may need adjustment
+- **Edge Cases**: Empty state briefly showing before data loads (race condition with skeleton screens) not addressed
+
 ## Dependencies
 
 - All Phase 1-5 features complete (empty states span the entire app)

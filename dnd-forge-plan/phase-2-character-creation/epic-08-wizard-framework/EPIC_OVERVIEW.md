@@ -26,6 +26,22 @@ A reusable, multi-step wizard component with progress tracking, validation gatin
 - **Conditional step logic** — Skip spellcasting step for non-casters at level 1
 - **Keyboard navigation** — Enter/Tab to advance, Escape to go back, number keys to jump
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 8.1 — Wizard Shell & Step Management | 4 | 10 | 4 | 18 |
+| 8.2 — Intro Screen & Mode Selection | 0 | 10 | 3 | 13 |
+| 8.3 — Freeform Creation Mode | 0 | 10 | 3 | 13 |
+
+### Key Gaps Found
+- No specification for corrupted/invalid wizard store data on resume
+- Missing loading states for session state restoration
+- Keyboard navigation specified but ARIA live region announcements for step changes not defined
+- Mobile touch/swipe gestures for step navigation not detailed
+- No render time criteria for step transitions or initial wizard load
+- Browser back/forward button integration mentioned but not in acceptance criteria
+
 ## Dependencies
 
 - **Depends on:** Phase 1 foundation (Zustand stores with persist middleware, type system, calculation engine, React Router)

@@ -38,6 +38,36 @@ As a developer, I need functions for proficiency bonus, skill modifiers, saving 
 - `getAllSavingThrows()` returns correct modifiers for all 6 saving throws
 - Unit tests cover all modifier permutations and edge cases
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return proficiency bonus +2 for level 1 via getProficiencyBonus`
+- `should return proficiency bonus +3 for level 5 via getProficiencyBonus`
+- `should return proficiency bonus +6 for level 17 via getProficiencyBonus`
+- `should return ability modifier only for non-proficient skill via getSkillModifier`
+- `should return ability modifier + proficiency for proficient skill via getSkillModifier`
+- `should return ability modifier + double proficiency for expertise skill via getSkillModifier`
+- `should add half proficiency for non-proficient skills on Bard level 2+ (Jack of All Trades) via getSkillModifier`
+- `should add half proficiency for STR/DEX/CON non-proficient checks on Champion Fighter level 7+ (Remarkable Athlete) via getSkillModifier`
+- `should return ability modifier + proficiency for proficient saving throw via getSavingThrowModifier`
+- `should return 10 + skill modifier for passive score via getPassiveScore`
+- `should add +5 to passive score with advantage via getPassiveScore`
+- `should subtract -5 from passive score with disadvantage via getPassiveScore`
+- `should return correct modifiers for all 18 skills via getAllSkillModifiers`
+- `should return correct modifiers for all 6 saving throws via getAllSavingThrows`
+
+### Test Dependencies
+- Character type fixtures with Bard (Jack of All Trades), Champion Fighter (Remarkable Athlete), and Rogue (Expertise) configurations
+- getModifier and getEffectiveAbilityScores from Story 4.1
+
+## Identified Gaps
+
+- **Edge Cases**: Jack of All Trades adds half proficiency to initiative (DEX check) but this interaction is only mentioned in notes, not acceptance criteria
+- **Edge Cases**: Reliable Talent (Rogue 11+) affects minimum roll outcome but is not modeled in getSkillModifier return value
+- **Dependency Issues**: Saving throw proficiency from multiclass (only first class grants saves) requires checking class order in Character.classes array
+
 ## Dependencies
 - **Depends on:** Story 2.1 (AbilityName, SkillName, SKILL_ABILITY_MAP), Story 2.8 (Character type), Story 4.1 (getModifier, getEffectiveAbilityScores)
 - **Blocks:** Story 4.3 (combat calculations use skill/proficiency), Story 4.4 (spell calculations use proficiency bonus), Story 4.8 (validation checks proficiency counts)

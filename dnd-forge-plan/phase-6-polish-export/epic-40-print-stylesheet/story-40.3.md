@@ -35,6 +35,33 @@ As a player using any modern browser, I need consistent print output. This story
 - Mobile print works from iOS Safari using the share sheet "Print" option
 - All character sheet pages (Stats, Backstory, Spells) render correctly in all browsers
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should produce correct print output in Chrome with all three character sheet pages`
+- `should produce correct print output in Firefox with proper page break handling`
+- `should produce correct print output in Safari with break-inside workarounds applied`
+- `should produce correct print output in Edge`
+- `should render print output without clipping content in US Letter paper size`
+- `should render print output without clipping content in A4 paper size`
+- `should verify mobile print works via Chrome Android system print dialog`
+
+### Test Dependencies
+- Playwright multi-browser configuration (chromium, firefox, webkit)
+- Character sheet with all three pages fully populated
+- Paper size configuration for US Letter and A4
+- Mobile device emulation for Chrome Android and iOS Safari testing
+- Cross-browser print CSS compatibility report template
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for minimum margin values to avoid clipping across browsers
+- **Error Handling**: No fallback specified if print CSS fails to load in a specific browser
+- **Mobile/Responsive**: iOS Safari print testing via share sheet is difficult to automate with Playwright
+- **Dependency Issues**: Samsung Internet not included in print testing scope but mentioned in Epic 45
+
 ## Dependencies
 
 - Stories 40.1 and 40.2 (print styles and layouts must be complete before cross-browser testing)

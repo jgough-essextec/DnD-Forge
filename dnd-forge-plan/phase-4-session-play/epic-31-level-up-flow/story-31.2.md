@@ -77,6 +77,49 @@ At level 1, characters take the **maximum** value of their hit die + CON modifie
 8. Retroactive adjustment applies the CON mod difference to all previous levels
 9. Both retroactive and current-level HP changes are shown clearly
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate HP gain from roll: die result + CON modifier with minimum 1 HP`
+- `should calculate HP gain from average: ceil(die_max/2) + CON modifier with minimum 1 HP`
+- `should enforce minimum 1 HP gained even with negative CON modifier (e.g., d6 roll 1 + CON -2 = 1, not -1)`
+- `should return correct hit die type for each class (e.g., Fighter=d10, Wizard=d6, Barbarian=d12)`
+- `should calculate retroactive CON adjustment: (new modifier - old modifier) * previous levels`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render HPIncreaseStep with "Roll" and "Take Average" options`
+- `should display the correct class hit die (e.g., "d10 for Fighter")`
+- `should animate die roll and show result "Rolled: [result] + CON Mod ([N]) = [total] HP gained"`
+- `should show average value with no randomness: "Average: 6 + CON Mod (+2) = 8 HP gained"`
+- `should display HP Max change: "HP Max: [old] -> [new]"`
+- `should show retroactive CON increase message when CON modifier changes at this level`
+- `should enforce minimum 1 HP gained in the display`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should roll for HP increase, see animated die roll with result, and verify HP max updated`
+- `should take average HP increase and verify correct fixed value applied`
+- `should increase CON via ASI, see retroactive HP adjustment for all previous levels`
+
+### Test Dependencies
+- Mock character data with known level, class, CON modifier, current HP max
+- Mock dice engine for controlled hit die roll results
+- Mock dice animation component from Epic 26
+- Phase 1 class data for hit die types
+- Mock ASI data for retroactive CON adjustment scenario
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the roll button is clicked multiple times (should only allow one roll); no undo for HP roll choice
+- **Edge Cases**: Multiclass HP increase uses the class gaining the new level's hit die -- not explicitly validated in acceptance criteria; order of operations between ASI step and HP step affects retroactive adjustment
+- **Accessibility**: No ARIA announcement for die roll result; roll vs average choice should be keyboard navigable; screen reader should announce HP max change
+- **Performance**: Dice animation on level up should use "Dramatic" speed per notes -- but this is configurable and not enforced
+
 ## Dependencies
 
 - Story 31.1 (Level Up Entry & Overview) for the wizard container

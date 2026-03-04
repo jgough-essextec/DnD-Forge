@@ -29,6 +29,23 @@ A visually rich, informative race selection experience that presents all 9 SRD r
 - **DragonbornAncestryPicker.tsx** — 10-option ancestry table with damage types and breath weapons
 - SRD race data (static JSON from Phase 1)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 9.1 — Race Card Gallery | 0 | 10 | 3 | 13 |
+| 9.2 — Race Detail Panel | 0 | 9 | 2 | 11 |
+| 9.3 — Subrace Selection | 0 | 8 | 3 | 11 |
+| 9.4 — Race-Specific Choice Panels | 3 | 8 | 3 | 14 |
+| 9.5 — Race Step Validation & State | 8 | 4 | 0 | 12 |
+
+### Key Gaps Found
+- Missing error handling for SRD race/feat/spell data loading failures
+- No loading or empty states defined for race data or filter results
+- ARIA labels not specified for race cards, filter controls, pickers, or tooltips
+- Race-specific choice clearing on race switch mentioned in notes but not formalized in acceptance criteria
+- No touch target sizes or minimum card dimensions specified for mobile
+
 ## Dependencies
 
 - **Depends on:** Epic 8 (Wizard Shell — this step plugs into the wizard framework), Epic 16 (shared SelectableCardGrid, SearchFilterBar, DetailSlidePanel, CountSelector), Phase 1 SRD race data

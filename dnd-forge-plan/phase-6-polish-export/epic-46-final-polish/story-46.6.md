@@ -54,6 +54,52 @@ As a player, I need all settings and preferences to be discoverable and well-org
 - "Clear All Data" shows a confirmation dialog before executing
 - "Export All Data" generates a full backup JSON file with all characters, campaigns, and settings
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define all settings categories: Dice, Display, Accessibility, Data, PWA`
+- `should store all preferences in IndexedDB preferences table`
+- `should apply preferences immediately on change without requiring a Save button`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render settings page with Dice section (animation speed, sound effects, advantage/disadvantage lock)`
+- `should render settings page with Display section (detailed gallery cards, theme, reduced motion)`
+- `should render settings page with Accessibility section (high contrast mode, screen reader hints)`
+- `should render settings page with Data section (auto-save interval, undo depth, export all, clear all)`
+- `should render settings page with PWA section (check for updates, clear cache, about/version)`
+- `should show "Clear All Data" confirmation dialog requiring double confirmation before executing`
+- `should generate full backup JSON file from "Export All Data" button`
+- `should render first-run welcome modal with 3-step intro for new users`
+- `should dismiss welcome modal on "Get Started" click and not show on subsequent visits`
+- `should persist welcome modal dismissal in IndexedDB preferences`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should persist all settings across app restarts (IndexedDB preferences survive)`
+- `should display first-run welcome modal on initial visit and dismiss permanently`
+- `should export all data and clear all data with proper confirmation flow`
+
+### Test Dependencies
+- IndexedDB preferences table mock
+- First-visit detection mechanism
+- Settings page with all preference categories
+- Welcome modal 3-step intro content
+- Full data export/import verification
+- Double confirmation dialog for destructive actions
+
+## Identified Gaps
+
+- **Error Handling**: No specification for behavior when IndexedDB preferences fail to save
+- **Edge Cases**: Theme selector shows "Dark" with disabled "Light" option "Coming Soon" — but this UX pattern may confuse users
+- **Edge Cases**: "Clear All Data" double confirmation (type "DELETE") mentioned in notes but not in acceptance criteria
+- **Accessibility**: Settings page keyboard navigation and screen reader compatibility not specified
+- **Mobile/Responsive**: Settings page layout on mobile not specified
+
 ## Dependencies
 
 - Phase 3 preferences system and settings page (foundation to build on)

@@ -41,6 +41,35 @@ As a developer, I need functions that compute what recovers on short and long re
 - `applyLongRest()` reduces exhaustion by 1 level (if any)
 - Unit tests verify all recovery mechanics including edge cases
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should heal by hit die roll + CON mod when spending hit dice on short rest via applyShortRest`
+- `should not heal above max HP on short rest via applyShortRest`
+- `should not allow spending more hit dice than available via applyShortRest`
+- `should recover Warlock pact magic slots on short rest via applyShortRest`
+- `should reset short-rest-recharge feature uses on short rest via applyShortRest`
+- `should restore HP to maximum on long rest via applyLongRest`
+- `should recover half total hit dice (rounded down, min 1) on long rest via applyLongRest`
+- `should restore all spell slots on long rest via applyLongRest`
+- `should reset all feature usage counters (short and long rest) on long rest via applyLongRest`
+- `should reset death saves to 0/0 on long rest via applyLongRest`
+- `should reduce exhaustion by 1 level on long rest via applyLongRest`
+- `should return new Character object (immutable) from rest functions`
+
+### Test Dependencies
+- Character type fixtures with hit dice, spell slots, features, exhaustion, and death saves
+- Dice engine from Story 7.1 for hit die rolls
+- Feature data from Story 3.2 for recharge identification
+
+## Identified Gaps
+
+- **Edge Cases**: Short rest hit die spending for multiclass (choose which die type to spend) requires array of die types but exact behavior not specified
+- **Edge Cases**: Wizard Arcane Recovery (recover spell slots on short rest) is noted as needing manual activation but not modeled in applyShortRest
+- **Edge Cases**: Long rest hit dice recovery — which types to recover in multiclass is player choice, not automated
+
 ## Dependencies
 - **Depends on:** Story 2.3 (Feature with recharge field), Story 2.5 (SpellSlots, PactMagic, SpellcastingData), Story 2.7 (DeathSaves, ConditionInstance for exhaustion), Story 2.8 (Character type), Story 7.1 (dice engine for hit die rolls)
 - **Blocks:** Epic 6 (Stores will expose rest actions to the UI), Phase 3+ (Rest UI)

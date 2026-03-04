@@ -34,3 +34,19 @@ Tools for the DM to award experience points to individual characters or the whol
 - `components/dm/XPAward.tsx`
 - Milestone Level-Up UI (within XPAward or standalone)
 - Level Progress column in PartyStatsGrid
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 37.1 — XP Award System | 5 | 8 | 2 | 15 |
+| 37.2 — Milestone Level-Up | 3 | 7 | 3 | 13 |
+| 37.3 — Level Progress Tracking | 5 | 6 | 2 | 13 |
+| **Totals** | **13** | **21** | **7** | **41** |
+
+### Key Gaps Found
+- **Accessibility** missing: no ARIA labels for XP inputs, mode toggles, progress bars, or level-up notifications; no screen reader support
+- **Error Handling** gaps in negative XP input, batch level-up partial failure, and XP overflow past level 20
+- **Edge Cases** around switching between XP and Milestone modes mid-campaign (XP field population), multiclass level-up choices in batch flow, and awarding XP to level 20 characters
+- **Loading/Empty States** no loading indicators during XP persistence or batch level-up processing
+- **Dependency Issues**: Shared XP application logic between this epic and Epic 35 Story 35.6 not defined as a shared utility

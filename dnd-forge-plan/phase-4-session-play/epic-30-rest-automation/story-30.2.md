@@ -92,6 +92,56 @@ As a player, I need a "Long Rest" button that fully recovers my HP, restores spe
 13. Duration note is displayed
 14. 24-hour guard tracks last long rest and shows a warning for repeat attempts
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should restore current HP to max HP on long rest`
+- `should restore all spell slots to full (standard + Pact Magic)`
+- `should recover spent hit dice up to half total (minimum 1, round down)`
+- `should correctly calculate hit dice recovery when fewer than half were spent`
+- `should reduce exhaustion by 1 level on long rest`
+- `should reset death saves to 0 successes / 0 failures`
+- `should not remove temp HP on long rest (persist through rests)`
+- `should restore all short-rest AND long-rest class features`
+- `should reset Arcane Recovery daily use flag`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render LongRestModal when "Long Rest" button is clicked`
+- `should show automatic recovery: HP restored, spell slots recovered, features restored`
+- `should display hit dice recovery: "Hit Dice: Recovered 2 of 4 spent (now 6/8 total)"`
+- `should show exhaustion reduction: "Exhaustion: Level 3 -> Level 2" with food/water note`
+- `should display condition clearing checklist for transient conditions`
+- `should show complete before/after summary panel for all resource categories`
+- `should display duration note "A long rest takes at least 8 hours"`
+- `should show 24-hour guard warning for repeat long rest attempts`
+- `should commit all changes and save on "Finish Long Rest" click`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete full long rest flow: verify HP restored, slots recovered, features reset, exhaustion reduced, and summary displayed`
+- `should clear selected conditions via checklist during long rest`
+- `should verify temp HP persists through long rest`
+- `should verify 24-hour warning appears on second long rest attempt`
+
+### Test Dependencies
+- Mock character data with depleted HP, expended slots, used features, spent hit dice, active conditions, exhaustion
+- Mock Zustand character store for state before/after comparison
+- Mock last long rest timestamp for 24-hour guard
+- Feature recovery mapping data for all classes
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the character has 0 HP at the start of the rest (RAW requires at least 1 HP); no error handling for data save failures during "Finish Long Rest"
+- **Loading/Empty States**: No specification for the summary when character was already at full resources
+- **Edge Cases**: Long rest includes benefit of short rest -- should short rest features show separately in summary; condition clearing checklist should differentiate between combat conditions and persistent conditions; 24-hour guard is "soft warning" but interaction model (blocking vs non-blocking) needs specification
+- **Accessibility**: No ARIA labels for the condition clearing checklist; no keyboard navigation for the summary panel; screen reader should announce each recovery category
+- **Mobile/Responsive**: Summary panel layout on mobile not specified; scroll behavior for long before/after comparison
+
 ## Dependencies
 
 - Story 27.1 (HP Tracker) for HP restoration

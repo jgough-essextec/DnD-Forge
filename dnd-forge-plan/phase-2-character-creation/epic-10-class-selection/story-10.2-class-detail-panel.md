@@ -44,6 +44,39 @@ As a player, I need to see the full details of a class — proficiencies, starti
 - Starting Equipment Preview shows choice groups as read-only text
 - The panel is scrollable and works on both desktop (right side) and mobile (bottom sheet)
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should open a slide-in detail panel with animated entrance when a class card is clicked`
+- `should display class description, hit die, primary ability, and saving throw proficiencies in Overview section`
+- `should list all armor, weapon, and tool proficiencies with icons in Proficiencies section`
+- `should list all level 1 features with expandable descriptions and note choice features`
+- `should show Spellcasting Preview section only for caster classes with type, ability, and cantrip/spell counts`
+- `should hide Spellcasting Preview section for non-caster classes`
+- `should render Level Progression table for levels 1-20 with subclass, ASI, and power spike highlights`
+- `should show Starting Equipment Preview with choice groups as read-only text`
+- `should be scrollable and work on both desktop (right side) and mobile (bottom sheet)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open detail panel for Fighter and verify non-caster sections (no Spellcasting Preview)`
+- `should open detail panel for Wizard and verify caster sections including Spellcasting Preview`
+- `should expand and collapse long feature descriptions in the Level 1 Features section`
+
+### Test Dependencies
+- Mock SRD class data with complete feature descriptions, proficiencies, and level progression
+- Mock Epic 16 DetailSlidePanel component
+- Test fixtures for caster and non-caster class detail data
+
+## Identified Gaps
+
+- **Loading/Empty States**: No loading state while class detail data is prepared
+- **Accessibility**: No ARIA labels for expandable feature cards, tabs/scroll sections, or close button
+- **Mobile/Responsive**: Bottom sheet on mobile mentioned but no max height or swipe-to-close specified
+
 ## Dependencies
 
 - **Depends on:** Story 10.1 (Class Card Gallery — selection triggers panel open), Epic 16 Story 16.1 (DetailSlidePanel), Phase 1 SRD class data

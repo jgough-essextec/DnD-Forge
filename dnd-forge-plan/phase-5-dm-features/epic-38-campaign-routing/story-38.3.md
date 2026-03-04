@@ -56,6 +56,49 @@ This story implements the join campaign flow. In Phase 5 (local-only), join code
 - Success state shows confirmation message with link to campaign view
 - Character is properly linked to the campaign after joining
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should validate join code format (6 uppercase alphanumeric characters, no ambiguous chars)`
+- `should resolve join code against local IndexedDB campaigns`
+- `should return "not found" when join code matches no local campaign`
+- `should mark imported campaign user as participant (not DM)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render join campaign page at /join/:code with code input field`
+- `should auto-fill join code from URL parameter`
+- `should display campaign name and description when code matches a local campaign`
+- `should show "Campaign not found locally" message with import prompt when code does not match`
+- `should open import dialog on "Import Campaign" button click`
+- `should display character selection after successful join (existing or create new)`
+- `should show success state: "You've joined [Campaign Name]!" with link to campaign view`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should enter a valid join code, select a character, and successfully join a campaign`
+- `should import a campaign JSON file and join with a selected character`
+- `should create a new character respecting house rules and auto-assign to campaign after joining`
+
+### Test Dependencies
+- Mock campaign with known join code in IndexedDB
+- Campaign JSON export fixture for import testing
+- Character fixtures for selection
+- Mock Phase 2 character creation wizard
+- Mock file input for JSON import
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling invalid/corrupted campaign JSON import; no error state for partial import
+- **Loading/Empty States**: No loading state while resolving join code against IndexedDB
+- **Accessibility**: No ARIA labels for join code input; no keyboard navigation for character selection
+- **Mobile/Responsive**: No mobile layout specified for the join campaign page
+- **Edge Cases**: Behavior when the join code input has trailing spaces; behavior when user has no characters to select
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model (joinCode field, character assignment)

@@ -86,6 +86,50 @@ interface Combatant {
 - Combatant list is reorderable via drag handles with remove buttons
 - "Roll Initiative & Start" button proceeds to the initiative rolling screen
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should auto-populate combatant list from campaign characters with correct stats (AC, HP, initiative modifier)`
+- `should create Combatant from Character data with type 'player' and linked characterId`
+- `should increment monster name suffix correctly ("Goblin 1", "Goblin 2", "Goblin 3")`
+- `should create N individual combatant entries from quantity input with separate HP values`
+- `should generate unique groupId for grouped identical monsters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render two-panel layout with combatant list on left and add interface on right`
+- `should display all campaign characters as player combatants in the list automatically`
+- `should render monster/NPC add form with Name (required), AC, HP, and Initiative Modifier fields`
+- `should search SRD monsters and auto-fill stats when a result is selected`
+- `should duplicate a monster with "Add Another" button with incremented name`
+- `should create multiple entries via quantity field with individual HP per combatant`
+- `should render combatant list items with drag handle, name, type icon, AC, HP, and remove button`
+- `should enable "Roll Initiative & Start" button to proceed to combat`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open encounter setup from "Start Encounter" button on campaign dashboard`
+- `should add SRD monsters via search, duplicate them, and proceed to initiative rolling`
+- `should reorder combatants via drag handles and verify order persists`
+
+### Test Dependencies
+- Mock campaign with 4 characters for auto-populate testing
+- SRD monster index data (subset for testing: Goblin, Orc, Dragon)
+- Mock Zustand encounter store
+- Drag-and-drop testing utilities
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling SRD search with no results; no validation for negative or zero HP/AC values
+- **Loading/Empty States**: No loading state for SRD monster search results
+- **Accessibility**: No keyboard navigation for drag-and-drop reordering; no ARIA labels for combatant type icons
+- **Mobile/Responsive**: Two-panel layout behavior on mobile not specified (stack? collapse?)
+- **Edge Cases**: Maximum combatant count not specified; behavior when campaign has 0 characters not addressed
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign and Encounter data models, Zustand store

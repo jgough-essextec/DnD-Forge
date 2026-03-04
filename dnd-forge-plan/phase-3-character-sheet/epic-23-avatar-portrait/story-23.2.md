@@ -39,6 +39,32 @@ As a developer, I need the avatar component to render consistently in all contex
 - Parchment-textured border ring renders around all avatars
 - Component is reusable across all app contexts
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render CharacterAvatar at all four size variants (32px, 48px, 64px, 128px)`
+- `should display avatar image when present in character data`
+- `should display default placeholder when no avatar is set (race silhouette + class color)`
+- `should show upload icon overlay on hover when editable prop is true`
+- `should not show upload icon when editable prop is false`
+- `should render with circular mask on character sheet banner (size="xl")`
+- `should render parchment-textured border ring around all avatars`
+- `should render correctly in gallery card context (size="lg", 64px)`
+- `should render correctly in shared view context (size="xl", 128px, not editable)`
+
+### Test Dependencies
+- Mock character data with avatar (base64 data URL)
+- Mock character data without avatar (various race/class combinations for default generation)
+- Mock CSS for parchment border texture
+
+## Identified Gaps
+
+- **Accessibility**: No alt text specification for avatar images, no ARIA labels for editable overlay, no screen reader description for default placeholders
+- **Performance**: No specification for rendering performance with many avatars simultaneously (gallery with 50+ cards)
+- **Edge Cases**: No specification for handling corrupted base64 avatar data (fallback to default)
+
 ## Dependencies
 - Story 23.1 (Avatar Upload & Storage) — provides avatar data and default generation
 - Story 17.1 (Sheet Banner) — avatar displays in the banner

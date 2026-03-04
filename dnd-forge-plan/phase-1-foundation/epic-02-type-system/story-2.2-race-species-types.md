@@ -37,6 +37,29 @@ As a developer, I need complete type definitions for races so the data layer and
 - `RaceSelection` captures all player choices made during race selection (ability score allocation for Half-Elf, cantrip for High Elf, skills for Half-Elf, feat for Variant Human)
 - `Subrace` carries its own ability score increases and traits separate from the parent race
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define DamageType enum with all 13 damage types`
+- `should define Size type with Tiny, Small, Medium, and Large values`
+- `should define Resistance interface with damageType, and resistance/immunity/vulnerability type`
+- `should define Sense interface supporting darkvision, blindsight, tremorsense, truesight with range`
+- `should define Race interface with all required fields (id, name, abilityScoreIncrease, size, speed, traits, subraces)`
+- `should define RaceSelection capturing raceId, subraceId, chosenLanguages, chosenCantrip, chosenSkills`
+- `should define Subrace interface with own abilityScoreIncrease and traits`
+- `should allow RacialTrait to have optional mechanicalEffect`
+
+### Test Dependencies
+- No mock data needed — these are type compilation tests
+- Depends on AbilityScores and SkillName types from Story 2.1
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for how to represent Dragonborn's 10 draconic ancestry types within the Subrace model (may need a variant or ancestry array)
+- **Dependency Issues**: MechanicalEffect type is referenced but defined in Story 2.3; circular dependency risk if not placed in shared types file
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses AbilityScores, SkillName types)
 - **Blocks:** Story 2.8 (Character master type includes RaceSelection), Story 3.1 (Race data files must conform to Race type)

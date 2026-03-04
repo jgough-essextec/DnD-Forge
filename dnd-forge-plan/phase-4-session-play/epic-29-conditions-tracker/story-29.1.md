@@ -114,6 +114,48 @@ As a player, I need to see which conditions are currently affecting my character
 7. Exhaustion tooltip shows all cumulative effects for the current level
 8. Exhaustion level 6 shows a prominent death warning
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should categorize each condition into correct color group (red=debilitating, orange=moderate, yellow=mild, green=beneficial)`
+- `should return correct cumulative exhaustion effects for a given level (e.g., Level 3 = disadvantage on checks + speed halved + disadvantage on attacks/saves)`
+- `should return full mechanical effects text for each of the 14 standard conditions`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render ConditionsTracker as a horizontal badge strip below the combat stats row`
+- `should show "No conditions" placeholder when no conditions are active`
+- `should render color-coded badges with icons for active conditions`
+- `should display red badges for debilitating conditions (Blinded, Paralyzed, Stunned, Unconscious, Petrified)`
+- `should display green badge for Invisible (beneficial)`
+- `should show popover with full mechanical effects text and "Remove" button when badge is clicked`
+- `should display "Exhaustion [N]" with level number for exhaustion`
+- `should show cumulative effects in exhaustion tooltip`
+- `should display death warning for Exhaustion Level 6`
+- `should wrap badges to multiple rows when many conditions are active`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should view character sheet Page 1 with active conditions, click a condition badge, see popover with effects text, and click "Remove"`
+- `should verify all 14 conditions render with correct color coding when all are active simultaneously`
+- `should display exhaustion at Level 3 and verify cumulative effects shown in tooltip`
+
+### Test Dependencies
+- Mock Phase 1 SRD conditions data for all 14 conditions + exhaustion
+- Mock character data with various active conditions
+- Phase 3 character sheet Page 1 layout stub
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if SRD conditions data is missing or corrupted
+- **Edge Cases**: Behavior when Incapacitated condition (condition #6) is listed in the 14 conditions data but only appears in yellow category; maximum number of simultaneous conditions not specified (theoretical max is all 14 + exhaustion)
+- **Accessibility**: No ARIA labels for condition badges; no keyboard navigation for the badge strip; popover should be keyboard-dismissible; screen reader should announce condition name and severity
+- **Mobile/Responsive**: Badge strip horizontal scroll vs wrap behavior on narrow screens not fully specified
+
 ## Dependencies
 
 - Phase 1 SRD conditions data

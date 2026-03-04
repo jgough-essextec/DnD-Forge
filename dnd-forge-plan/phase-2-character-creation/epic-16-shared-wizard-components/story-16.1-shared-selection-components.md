@@ -40,6 +40,45 @@ As a developer, I need reusable components for common selection patterns across 
 - All components support keyboard navigation and include ARIA accessibility attributes
 - All components use the app's dark fantasy visual theme (Tailwind CSS, shadcn/ui)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should enforce maxSelections in CountSelector and prevent additional selections`
+- `should compute filter results correctly in SearchFilterBar with dropdown, toggle, and chip filters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render SelectableCardGrid with responsive grid layout and single-select mode`
+- `should render SelectableCardGrid with multi-select mode and correct selection state`
+- `should render SearchFilterBar with text search, dropdown filters, toggle filters, and chip filters`
+- `should invoke onSearch and onFilter callbacks when search/filter controls are used`
+- `should render DetailSlidePanel sliding in from right on desktop and from bottom on mobile with framer-motion animation`
+- `should close DetailSlidePanel when clicking outside or pressing close button`
+- `should render CountSelector with checkboxes enforcing maximum selection count and showing "N of M selected"`
+- `should disable remaining items in CountSelector once maxSelections is reached`
+- `should render ChoiceGroup with radio-button options (labels and descriptions) allowing single selection only`
+- `should accept TypeScript generics for type safety in all components`
+- `should support keyboard navigation and ARIA accessibility attributes in all components`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render SelectableCardGrid at different viewport sizes and verify responsive column counts`
+
+### Test Dependencies
+- Mock framer-motion for animation assertions
+- Test fixtures for generic item arrays with various configurations
+- Mock filter definitions for SearchFilterBar testing
+
+## Identified Gaps
+
+- **Accessibility**: ARIA labels are mentioned in acceptance criteria but no specific ARIA roles or patterns (e.g., role="listbox", role="radiogroup") are specified
+- **Mobile/Responsive**: DetailSlidePanel swipe-down-to-close on mobile is mentioned in notes but not in acceptance criteria
+- **Performance**: No render performance criteria for large item lists in SelectableCardGrid or CountSelector
+
 ## Dependencies
 
 - **Depends on:** Phase 1 project scaffolding (React, TypeScript, Tailwind CSS, shadcn/ui, framer-motion installed)

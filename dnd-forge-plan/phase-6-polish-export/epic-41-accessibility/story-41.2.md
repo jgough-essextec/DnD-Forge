@@ -51,6 +51,43 @@ As a player using a screen reader, I need the character sheet and all interactiv
 - All modals use `role="dialog"`, `aria-labelledby`, and `aria-modal="true"`
 - Data tables have proper `<th>` headers with `scope` attributes
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should provide aria-label on every form control (input, select, checkbox, toggle, button)`
+- `should announce ability score block as "Strength: Score 16, Modifier +3" via aria-label on container`
+- `should announce skill row as "[skill name], modifier [value], [proficient/not proficient/expertise]"`
+- `should announce dice roll result via aria-live="assertive" with expression, result, and context`
+- `should announce "CRITICAL!" for nat 20 and "FUMBLE!" for nat 1 dice results`
+- `should announce spell slot group as "Level N spell slots: X of Y remaining" via role="group" with aria-label`
+- `should announce death save group as "Death saves: X successes, Y failures"`
+- `should render gallery cards as <article> elements with aria-label including character name, level, race, and class`
+- `should announce current turn combatant via aria-live="polite" on combat tracker turn advance`
+- `should render modals with role="dialog", aria-labelledby, and aria-modal="true"`
+- `should render data tables with proper <th> headers and scope attributes`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should have no unlabeled form controls across the entire application`
+- `should correctly announce dice roll results with full context when rolling from character sheet`
+- `should announce combat turn changes when advancing initiative in the combat tracker`
+
+### Test Dependencies
+- Character sheet with all interactive elements (ability scores, skills, spell slots, death saves)
+- Dice roller component with various roll results (normal, critical, fumble)
+- Combat tracker with multiple combatants
+- Gallery with multiple character cards
+- ARIA attribute validation utilities
+
+## Identified Gaps
+
+- **Accessibility**: No specification for testing with actual screen readers (VoiceOver, NVDA, TalkBack) — only ARIA attributes
+- **Edge Cases**: How gallery sort/filter changes are announced to screen readers not fully specified
+- **Edge Cases**: Behavior when aria-live regions receive rapid updates (multiple dice rolls in quick succession)
+
 ## Dependencies
 
 - All Phase 1-5 features complete (screen reader audit spans entire app)

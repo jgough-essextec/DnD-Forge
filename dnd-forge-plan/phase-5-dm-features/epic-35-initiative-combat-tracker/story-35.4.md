@@ -68,6 +68,52 @@ interface Combatant {
 - Concentration check reminder fires when a concentrating combatant takes damage with correct DC
 - All HP changes for player combatants sync back to the character's IndexedDB record
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should apply damage to temp HP first, then regular HP (Phase 4 logic)`
+- `should clamp HP at 0 (no negative HP) and trigger death handling`
+- `should calculate concentration check DC as max(10, damage/2)`
+- `should auto-apply "Unconscious" condition when monster reaches 0 HP`
+- `should correctly track death save successes and failures for player characters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should open inline damage/heal input when HP bar is clicked`
+- `should render quick damage buttons ("-5", "-10", "-15", "Custom") on current turn combatant`
+- `should update HP bar color gradient in real-time after damage/heal`
+- `should show "Defeated" overlay with fade-to-grey animation on monster at 0 HP`
+- `should display inline death saves tracker on player character at 0 HP`
+- `should show alert "Player [Name] is making death saves!" when player reaches 0 HP`
+- `should add/remove conditions via Phase 4 condition picker`
+- `should display "Concentrating" badge on spellcaster combatants`
+- `should show concentration check reminder with correct DC when concentrating combatant takes damage`
+- `should render editable temp HP field per combatant`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should apply damage to a monster, reduce to 0 HP, and see "Defeated" overlay`
+- `should apply damage to a player, trigger death saves, and roll a death save`
+- `should add a condition to a combatant and see it persist across turns`
+- `should sync player HP changes back to character's IndexedDB record after combat`
+
+### Test Dependencies
+- Mock Phase 4 HP tracker logic, conditions system, death save logic, and dice roller
+- Combatant fixtures at various HP levels (full, half, 0, with temp HP)
+- Spellcaster combatant fixture with concentration state
+- Mock IndexedDB for player character HP sync verification
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling massive damage (instant death when damage exceeds max HP + current HP)
+- **Loading/Empty States**: No loading state for inline damage/heal input
+- **Accessibility**: No keyboard-accessible alternative to clicking HP bar; no screen reader announcements for HP changes or death save results
+- **Edge Cases**: Behavior when healing a "Defeated" monster (should it remove Unconscious?); behavior when temp HP is applied to a character at 0 HP
+
 ## Dependencies
 
 - Story 35.3 — Combat tracker main view (host component)

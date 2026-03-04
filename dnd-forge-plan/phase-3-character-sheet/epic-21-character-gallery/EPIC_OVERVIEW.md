@@ -33,3 +33,19 @@ The app's home screen — a visually rich gallery of all the player's characters
 - Empty state with welcoming illustration and CTA for first-time users
 - Grid/list view toggle with persistent preference
 - Batch operations with multi-select mode
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 21.1 — Gallery Grid Layout | 3 | 11 | 2 | 16 |
+| 21.2 — Search, Filter & Sort | 7 | 11 | 2 | 20 |
+| 21.3 — Character Quick Actions | 3 | 11 | 3 | 17 |
+| **Totals** | **13** | **33** | **7** | **53** |
+
+### Key Gaps Found
+- **Loading/Empty States**: No loading skeleton or spinner while characters load from IndexedDB
+- **Accessibility**: Missing keyboard navigation for gallery grid cards, filter chips, and batch selection. No ARIA labels for context menus
+- **Error Handling**: No specification for IndexedDB read failure (database corruption) or CRUD operation failures
+- **Performance**: No render time targets for gallery with many characters (100+ cards)
+- **Edge Cases**: Combined empty state when all filters exclude all characters not specified. Batch delete confirmation behavior unclear

@@ -30,6 +30,44 @@ As a spellcaster, I need to see my cantrips listed at the top of the spell page.
 - Adding cantrips validates against the maximum cantrips known for the class/level
 - Cantrip list reflects the character's chosen cantrips from the creation wizard
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should determine maximum cantrips known for class and level (e.g., Wizard 3, Sorcerer 4 at level 1)`
+- `should validate cantrip count against class/level maximum`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render cantrips section at the top of the spell page with "Cantrips" label`
+- `should display each cantrip with name, casting time icon, range, and brief description preview`
+- `should expand to show full spell detail card when clicking a cantrip name`
+- `should collapse spell detail card when clicking again`
+- `should show "Add Cantrip" button in edit mode that opens spell browser filtered to class cantrips`
+- `should show "Remove" button on each cantrip in edit mode`
+- `should validate against maximum cantrips known when adding a new cantrip`
+- `should reflect character's chosen cantrips from the creation wizard`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate to Page 3, view cantrips, expand a cantrip detail, and add/remove a cantrip in edit mode`
+
+### Test Dependencies
+- Mock character data for spellcaster with known cantrips
+- Mock SRD spell data for cantrip details
+- Mock SpellDetailCard component from Phase 2
+- Mock spell browser from Phase 2
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if SRD cantrip data is missing or corrupted
+- **Accessibility**: No keyboard navigation for cantrip list, no ARIA labels for expand/collapse interaction
+- **Edge Cases**: No specification for cantrip scaling display at higher levels (e.g., Fire Bolt 2d10 at level 5) beyond a note
+
 ## Dependencies
 - Story 19.1 (Spellcasting Header) — cantrips section is part of the spellcasting page
 - Phase 1 SRD spell data for cantrip details

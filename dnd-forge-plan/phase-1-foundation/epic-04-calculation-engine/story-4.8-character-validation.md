@@ -53,6 +53,41 @@ As a developer, I need a validation function that checks a character for complet
 - All results include field path, severity, and human-readable message
 - Unit tests cover valid characters, each specific validation rule violation, and edge cases
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return empty array for fully valid character via validateCharacter`
+- `should return error for missing name via validateCharacter`
+- `should return error for missing race selection via validateCharacter`
+- `should return error for missing class selection via validateCharacter`
+- `should return error for missing ability scores via validateCharacter`
+- `should return error for point buy totaling 28 points via validateCharacter`
+- `should return warning for point buy under budget via validateCharacter`
+- `should return error for invalid standard array values via validateCharacter`
+- `should return error for 7 skill proficiencies when class allows 4 via validateCharacter`
+- `should return error for duplicate skill proficiencies without replacement via validateCharacter`
+- `should return warning for equipment weight exceeding carry capacity via validateCharacter`
+- `should return error for exceeding 3 attuned magic items via validateCharacter`
+- `should return warning for HP max not matching calculated value via validateCharacter`
+- `should return error for multiclass without meeting prerequisite ability scores via validateCharacter`
+- `should classify all results as error or warning severity via validateCharacter`
+- `should include field path in dot notation for each validation result`
+
+### Test Dependencies
+- Character type fixtures: valid character, character with various violations
+- Class data from Story 3.2 for proficiency allowances and multiclass requirements
+- Background data from Story 3.5 for proficiency counts
+- Calculation functions from Stories 4.1-4.4
+
+## Identified Gaps
+
+- **Error Handling**: No specification for how to handle partially constructed characters (during wizard flow) — should some validations be skipped?
+- **Edge Cases**: Spell count validation for multiclass characters with multiple spellcasting classes needs clarification
+- **Edge Cases**: Validation ordering (errors before warnings) is mentioned but not in acceptance criteria
+- **Performance**: Validation should be fast enough for real-time feedback but no performance target specified
+
 ## Dependencies
 - **Depends on:** Story 2.8 (Character, CharacterValidation types), Story 3.2 (class data for proficiency allowances, multiclass requirements), Story 3.5 (background data for proficiency counts), Story 4.1 (ability score validation functions), Story 4.2 (proficiency calculations), Story 4.3 (HP calculation for verification, encumbrance), Story 4.4 (spell slot/preparation calculations)
 - **Blocks:** Epic 5 (database could run validation before save), Epic 6 (stores can expose validation state)

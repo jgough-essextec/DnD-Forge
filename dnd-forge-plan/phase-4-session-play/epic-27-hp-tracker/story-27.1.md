@@ -69,6 +69,57 @@ This story enhances the Phase 3 HP block (`components/character/page1/HitPointBl
 10. Mini-history shows last 10 damage/heal events with type annotations
 11. Keyboard shortcuts work: numbers for input, Enter to apply, Tab to switch tabs
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should apply damage to temp HP first, then current HP (e.g., 10 temp HP + 30 HP, 15 damage = 0 temp HP, 25 HP)`
+- `should clamp current HP at 0 (no negative HP)`
+- `should detect massive damage instant death (remaining damage after 0 HP >= max HP)`
+- `should halve damage for resistance (round down: 7 fire with resistance = 3)`
+- `should double damage for vulnerability (7 fire with vulnerability = 14)`
+- `should set damage to 0 for immunity`
+- `should cap healing at max HP (cannot overheal)`
+- `should reset death saves to 0/0 when healing from 0 HP`
+- `should generate correct HP event log entry with damage type annotation`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should open damage/heal modal when HP number is clicked`
+- `should render "Take Damage" and "Heal" tabs in the modal`
+- `should show real-time preview "Current: 25 -> After: 18 (7 damage)"`
+- `should show instant death warning when massive damage applies`
+- `should display damage type dropdown with all 13 D&D damage types`
+- `should show "(Resisted: half damage)" when damage type matches character resistance`
+- `should add HP on heal tab capped at max HP with preview`
+- `should show "stabilized!" message when healing from 0 HP`
+- `should display mini-history of last 10 damage/heal events`
+- `should switch between Damage/Heal tabs with Tab key`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open HP modal, enter damage amount, select fire damage type with resistance, verify halved damage preview, and apply`
+- `should take lethal damage to 0 HP, see unconscious state, then heal to stabilize`
+- `should trigger massive damage instant death when remaining damage exceeds max HP`
+- `should use keyboard shortcuts: number keys for amount, Enter to apply, Tab to switch tabs`
+
+### Test Dependencies
+- Mock character data with known HP, max HP, temp HP, resistances, vulnerabilities, immunities
+- Mock Zustand character store for HP state management
+- Mock conditions store for unconscious condition badge
+- HP event factory for generating test log entries
+
+## Identified Gaps
+
+- **Error Handling**: No specification for non-numeric input in damage/heal fields; behavior when modal is submitted with 0 or negative values
+- **Loading/Empty States**: No specification for mini-history when no events exist yet
+- **Edge Cases**: Behavior when damage type is not selected but character has resistances; rounding for resistance with odd damage values (e.g., 3 fire with resistance = 1); applying damage when already at 0 HP (should trigger death save failures?)
+- **Accessibility**: No ARIA labels for damage/heal modal tabs; no focus management on modal open; screen reader announcement for HP change results
+- **Mobile/Responsive**: Modal sizing on small screens not specified; number input behavior on mobile (numeric keyboard)
+
 ## Dependencies
 
 - Phase 3 HitPointBlock component (`components/character/page1/HitPointBlock.tsx`)

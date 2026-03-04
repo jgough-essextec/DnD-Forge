@@ -37,3 +37,22 @@ Achieve WCAG 2.1 AA compliance across the entire application. Every interactive 
 - Color contrast compliance with high contrast mode toggle
 - Reduced motion support with system preference detection and in-app toggle
 - Form accessibility with proper error messaging, required field indicators, combobox patterns
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 41.1 — Keyboard Navigation Audit | 2 | 7 | 5 | 14 |
+| 41.2 — Screen Reader Compatibility | 0 | 11 | 3 | 14 |
+| 41.3 — Color Contrast & Visual Accessibility | 3 | 8 | 3 | 14 |
+| 41.4 — Reduced Motion & Animation Preferences | 3 | 7 | 3 | 13 |
+| 41.5 — Form Accessibility | 0 | 8 | 4 | 12 |
+| **Totals** | **8** | **41** | **18** | **67** |
+
+### Key Gaps Found
+- No specification for skip navigation links or landmark regions (main, nav, aside)
+- Actual screen reader testing (VoiceOver, NVDA, TalkBack) not part of automated test plan -- only ARIA attributes verified
+- Windows High Contrast Mode (forced-colors media query) support not specified
+- Combobox library choice (downshift vs. Radix UI) not resolved
+- Error summary at top of forms for screen reader users not specified
+- Conflict resolution between system reduced motion preference and in-app toggle not fully clarified

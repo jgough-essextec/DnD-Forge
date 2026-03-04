@@ -21,6 +21,24 @@ A clean, running project with all dependencies installed, configured, and verifi
 - **Key dependencies:** Zustand, Dexie, framer-motion, dnd-kit, jspdf, lucide-react
 - **Fonts:** Cinzel (headings), Inter (body), JetBrains Mono (monospace)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 1.1 — Initialize Project | 3 | 0 | 3 | 6 |
+| 1.2 — Tailwind/shadcn | 3 | 6 | 3 | 12 |
+| 1.3 — Runtime Dependencies | 9 | 0 | 1 | 10 |
+| 1.4 — Testing Framework | 9 | 0 | 6 | 15 |
+| 1.5 — Routing Shell | 3 | 7 | 8 | 18 |
+| **Totals** | **27** | **13** | **21** | **61** |
+
+### Key Gaps Found
+- Accessibility: No contrast ratios for dark fantasy palette, no keyboard nav specs for navigation, no ARIA labels
+- Mobile/Responsive: Tablet viewport behavior (640px-1024px) undefined, font loading fallback behavior not specified
+- Performance: No build time targets, no HMR speed targets, no bundle size targets
+- Infrastructure: Playwright browser installation dependencies not specified, Node.js version requirement missing
+- Error Handling: Nested error boundaries not specified, coverage threshold enforcement unclear
+
 ## Dependencies
 - **Depends on:** Nothing — this is the first epic
 - **Blocks:** All subsequent epics (2-7) depend on the project scaffolding being complete

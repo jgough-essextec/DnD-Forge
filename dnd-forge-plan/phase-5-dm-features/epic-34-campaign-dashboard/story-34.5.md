@@ -53,6 +53,46 @@ This story creates a party composition analysis panel that maps each character's
 - Special callout badges detect notable party characteristics (e.g., all darkvision, no healer)
 - Analysis is informational and not prescriptive
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should map each class to correct primary and secondary roles based on the defined role mapping`
+- `should detect uncovered roles (no primary or secondary coverage)`
+- `should identify special party characteristics ("All party members have darkvision", "No one has healing magic")`
+- `should handle multiclass characters mapping to multiple roles`
+- `should return correct role coverage indicator (filled, half-filled, empty) per role`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 7 archetypal role cards with character assignments`
+- `should display filled circle for primary, half-filled for secondary, and empty for uncovered roles`
+- `should highlight uncovered roles with amber background`
+- `should display header text "Party Strengths & Potential Gaps" (informational tone)`
+- `should show tooltips explaining each role on hover`
+- `should render special callout badges for notable party characteristics`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display party composition analysis with correct role assignments for a varied party`
+- `should show callout badge "No one has healing magic" when no healer class is present`
+
+### Test Dependencies
+- Class-to-role mapping data file
+- Mock campaign with varied party compositions (balanced, missing healer, all melee)
+- Character fixtures with known classes and subclasses
+- Racial trait data for darkvision detection
+
+## Identified Gaps
+
+- **Edge Cases**: Subclass-specific role mapping only partially defined (e.g., Moon Druid as Tank, but not all subclass mappings listed); behavior with homebrew/custom classes not addressed
+- **Accessibility**: No screen reader descriptions for role coverage indicators (filled/half-filled/empty)
+- **Mobile/Responsive**: No mobile layout specified for role cards grid
+- **Dependency Issues**: Class-to-role mapping data file mentioned as separate from component but not defined as a task dependency
+
 ## Dependencies
 
 - Story 34.1 — Campaign dashboard layout (Party tab host)

@@ -67,6 +67,45 @@ As a developer, I need functions for AC, initiative, speed, HP, and attack bonus
 - `getEncumbrance()` calculates all thresholds correctly
 - Unit tests cover all AC formulas, multiclass HP, speed edge cases, and weapon calculations
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return AC 10 + DEX mod for unarmored character via getArmorClass`
+- `should return AC 10 + DEX mod + CON mod for Barbarian Unarmored Defense via getArmorClass`
+- `should return AC 10 + DEX mod + WIS mod for Monk Unarmored Defense via getArmorClass`
+- `should return base AC + full DEX mod for light armor via getArmorClass`
+- `should return base AC + DEX mod capped at +2 for medium armor via getArmorClass`
+- `should return flat base AC for heavy armor (no DEX) via getArmorClass`
+- `should add +2 for shield on top of any AC formula via getArmorClass`
+- `should add +1 for Defense fighting style when wearing armor via getArmorClass`
+- `should select highest base formula and not stack multiple AC formulas via getArmorClass`
+- `should return DEX mod + Alert feat +5 + Jack of All Trades half proficiency via getInitiative`
+- `should reduce speed by 10ft for heavy armor without STR requirement via getSpeed`
+- `should not reduce Dwarf speed for heavy armor via getSpeed`
+- `should add Barbarian Fast Movement +10ft when not wearing heavy armor via getSpeed`
+- `should return max hit die + CON mod for level 1 HP via getHitPointMax`
+- `should calculate multiclass HP correctly (Fighter 3/Wizard 2) via getHitPointMax`
+- `should return grouped hit dice by class for multiclass via getHitDiceTotal`
+- `should use higher of STR/DEX for finesse weapon via getAttackBonus`
+- `should add +2 for Archery fighting style on ranged attacks via getAttackBonus`
+- `should add +2 Dueling damage for one-handed melee weapon via getWeaponDamage`
+- `should calculate encumbrance thresholds from STR score via getEncumbrance`
+
+### Test Dependencies
+- Character type fixtures with various armor, class, and ability score configurations
+- Weapon and Armor data from Story 3.4
+- Class data from Story 3.2 for feature detection
+- getModifier, getEffectiveAbilityScores from Story 4.1, getProficiencyBonus from Story 4.2
+
+## Identified Gaps
+
+- **Edge Cases**: Medium Armor Master feat raising DEX cap to +3 is mentioned but not in acceptance criteria as a test case
+- **Edge Cases**: Monk Unarmored Movement scaling (+10ft at 2, +15ft at 6, +20ft at 10, etc.) requires level-based lookup but scaling table not specified in test cases
+- **Edge Cases**: Minimum 1 HP per level not explicitly tested
+- **Performance**: AC calculation with many class features may need optimization for real-time updates
+
 ## Dependencies
 - **Depends on:** Story 2.3 (HitDie, FightingStyle, ClassSelection), Story 2.4 (Weapon, Armor, Encumbrance, EquipmentItem), Story 2.7 (Speed), Story 2.8 (Character), Story 3.2 (class data for features), Story 3.4 (armor/weapon data), Story 4.1 (getModifier, getEffectiveAbilityScores), Story 4.2 (getProficiencyBonus)
 - **Blocks:** Story 4.8 (validation checks calculated stats), Epic 5 (stored calculated values), Epic 6 (stores trigger recalculation)

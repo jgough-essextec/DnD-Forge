@@ -35,6 +35,32 @@ As a developer, I need the complete SRD spell list as a searchable, filterable d
 - At least 20 spells have been manually verified against the SRD source for accuracy
 - Concentration and ritual flags are correctly set for all spells
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export spells array with approximately 300 spells`
+- `should have every spell pass TypeScript type checking against Spell interface`
+- `should have Fireball with level 3, school Evocation, and concentration false`
+- `should have Shield with casting time reaction and trigger specified`
+- `should have Cure Wounds on Cleric, Druid, Bard, and Paladin spell lists`
+- `should return correct spells for getSpellsByClass('wizard')`
+- `should filter getSpellsByClass with maxLevel parameter`
+- `should return matching spells for searchSpells('fire') text search`
+- `should filter spells by concentration flag in searchSpells`
+- `should filter spells by ritual flag in searchSpells`
+
+### Test Dependencies
+- Spell type interface from Story 2.5
+- Import via `@/data/spells` path alias
+
+## Identified Gaps
+
+- **Edge Cases**: Spells with variable damage types (e.g., Chromatic Orb) need accommodation in the damage field
+- **Performance**: ~300 spells searched with `searchSpells()` may need indexing for fast filtering in the UI
+- **Edge Cases**: Cantrip scaling at character levels 5, 11, 17 is described in text but not structured as data
+
 ## Dependencies
 - **Depends on:** Story 2.5 (Spell, SpellSchool, SpellLevel, CastingTime, SpellRange, SpellComponents, SpellDuration types)
 - **Blocks:** Story 4.4 (Spellcasting calculations reference spell data), Epic 6 Story 6.2 (Wizard store spell selections)

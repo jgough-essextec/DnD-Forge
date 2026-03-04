@@ -34,6 +34,52 @@ As a player, I need to see my AC, initiative bonus, and speed prominently displa
 - Edit mode allows manual AC override, custom initiative bonus, and speed editing
 - Class-specific AC formulas (Barbarian, Monk) are correctly detected and applied
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute AC with default formula (10 + DEX mod) when no armor equipped`
+- `should compute AC with light armor formula (armor base + DEX mod)`
+- `should compute AC with medium armor formula (armor base + DEX mod capped at 2)`
+- `should compute AC with heavy armor formula (armor base only, no DEX)`
+- `should compute AC with shield bonus (+2)`
+- `should compute Barbarian Unarmored Defense (10 + DEX + CON)`
+- `should compute Monk Unarmored Defense (10 + DEX + WIS)`
+- `should compute initiative as DEX modifier plus any class/feat bonuses`
+- `should generate AC tooltip breakdown string for each armor type`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render three stat boxes (AC, Initiative, Speed) in a horizontal row with icons`
+- `should display large numeric values with labels below each box`
+- `should show AC tooltip with full computation breakdown on hover`
+- `should roll initiative (1d20 + modifier) when clicking initiative box in view mode`
+- `should display walking speed with dropdown for additional movement types`
+- `should provide manual AC override toggle in edit mode`
+- `should show warning indicator when AC is manually overridden`
+- `should allow custom initiative bonus input in edit mode`
+- `should allow speed editing in edit mode`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click initiative box, see dice roll, and display the result inline`
+
+### Test Dependencies
+- Mock character data for different armor types (light, medium, heavy, unarmored)
+- Mock character data for Barbarian and Monk classes (special AC formulas)
+- Mock dice engine for initiative roll
+- Mock calculation engine for AC, initiative, speed computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for speed reduction from heavy armor without sufficient STR (e.g., Chain Mail requires STR 13)
+- **Accessibility**: No ARIA labels for stat boxes, no keyboard interaction for initiative roll, no screen reader support for tooltip breakdown
+- **Error Handling**: No specification for manual AC override validation (minimum/maximum values)
+
 ## Dependencies
 - Story 17.2 (Ability Score Blocks) — AC uses DEX/CON/WIS modifiers, initiative uses DEX
 - Story 18.3 (Equipment) — AC depends on equipped armor and shield

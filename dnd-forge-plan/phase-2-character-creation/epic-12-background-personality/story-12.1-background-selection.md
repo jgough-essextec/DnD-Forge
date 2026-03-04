@@ -40,6 +40,46 @@ As a player, I need to choose a background that gives my character a history and
 - Tool proficiency choices show a dropdown selector
 - Only one background can be selected at a time
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should detect skill overlap between background-granted skills and existing race/class skills`
+- `should correctly identify replacement skill eligibility from full skill list`
+- `should exclude already-known languages from available language choices`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display all SRD backgrounds in a selectable card/list grid`
+- `should show name, skill proficiencies, tool proficiencies, languages, and brief description on each card`
+- `should expand to show full details (feature, equipment, personality tables) when a background is selected`
+- `should highlight skill overlap in red when background skill conflicts with existing race/class skills`
+- `should show replacement skill picker for each overlap allowing selection from any skill`
+- `should show LanguagePicker with already-known languages excluded for backgrounds with language choices`
+- `should show tool proficiency dropdown for backgrounds with tool choices (e.g., Guild Artisan)`
+- `should allow selecting only one background at a time`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select Criminal background for a Rogue with Stealth, detect overlap, and choose replacement skill`
+- `should select Acolyte background and choose 2 extra languages from the language picker`
+
+### Test Dependencies
+- Mock SRD background data (all backgrounds with proficiencies, languages, equipment)
+- Mock wizard store with pre-selected race and class skills for overlap detection
+- Mock LanguagePicker component from Epic 9
+- Test fixtures for overlap scenarios (e.g., Elf Perception + Outlander Perception)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if background data is missing or incomplete
+- **Loading/Empty States**: No loading state while background data loads
+- **Accessibility**: No ARIA labels for background cards, overlap highlight, or replacement picker
+- **Edge Cases**: Double overlap (both background skills overlap with existing skills) is not explicitly addressed
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 4), Epic 9 Story 9.4 (LanguagePicker component for reuse), Epic 9 Story 9.5 (race skill data for overlap detection), Epic 10 Story 10.6 (class skill data for overlap detection), Phase 1 SRD background data

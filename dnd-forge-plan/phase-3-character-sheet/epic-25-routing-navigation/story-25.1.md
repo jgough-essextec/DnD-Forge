@@ -46,6 +46,45 @@ As a developer, I need all Phase 3 pages properly routed with clean URLs and nav
 - Browser back button navigates correctly through the history stack
 - Edit mode to view mode transition is reflected in the URL
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should extract characterId from URL params using useParams()`
+- `should determine navigation direction (forward/back) for animation selection`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should route "/" to the Character Gallery (HomePage)`
+- `should route "/character/:id" to the character sheet in view mode`
+- `should route "/character/:id/edit" to the character sheet in edit mode`
+- `should route "/share#[data]" to the shared character view`
+- `should route "/import" to the import dialog/page`
+- `should show 404 "Character not found" page with "Go Home" button for invalid character IDs`
+- `should reflect edit mode in the URL when toggling mode`
+- `should navigate back correctly via browser back button`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate from gallery to character sheet to edit mode and back using browser history`
+- `should show 404 page for non-existent character ID and navigate home`
+- `should display page transition animations (slide-in) when navigating between pages`
+
+### Test Dependencies
+- Mock React Router with test routes
+- Mock IndexedDB with character data (for valid IDs) and without (for 404 testing)
+- Mock framer-motion AnimatePresence for transition testing
+- Mock character sheet and gallery page components
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling corrupted URL parameters (non-UUID character IDs)
+- **Accessibility**: No specification for focus management on page transitions, no screen reader announcement of page changes
+- **Edge Cases**: No specification for deep linking behavior (sharing a direct character sheet URL with someone who has the app)
+
 ## Dependencies
 - Phase 2 routing (creation wizard route already exists)
 - Epic 17-19 (Character Sheet pages) — route targets

@@ -36,6 +36,29 @@ As a developer, I need type-safe representations of abilities, skills, and their
 - `PassiveScore` can represent passive scores for any skill, not just Perception
 - `Alignment` includes all 9 standard alignments plus 'unaligned'
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define AbilityName union type with exactly 6 abilities (strength, dexterity, constitution, intelligence, wisdom, charisma)`
+- `should define SkillName union type with exactly 18 skills`
+- `should define SKILL_ABILITY_MAP with all 18 skills mapped to correct governing ability`
+- `should map acrobatics to dexterity in SKILL_ABILITY_MAP`
+- `should map athletics to strength in SKILL_ABILITY_MAP`
+- `should map arcana to intelligence in SKILL_ABILITY_MAP`
+- `should define SkillProficiency with proficient and expertise boolean fields`
+- `should define Alignment with all 9 standard alignments plus unaligned`
+- `should have SKILL_ABILITY_MAP typed as Record<SkillName, AbilityName> with no missing entries`
+- `should define PassiveScore supporting any SkillName, not just Perception`
+
+### Test Dependencies
+- No mock data needed — these are type compilation and constant verification tests
+
+## Identified Gaps
+
+No gaps identified.
+
 ## Dependencies
 - **Depends on:** Story 1.1 (TypeScript configured with strict mode)
 - **Blocks:** Story 2.2 (Race types use AbilityScores), Story 2.3 (Class types use SkillName, AbilityName), Story 2.8 (Character master type), Story 4.1 (Ability score calculations), Story 4.2 (Skill calculations)

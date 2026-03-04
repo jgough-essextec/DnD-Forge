@@ -57,6 +57,55 @@ As a player, I need a settings page or panel to configure my preferences (dice s
 - "About" section shows version, OGL acknowledgments, SRD link, and credits
 - Settings changes take effect immediately without requiring a page reload
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should serialize preferences to IndexedDB-compatible format`
+- `should validate auto-save interval options (500ms, 1s, 2s, manual)`
+- `should validate ability score method options (Standard Array, Point Buy, Rolling)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render settings page accessible from nav bar gear icon`
+- `should display all listed settings with correct control types (toggles, dropdowns)`
+- `should persist Default Player Name to IndexedDB preferences`
+- `should toggle Dice Sound Effects on/off`
+- `should change Dice Animation Speed (fast/normal/dramatic)`
+- `should change Auto-Save Interval setting`
+- `should change Default Ability Score Method setting`
+- `should toggle Show Dice Roll Results Inline`
+- `should toggle Reduced Motion and disable all animations`
+- `should toggle Dark/Light Mode theme`
+- `should change Gallery Default Sort setting`
+- `should render "Clear All Data" danger zone requiring "DELETE" confirmation`
+- `should not execute clear when incorrect text is typed`
+- `should delete all data from IndexedDB when "DELETE" is correctly typed and confirmed`
+- `should render "Export All Data" button that exports entire database`
+- `should display About section with version, OGL acknowledgments, SRD link, credits`
+- `should apply settings changes immediately without page reload`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should change a setting, navigate away, return, and verify the setting persisted`
+- `should toggle Reduced Motion and verify animations are disabled across the app`
+
+### Test Dependencies
+- Mock IndexedDB preferences table
+- Mock dice engine for dice-related settings
+- Mock Zustand stores for theme and preference state
+- Mock auto-save system from Story 20.2
+
+## Identified Gaps
+
+- **Error Handling**: No specification for IndexedDB preferences write failure
+- **Accessibility**: No specification for settings form ARIA labels, no keyboard navigation for settings controls
+- **Edge Cases**: No specification for "Export All Data" with very large databases (many characters with avatars)
+- **Loading/Empty States**: No specification for settings loading state while preferences are read from IndexedDB
+
 ## Dependencies
 - Phase 1 IndexedDB preferences table for storage
 - Phase 1 dice engine (affected by dice settings)

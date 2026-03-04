@@ -34,6 +34,36 @@ As a developer, I need all ability score data persisted and validated. This stor
 - All ability score data is persisted to the Zustand wizard store (base values, method, racial bonuses, raw rolls)
 - Progress sidebar shows compact modifier badges for all 6 abilities
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false with error if any ability does not have an assigned value`
+- `should return valid:false for Standard Array if values are not a valid permutation of [15, 14, 13, 12, 10, 8]`
+- `should return valid:false for Standard Array if duplicate values exist`
+- `should return warning for Point Buy if fewer than 27 points are spent`
+- `should return valid:false for Rolling if not all 6 rolls are completed`
+- `should return valid:false for Rolling if not all 6 totals are assigned to abilities`
+- `should return valid:true when all selections are complete for each method`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist ability scores, method, racial bonuses, and raw rolls to wizard store`
+- `should display compact modifier badges in progress sidebar for all 6 abilities`
+- `should restore selected method and all assignments when back-navigating to this step`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Test fixtures for complete/incomplete ability score data per method
+- Mock raw roll data for rolling method
+
+## Identified Gaps
+
+- **Edge Cases**: Point Buy with fewer than 27 points spent is a warning, not error, but the warning vs. error distinction is not consistently enforced across all test paths
+- **Dependency Issues**: Progress sidebar modifier display compactness on mobile is mentioned but no specific character/width limits defined
+
 ## Dependencies
 
 - **Depends on:** Stories 11.1-11.5 (all ability score UI must be built), Story 8.1 (wizard shell consumes the validate function), Phase 1 Zustand wizard store

@@ -44,6 +44,53 @@ As a player, I need to see my equipped weapons with computed attack bonuses and 
 - "Add Attack" picker offers equipped weapons, attack spells, and custom entries
 - Freeform notes area displays below the attack rows
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute melee attack bonus as proficiency + STR modifier`
+- `should compute ranged attack bonus as proficiency + DEX modifier`
+- `should compute finesse attack bonus as proficiency + higher of STR/DEX`
+- `should compute weapon damage as damage dice + ability modifier + damage type`
+- `should format versatile weapon damage showing both one-handed and two-handed values`
+- `should generate attack rows from equipped weapons list`
+- `should generate cantrip attack rows for spellcasters with spell attack bonus`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render attacks table with columns: Attack Name, Attack Bonus, Damage/Type`
+- `should auto-populate attack rows from equipped weapons`
+- `should display correct attack bonus for melee, ranged, and finesse weapons`
+- `should display damage with dice, modifier, and type (e.g., "1d8 + 3 slashing")`
+- `should show versatile weapon damage for both one-handed and two-handed`
+- `should display spellcaster attack cantrips below weapon rows`
+- `should roll attack (1d20 + bonus) and damage when clicking an attack row in view mode`
+- `should allow adding/removing/editing attack rows in edit mode`
+- `should show "Add Attack" picker with equipped weapons, attack spells, and custom entries`
+- `should render freeform notes area below attack rows`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click an attack row, see combined attack roll and damage roll results displayed inline`
+- `should add a custom attack in edit mode and see it appear in the attacks table`
+
+### Test Dependencies
+- Mock character data with equipped weapons (melee, ranged, finesse, versatile)
+- Mock character data for spellcaster with attack cantrips
+- Mock SRD weapon data for properties and damage dice
+- Mock dice engine for controlled attack and damage rolls
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens when no weapons are equipped (empty attacks table display)
+- **Edge Cases**: No specification for Monk weapon handling (DEX instead of STR) beyond a note
+- **Accessibility**: No ARIA labels for the attacks table, no keyboard interaction for attack rolls, no screen reader support for roll results
+- **Loading/Empty States**: No visual treatment for empty attacks section (no equipped weapons, no spells)
+
 ## Dependencies
 - Story 17.2 (Ability Score Blocks) — attack bonuses depend on STR/DEX modifiers
 - Story 17.10 (Proficiency Bonus) — attack bonus includes proficiency

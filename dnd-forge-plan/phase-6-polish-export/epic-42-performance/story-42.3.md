@@ -44,6 +44,47 @@ As a player with many characters or a DM with a large party, I need the app to r
 - Avatar images use `loading="lazy"` and only decode when visible
 - No unnecessary re-renders observed in React DevTools Profiler for static data
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should cache calculation engine results keyed on characterId-lastModified`
+- `should invalidate calculation cache when character data changes`
+- `should debounce spell search filtering by 150ms`
+- `should debounce skill matrix highlighting by 150ms`
+- `should debounce gallery search by 150ms`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should wrap CharacterCard, AbilityScoreBlock, SkillRow, SpellCard, CombatantRow in React.memo()`
+- `should use useMemo() for derived calculations with proper dependencies`
+- `should activate virtual scrolling when gallery has 50+ characters`
+- `should use loading="lazy" on avatar images in the gallery`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should scroll gallery with 100+ characters at 60fps with virtual scrolling`
+- `should load all gallery characters in a single IndexedDB query (not per-card)`
+- `should filter gallery search results within 200ms on 100+ characters`
+- `should show no unnecessary re-renders in React DevTools Profiler for static data`
+
+### Test Dependencies
+- Character generation script for 100+ characters
+- Virtual scrolling library (react-window or @tanstack/virtual)
+- React DevTools Profiler integration for re-render detection
+- IndexedDB query monitoring
+- Performance measurement utilities (fps counter, timing)
+
+## Identified Gaps
+
+- **Performance**: No specification for maximum memory usage with 100+ characters and virtual scrolling
+- **Edge Cases**: Behavior when switching between virtual and non-virtual modes (crossing 50 character threshold)
+- **Dependency Issues**: Choice between react-window (~6KB) and @tanstack/virtual (~15KB) not finalized
+- **Edge Cases**: Phase 3 OQ6 diff-based undo decision not resolved — memory impact at scale unclear
+
 ## Dependencies
 
 - Story 42.1 (bundle analysis — virtual scrolling library adds to bundle size)

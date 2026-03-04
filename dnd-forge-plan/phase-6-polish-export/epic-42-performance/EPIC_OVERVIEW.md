@@ -51,3 +51,23 @@ Meet all non-functional performance requirements — FCP <1.5s, TTI <3s, Lightho
 - Memoized calculation engine
 - Lighthouse scores >90 in all categories
 - Stress test results for 100+ characters, large campaigns, long combats
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 42.1 — Bundle Size Analysis & Reduction | 4 | 0 | 6 | 10 |
+| 42.2 — SRD Data Lazy Loading | 7 | 4 | 3 | 14 |
+| 42.3 — Rendering Performance | 5 | 4 | 4 | 13 |
+| 42.4 — Core Web Vitals & Lighthouse | 0 | 0 | 10 | 10 |
+| 42.5 — Stress Testing | 1 | 0 | 9 | 10 |
+| **Totals** | **17** | **8** | **32** | **57** |
+
+### Key Gaps Found
+- Maximum acceptable initial Core chunk size not specified
+- Error fallback for code-split chunk load failures not defined
+- Three.js dice upgrade decision and framer-motion replacement decisions pending (bundle impact)
+- Virtual scrolling library choice (react-window vs. @tanstack/virtual) not finalized
+- Memory usage ceiling for 100+ characters not specified
+- Phase 3 OQ6 diff-based undo decision not resolved -- memory impact at scale unclear
+- SRD data tier individual load time targets not defined

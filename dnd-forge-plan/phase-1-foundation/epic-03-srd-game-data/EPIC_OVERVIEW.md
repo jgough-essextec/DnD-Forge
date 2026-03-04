@@ -22,6 +22,27 @@ All D&D 5e Systems Reference Document data is structured as static JSON files, i
 - **Utility functions:** `getSpellsByClass()`, `searchSpells()`, `getAvailableFeats()` for data querying
 - **Validation:** Every data entry must conform to its type interface; cross-check against SRD source for accuracy
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 3.1 — Race Data Files | 10 | 0 | 0 | 10 |
+| 3.2 — Class Data Files | 10 | 0 | 0 | 10 |
+| 3.3 — Spell Database | 10 | 0 | 0 | 10 |
+| 3.4 — Equipment Database | 10 | 0 | 0 | 10 |
+| 3.5 — Background Data | 8 | 0 | 0 | 8 |
+| 3.6 — Feat Data | 9 | 0 | 0 | 9 |
+| 3.7 — Reference Tables & Constants | 10 | 0 | 0 | 10 |
+| **Totals** | **67** | **0** | **0** | **67** |
+
+### Key Gaps Found
+- Cross-referencing between data files: equipment packs referencing adventuring gear IDs, background equipment referencing item IDs — linkage mechanism not specified
+- Dragonborn Breath Weapon damage scaling storage format unclear
+- Spell data: cantrip scaling at character levels 5, 11, 17 stored as text only, not structured data
+- Complex class features (Wild Shape, Rage) need separate description files but linking mechanism not specified
+- Full PHB feat list vs SRD-only coverage ambiguity
+- CONDITION_EFFECTS structured format schema not defined
+
 ## Dependencies
 - **Depends on:** Epic 2 (Type System) — data files must conform to the defined types
 - **Blocks:** Epic 4 (Calculation Engine) — calculations consume SRD data

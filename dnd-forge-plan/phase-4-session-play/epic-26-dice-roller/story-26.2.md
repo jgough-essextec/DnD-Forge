@@ -65,6 +65,52 @@ Each die type has a distinct shape and color scheme:
 8. Reduced Motion preference skips tumble animation and uses fade-in
 9. Animation speed is configurable (Fast 0.5s, Normal 1.2s, Dramatic 2.5s)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate random 3D rotation keyframes for tumble animation`
+- `should calculate stagger offset timing for multiple dice (50-100ms per die)`
+- `should return correct shape/color config for each die type (d4=green pyramid, d6=white cube, etc.)`
+- `should determine animation duration based on speed setting (Fast=0.5s, Normal=1.2s, Dramatic=2.5s)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render distinct 3D shapes for each of the 7 die types using CSS transforms`
+- `should display result total prominently after animation completes`
+- `should show "Roll: [sum] + [mod] = [total]" format when modifier is present`
+- `should highlight d20 with gold glow when natural 20 is rolled`
+- `should highlight d20 with red glow when natural 1 is rolled`
+- `should skip tumble animation and use fade-in when reduced motion is enabled`
+- `should not play sound effects when sound is toggled off in settings`
+- `should render multiple dice with scattered positioning within the tray`
+- `should show both d20 values with kept one highlighted for advantage/disadvantage rolls`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should animate a d20 roll through tumble sequence and settle to show result`
+- `should display critical hit gold glow and play chime on natural 20`
+- `should respect reduced motion OS preference and skip tumble animation`
+- `should change animation speed through settings and verify timing`
+
+### Test Dependencies
+- Mock Phase 1 dice engine to return predetermined roll results (e.g., natural 20, natural 1)
+- Mock Audio API for sound effect testing
+- Mock `prefers-reduced-motion` media query
+- CSS animation testing utilities
+- Mock settings store for sound/speed preferences
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if CSS 3D transforms are not supported by the browser
+- **Loading/Empty States**: No specification for dice tray appearance between rolls (after animation completes, before next roll)
+- **Edge Cases**: Behavior when rolling large numbers of dice (e.g., 8d6 fireball) not fully defined for tray layout/scatter; d100 percentile die visual design not specified
+- **Accessibility**: No ARIA live region for announcing roll results to screen readers; no specification for result announcement timing
+- **Performance**: No frame rate target for CSS 3D animations; no maximum concurrent dice animation count
+
 ## Dependencies
 
 - Story 26.1 (Dice Roller Panel) provides the dice tray container

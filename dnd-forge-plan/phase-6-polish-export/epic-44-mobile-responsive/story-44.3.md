@@ -43,6 +43,41 @@ As a player using a touchscreen, I need all interactions to feel native and resp
 - Numeric inputs (HP, XP, gold) trigger the numeric keyboard on mobile
 - Dice expression input triggers the text keyboard with autocomplete support
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render proficiency circles with expanded touch area meeting 44x44px minimum via transparent padding`
+- `should render spell slot circles with expanded touch area meeting 44x44px minimum`
+- `should render death save circles with expanded touch area meeting 44x44px minimum`
+- `should set inputmode="numeric" on HP damage, XP amount, and gold inputs`
+- `should set inputmode="text" on dice expression input with autocomplete support`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should verify all interactive elements meet 44x44px minimum touch target`
+- `should swipe-to-dismiss bottom sheet (dice roller on mobile) without conflicting with iOS Safari swipe-to-go-back`
+- `should trigger long-press interactions (die quantity, re-roll, stat tooltip) with 300ms delay`
+- `should not trigger OS context menu on long-press of app elements`
+- `should scroll nested areas (spell list, roll history) with clear boundaries without leaking scroll to parent`
+- `should trigger numeric keyboard on mobile for HP/XP/gold inputs`
+
+### Test Dependencies
+- Touch event simulation for Playwright tests
+- Mobile device emulation with touch support
+- All interactive elements (proficiency circles, spell slots, death saves, condition badges, skill matrix)
+- Bottom sheet components (dice roller, HP widget on mobile)
+- Long-press event handlers with 300ms delay
+
+## Identified Gaps
+
+- **Edge Cases**: navigator.vibrate not supported on iOS — progressive enhancement mentioned but no fallback behavior specified
+- **Edge Cases**: Scroll behavior with overscroll-behavior: contain not tested across all browsers
+- **Mobile/Responsive**: Conflict between horizontal swipe gestures and iOS Safari swipe-to-go-back not fully mitigated
+- **Accessibility**: Touch target expansion may affect visual spacing on very small screens (360px)
+
 ## Dependencies
 
 - All Phase 1-5 features complete (touch interaction audit spans entire app)

@@ -42,6 +42,34 @@ As a developer, I need a persistent store for character creation wizard state so
 - The store clears when the browser tab is closed (sessionStorage, not localStorage)
 - Tests verify persistence across navigation, complete reset, and finalization producing a valid character
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should persist wizard state to sessionStorage via Zustand persist middleware`
+- `should survive simulated route navigation (state persists after re-mount)`
+- `should clear all wizard state back to defaults via reset`
+- `should update raceSelection via setRace action`
+- `should update classSelection via setClass action`
+- `should update abilityScores and method via setAbilityScores action`
+- `should update backgroundSelection via setBackground action`
+- `should navigate to any step via setStep action`
+- `should assemble valid Character object from wizard state via finalize`
+- `should run character through calculation engine in finalize to populate derived stats`
+- `should return Character ready for database save via finalize`
+
+### Test Dependencies
+- Mock sessionStorage for Zustand persist middleware testing
+- Mock calculation engine for finalize testing
+- RaceSelection, ClassSelection, AbilityScores, BackgroundSelection type fixtures
+
+## Identified Gaps
+
+- **Error Handling**: No specification for finalize behavior when wizard state is incomplete (missing required selections)
+- **Edge Cases**: Changing class after spell selection should invalidate spell choices but cascading reset is not specified in acceptance criteria
+- **Edge Cases**: WizardState.equipmentSelections is `any[]`; finalize must handle this loosely-typed field
+
 ## Dependencies
 - **Depends on:** Story 2.2 (RaceSelection), Story 2.3 (ClassSelection), Story 2.1 (AbilityScores), Story 2.6 (BackgroundSelection), Story 2.8 (Character), Story 2.10 (WizardState), Epic 4 (calculation engine for finalize)
 - **Blocks:** Phase 2 Character Creation Wizard UI

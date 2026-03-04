@@ -32,6 +32,46 @@ As a player, I need to see my six ability scores with their modifiers in the cla
 - Inspiration toggle is present at the top of the left column
 - Layout matches the classic D&D 5e sheet ability score arrangement
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute ability modifier as floor((score - 10) / 2) for all valid scores`
+- `should compute total ability score as base + racial bonus`
+- `should format modifier with sign ("+3", "-1", "+0")`
+- `should generate tooltip breakdown string "Base N + Racial +N = N (Modifier: +N)"`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render six ability score blocks vertically (STR, DEX, CON, INT, WIS, CHA)`
+- `should display modifier prominently and base score in a smaller circle`
+- `should apply accent-gold color for positive modifiers and accent-red for negative`
+- `should show tooltip with full breakdown on hover`
+- `should render Inspiration toggle at the top of the left column`
+- `should toggle Inspiration between filled and empty states on click`
+- `should render inline numeric editor for base score in edit mode`
+- `should display racial bonus as non-editable badge in edit mode`
+- `should recalculate modifier in real-time when base score changes in edit mode`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should edit an ability score base value and see modifier, saves, and skills update in real-time`
+
+### Test Dependencies
+- Mock character data with varied ability scores (high, low, neutral)
+- Mock AbilityScoreDisplay shared component from Phase 2
+- Mock calculation engine for modifier computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for minimum/maximum ability score values (3-30 range validation) during editing
+- **Accessibility**: No ARIA labels for ability score blocks, no keyboard navigation between scores, no screen reader announcement for modifier changes
+- **Error Handling**: No specification for invalid numeric input in edit mode (letters, decimals, out-of-range)
+
 ## Dependencies
 - Phase 1 calculation engine for modifier computation
 - Phase 2 AbilityScoreDisplay shared component

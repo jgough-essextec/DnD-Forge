@@ -50,6 +50,35 @@ As a developer, I need Lighthouse scores above 90 in all categories. This story 
 - Proper `<meta>` tags and `<title>` on each page
 - Open Graph tags present for share link previews
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should achieve Lighthouse Performance score >90 on gallery page`
+- `should achieve Lighthouse Performance score >90 on character sheet page`
+- `should achieve Lighthouse Accessibility score >90 on all audited pages`
+- `should achieve Lighthouse Best Practices score >90 on all audited pages`
+- `should achieve Lighthouse SEO score >90 on all audited pages`
+- `should achieve FCP <1.5s with critical CSS inlined and font-display: swap`
+- `should achieve LCP <2.5s with hero fonts and critical images preloaded`
+- `should achieve CLS <0.1 with explicit dimensions on all images and skeleton placeholders`
+- `should achieve INP <200ms for dice rolls, button clicks, and form inputs`
+- `should have no console errors in production build`
+
+### Test Dependencies
+- Lighthouse CI integration for automated scoring
+- Production build deployed to test environment
+- Performance measurement on gallery, character sheet, creation wizard, and campaign dashboard pages
+- Multiple Lighthouse runs for median score calculation (3 runs per page)
+
+## Identified Gaps
+
+- **Performance**: No specification for Lighthouse score targets per individual page (just >90 overall)
+- **Edge Cases**: Lighthouse scores can vary significantly between runs — no tolerance or retry strategy specified
+- **Error Handling**: No specification for what to do if Lighthouse scores are below target after all optimizations
+- **Dependency Issues**: SEO meta tags and Open Graph tags may not be relevant for a local-first PWA with no public URL
+
 ## Dependencies
 
 - Stories 42.1-42.3 (bundle splitting, SRD lazy loading, rendering optimization — measure AFTER optimizations)

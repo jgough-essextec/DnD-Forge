@@ -57,6 +57,32 @@ As a developer, I need the complete Character interface that aggregates all sub-
 - `CharacterExport` extends Character with `formatVersion` for import/export compatibility
 - `CharacterValidation` classifies issues as errors (must fix) or warnings (informational)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define Character interface with all required identity fields (id, name, createdAt, updatedAt, version)`
+- `should define Character.classes as array of ClassSelection to support multiclassing`
+- `should define Character with inspiration boolean flag`
+- `should define Character with version number for optimistic concurrency`
+- `should define CharacterSummary with only gallery-card fields (id, name, race, class, level, hp, ac)`
+- `should define CharacterExport extending Character with formatVersion string`
+- `should define CharacterValidation as array of { field, severity, message }`
+- `should define Character with all combat stat fields (hpMax, hpCurrent, tempHp, hitDiceTotal, hitDiceUsed)`
+- `should define Character with optional armorClassOverride and initiativeBonus`
+- `should define Character with attunedItems field`
+
+### Test Dependencies
+- No mock data needed — these are type compilation tests
+- Depends on all types from Stories 2.1 through 2.7
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for Character.attunedItems maximum of 3 at type level (enforced only at runtime via validation)
+- **Edge Cases**: Character.abilityScoreMethod should be a union type (standard/pointBuy/rolled) rather than a string for type safety
+- **Dependency Issues**: Character aggregates all sub-types; any change to sub-types will ripple to this interface
+
 ## Dependencies
 - **Depends on:** Story 2.1 (AbilityScores, Alignment, SkillProficiency, SavingThrow), Story 2.2 (RaceSelection), Story 2.3 (ClassSelection, Feature), Story 2.4 (EquipmentItem, Currency), Story 2.5 (SpellcastingData), Story 2.6 (BackgroundSelection, CharacterDescription), Story 2.7 (ConditionInstance, DeathSaves, Speed)
 - **Blocks:** Epic 5 (Database stores Character), Epic 6 (Stores manage Character), Story 4.8 (Character validation)

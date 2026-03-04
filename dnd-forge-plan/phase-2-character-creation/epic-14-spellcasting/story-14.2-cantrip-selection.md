@@ -47,6 +47,43 @@ As a spellcasting player, I need to choose my cantrips (at-will spells) from my 
 - Clicking a cantrip card reveals full spell details
 - The correct number of cantrips must be selected for the class before proceeding
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct cantrip count for each caster class (Bard:2, Cleric:3, Druid:2, Sorcerer:4, Warlock:2, Wizard:3)`
+- `should filter cantrips from spell data (level 0, matching class spell list)`
+- `should exclude racial cantrips from class cantrip count`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display spellcasting summary showing class, cantrip count, spell count, and spellcasting ability`
+- `should show all cantrips available to the selected class in a selectable card grid`
+- `should update live counter "N of M cantrips selected" as player selects/deselects`
+- `should pre-select and lock racial cantrips with From Race label (Tiefling: Thaumaturgy, High Elf: wizard cantrip)`
+- `should display cantrip card with name, school icon, casting time, range, and description preview`
+- `should reveal full spell details when cantrip card is clicked`
+- `should enforce exact cantrip count for the class before allowing advancement`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select 4 cantrips for Sorcerer and see correct count validation`
+- `should see Tiefling racial cantrip Thaumaturgy pre-locked and select 3 additional Cleric cantrips`
+
+### Test Dependencies
+- Mock SRD spell data filtered to cantrips (level 0) per class
+- Mock racial cantrip data from wizard store (Tiefling, High Elf, Forest Gnome)
+- Mock class data for cantrip counts and spellcasting ability
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the spell data has no cantrips for a class
+- **Loading/Empty States**: No loading state while cantrip data is filtered from spell database
+- **Accessibility**: No ARIA labels for cantrip cards, selection counter, or From Race label
+
 ## Dependencies
 
 - **Depends on:** Story 14.1 (conditional rendering — this only shows for casting classes), Epic 9 Story 9.5 (racial cantrip data from race selection), Epic 10 Story 10.6 (class determines cantrip list and count), Phase 1 SRD spell data (cantrips filtered by class and level 0)

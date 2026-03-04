@@ -46,6 +46,46 @@ As a spellcasting player, I need to select my known or prepared spells from my c
 - Spell list is browsable, searchable, and filterable with a detail pane for selected spells
 - The correct number of spells must be selected per the class's system before proceeding
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute prepared spell count as ability modifier + class level (minimum 1)`
+- `should correctly return known spell counts for Bard (4), Sorcerer (2), Warlock (2)`
+- `should identify Cleric domain spells as always-prepared and exclude from prepared limit`
+- `should return 6 as Wizard spellbook spell count at level 1`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display "Choose N spells to learn" and enforce exact count for known casters (Bard, Sorcerer, Warlock)`
+- `should display full class spell list as reference for prepared casters (Cleric, Druid) with preparation explanation`
+- `should display two-step Wizard flow: choose 6 spellbook spells, then choose prepared spells from spellbook`
+- `should display computed Spells Prepared count with formula breakdown`
+- `should show Cleric domain spells as always-prepared with Domain Spell label (non-deselectable)`
+- `should explain Warlock Pact Magic (short rest recharge, 1 slot at level 1)`
+- `should render browsable, searchable, filterable spell list with detail pane`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select 4 known spells for Bard and advance`
+- `should select 6 spellbook spells for Wizard, then select prepared spells from the spellbook`
+- `should see Cleric Life Domain spells (Bless, Cure Wounds) auto-prepared and select additional prepared spells`
+
+### Test Dependencies
+- Mock SRD spell data (level 1 spells per class list)
+- Mock ability modifier for prepared spell count computation
+- Mock Cleric domain spell data from subclass selection
+- Test fixtures for each spellcasting system (known, prepared, spellbook)
+
+## Identified Gaps
+
+- **Edge Cases**: Wizard prepared spell count with very low INT modifier (e.g., -1) should enforce minimum of 1 but this edge is not tested
+- **Accessibility**: No ARIA labels for spell list browser, detail pane, or search/filter controls
+- **Loading/Empty States**: No loading state for spell list filtering
+
 ## Dependencies
 
 - **Depends on:** Story 14.2 (SpellStep container and spellcasting summary), Epic 10 Story 10.4 (Cleric domain spells from subclass), Epic 11 Story 11.6 (spellcasting ability modifier for prepared count), Phase 1 SRD spell data

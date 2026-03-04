@@ -36,6 +36,38 @@ As a developer, I need debounced auto-save for character edits and user preferen
 - Default preferences are sensible and applied on first load
 - Tests verify debounce behavior and change coalescing
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should debounce auto-save by 500ms (default) via useAutoSave`
+- `should coalesce multiple rapid changes into single database write via useAutoSave`
+- `should not trigger save if character has not changed via useAutoSave`
+- `should return stored preferences via getPreferences`
+- `should create and return default preferences if none exist via getPreferences`
+- `should merge partial updates into existing preferences via updatePreferences`
+- `should have sensible defaults (diceAnimations=true, theme=dark, etc.)`
+- `should clean up debounce timer on component unmount`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should trigger auto-save after 500ms delay when character changes`
+- `should cancel pending save on unmount without errors`
+
+### Test Dependencies
+- `fake-indexeddb` for IndexedDB mocking
+- Database singleton and updateCharacter from Stories 5.1 and 5.2
+- Character type fixtures
+- Timer mocking (vi.useFakeTimers) for debounce testing
+
+## Identified Gaps
+
+- **Error Handling**: Auto-save failure handling (retry once, show notification) is described in notes but not in acceptance criteria
+- **Loading/Empty States**: No "save in progress" indicator specified as a requirement
+- **Edge Cases**: Behavior when multiple useAutoSave hooks are active simultaneously (multiple character editors)
+
 ## Dependencies
 - **Depends on:** Story 5.1 (database schema), Story 5.2 (updateCharacter function), Story 2.8 (Character type), Story 2.10 (UserPreferences type)
 - **Blocks:** Epic 6 Story 6.1 (Character store uses auto-save), Epic 6 Story 6.3 (UI store uses preferences for theme)

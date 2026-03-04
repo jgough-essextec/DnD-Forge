@@ -69,3 +69,20 @@ interface LootEntry {
 - `components/dm/SessionLog.tsx`
 - `components/dm/NPCTracker.tsx`
 - `components/dm/LootTracker.tsx`
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 36.1 — DM Notes Per Character | 4 | 7 | 3 | 14 |
+| 36.2 — Session Log / Campaign Timeline | 5 | 10 | 3 | 18 |
+| 36.3 — NPC Tracker | 4 | 8 | 3 | 15 |
+| 36.4 — Loot & Reward Tracker | 4 | 8 | 3 | 15 |
+| **Totals** | **17** | **33** | **12** | **62** |
+
+### Key Gaps Found
+- **Accessibility** consistently missing: no ARIA labels for timeline markers, NPC badges, loot table headers, or note tags; no keyboard navigation for expandable/filterable components
+- **Loading/Empty States** missing across all stories: no empty states for session log, NPC tracker, or loot tracker when no entries exist
+- **Mobile/Responsive** layouts not specified for session timeline, NPC card grid, or sortable loot table
+- **Error Handling** gaps in auto-save failure recovery, NPC deletion with cross-references, and loot inventory sync failures
+- **Edge Cases** around maximum entry counts, orphaned references (deleted NPC referenced in session, removed character with assigned loot), and currency conversion not addressed

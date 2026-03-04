@@ -51,6 +51,47 @@ This story creates a multi-step modal for campaign creation with three steps: Ba
 - After creation, user is navigated to the new campaign's dashboard
 - Success toast confirms campaign creation
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate a 6-character alphanumeric join code with no ambiguous characters (0, O, 1, I, L)`
+- `should validate campaign name is required and max 100 characters`
+- `should validate description max length of 2000 characters`
+- `should populate standard 5e defaults when "Use Standard Rules" is invoked`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render a 3-step modal with step indicators (Basic Info, House Rules, Invite Setup)`
+- `should prevent advancing from Step 1 when campaign name is empty`
+- `should display all HouseRules fields in Step 2 with correct defaults`
+- `should render the auto-generated join code and "Copy Code" button in Step 3`
+- `should fill all house rules with 5e defaults when "Use Standard Rules" button is clicked`
+- `should call createCampaign store action with correct data on "Create Campaign" click`
+- `should show success toast "Campaign '[name]' created!" after successful creation`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete full campaign creation flow from opening modal to navigating to dashboard`
+- `should persist created campaign to IndexedDB and display it in campaign list`
+
+### Test Dependencies
+- Mock Zustand campaign store with createCampaign action
+- Mock React Router navigation (useNavigate)
+- Toast notification mock
+- shadcn/ui modal and form component stubs
+
+## Identified Gaps
+
+- **Error Handling**: No specification for duplicate campaign name handling or joinCode collision detection
+- **Loading/Empty States**: No loading indicator specified during campaign save to IndexedDB
+- **Accessibility**: No keyboard navigation spec for multi-step modal (Tab order, Enter to advance, Escape to close)
+- **Mobile/Responsive**: No mobile layout specified for the multi-step modal
+- **Edge Cases**: Behavior when user navigates away mid-creation (data loss warning not specified)
+
 ## Dependencies
 
 - Story 33.1 — Campaign data model, Zustand store, and IndexedDB schema must be in place

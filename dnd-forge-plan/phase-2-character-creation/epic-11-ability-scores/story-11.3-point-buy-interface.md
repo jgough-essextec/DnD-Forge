@@ -53,6 +53,46 @@ As a player using Point Buy, I need an interactive interface to allocate 27 poin
 - Quick Presets dropdown auto-fills all six scores with preset values
 - Validation warns if all 27 points are not spent but allows saving with a warning
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute correct point cost for each score level (8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9)`
+- `should compute total points spent from a set of 6 ability scores`
+- `should validate that Balanced preset (13,13,13,12,12,12) totals exactly 27 points`
+- `should validate that Min-Max Caster preset (8,14,14,15,8,8) totals exactly 27 points`
+- `should validate that MAD Build preset (15,14,13,10,10,8) totals exactly 27 points`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display all six abilities with current score, increment/decrement buttons, modifier, and racial bonus`
+- `should update Points Remaining counter in real-time with color coding (green/gold/red)`
+- `should disable decrement button when score is 8`
+- `should disable increment button when score is 15 or insufficient points remain`
+- `should show point cost table with marginal cost highlighted next to each ability`
+- `should display racial bonuses as separate +N column with final total and modifier`
+- `should auto-fill all six scores when Quick Preset is selected`
+- `should warn if all 27 points are not spent but allow proceeding`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should allocate all 27 points across 6 abilities using increment/decrement buttons and see correct totals`
+- `should apply Min-Max Caster preset for Wizard and see 15 assigned to INT`
+
+### Test Dependencies
+- Mock racial bonuses from wizard store
+- Mock class data for preset customization
+- Point buy cost table fixture
+
+## Identified Gaps
+
+- **Error Handling**: No specification for recovering from an impossible state (negative remaining points, though UI prevents it)
+- **Accessibility**: No ARIA labels for increment/decrement buttons or points remaining counter
+- **Performance**: No render performance criteria for real-time point tracking updates
+
 ## Dependencies
 
 - **Depends on:** Story 11.1 (Method Selection — this renders when Point Buy is selected), Epic 9 Story 9.5 (racial ability bonuses), Epic 10 (class for preset customization)

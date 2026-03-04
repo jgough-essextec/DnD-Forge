@@ -28,6 +28,25 @@ A spell selection interface shown only for classes that have spellcasting at lev
 - Warlock Pact Magic special handling (short rest recharge, single slot at level 1)
 - SRD spell data (static JSON from Phase 1)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 14.1 — Spell Step Conditional Rendering | 3 | 6 | 0 | 9 |
+| 14.2 — Cantrip Selection | 3 | 7 | 2 | 12 |
+| 14.3 — Level 1 Spell Selection | 4 | 7 | 3 | 14 |
+| 14.4 — Spell Detail Cards & Browser | 3 | 8 | 2 | 13 |
+| 14.5 — Spell Step Validation & State | 9 | 3 | 0 | 12 |
+
+### Key Gaps Found
+- Changing class from caster to non-caster while on the Spellcasting step not specified
+- ARIA attributes for N/A progress bar indicator and spell UI elements not specified
+- No loading states for spell data filtering
+- Spell comparison (3 side-by-side) responsive layout on mobile not addressed
+- List virtualization performance targets not defined
+- Spell description truncation (500+ words) in notes but not in acceptance criteria
+- Warlock known spell count vs. Pact Magic slot count distinction needs clearer specification
+
 ## Dependencies
 
 - **Depends on:** Epic 8 (Wizard Shell — conditional step skip logic), Epic 9 (racial cantrips from High Elf/Tiefling), Epic 10 (class determines spellcasting type, spell list, cantrip/spell counts), Epic 11 (spellcasting ability modifier for prepared spell count), Phase 1 SRD spell data

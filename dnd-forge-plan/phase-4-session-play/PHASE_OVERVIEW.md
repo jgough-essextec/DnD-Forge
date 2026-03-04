@@ -110,3 +110,26 @@ Epic 32 (Session Compact View) <-- depends on all above being functional
 3. **Level-Up Undo:** Take explicit named snapshot before level-up.
 4. **Spell Slot Tracking Between Sessions:** No auto-prompt; persistent slots with prominent Long Rest button.
 5. **Condition Duration Tracking:** No real-time timer in Phase 4; manual removal by DM/player.
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 26 — Dice Roller | 24 | 47 | 20 | 91 | 12 |
+| 27 — HP Tracker | 15 | 25 | 10 | 50 | 10 |
+| 28 — Spell Slot Tracker | 15 | 22 | 9 | 46 | 9 |
+| 29 — Conditions Tracker | 18 | 30 | 11 | 59 | 10 |
+| 30 — Rest Automation | 23 | 25 | 12 | 60 | 10 |
+| 31 — Level Up Flow | 40 | 60 | 26 | 126 | 14 |
+| 32 — Session Compact View | 7 | 22 | 9 | 38 | 8 |
+| **Totals** | **142** | **231** | **97** | **470** | **73** |
+
+### Testing Infrastructure Needed
+- **Mock Data Factories**: Character data at various levels/classes, spell slot configurations, roll history entries, HP event logs, condition sets, feature usage states, level-up change sets
+- **Zustand Store Mocks**: UI store (panel state), dice store (roll history), character store (HP, slots, conditions, features), settings store (sound, animation speed, reduced motion)
+- **Phase 1 Engine Mocks**: Dice engine (controlled roll results for nat 20/1 testing), calculation engine (cascade recalculation), roll expression parser/validator
+- **Phase 2 Component Stubs**: SubclassSelector, FeatPicker, spell browser, cantrip picker, wizard framework
+- **Phase 3 Component Stubs**: HitPointBlock, SpellLevelSection, character sheet Page 1/2/3, gallery card, auto-save system, undo/snapshot system
+- **Browser API Mocks**: Clipboard API, Audio API, `prefers-reduced-motion` media query, viewport width, touch/swipe gesture simulation
+- **Fixtures**: SRD conditions data (14 conditions + exhaustion), class feature recovery mapping, spell slot progression tables, XP threshold table, ASI level tables per class, subclass selection level tables, hit die types by class, default pinned skills by class
+- **Testing Utilities**: CSS animation testing helpers, long-press gesture simulators, swipe gesture simulators, timer/date mocking for timestamps, IndexedDB mock for persistence testing

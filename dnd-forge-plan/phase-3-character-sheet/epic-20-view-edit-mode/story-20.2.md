@@ -38,6 +38,46 @@ As a player editing my character, I need my changes to save automatically withou
 - Emergency save to sessionStorage works when IndexedDB is unavailable
 - Emergency save shows a warning with guidance to export as JSON
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should debounce save calls at 500ms interval`
+- `should reset debounce timer when new changes occur before timer fires`
+- `should increment character version field on every successful save`
+- `should detect version conflict when two saves have different base versions`
+- `should serialize character data for sessionStorage emergency save`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display "Saved" indicator (green checkmark) when no pending changes`
+- `should display "Unsaved changes" indicator (yellow dot) when changes exist but debounce timer hasn't fired`
+- `should display "Saving..." indicator (spinning icon) when write is in progress`
+- `should display "Save failed" indicator (red X) with retry button when IndexedDB write fails`
+- `should trigger beforeunload warning on tab close when unsaved changes exist`
+- `should save to sessionStorage as emergency backup when IndexedDB is unavailable`
+- `should show warning message guiding user to export as JSON when emergency save is triggered`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should make an edit, see "Unsaved changes" indicator, wait for debounce, and see "Saved" indicator`
+
+### Test Dependencies
+- Mock IndexedDB database layer (Dexie.js) with success and failure scenarios
+- Mock Zustand store for save state tracking
+- Mock debounce timer (use fake timers in tests)
+- Mock sessionStorage for emergency save testing
+- Mock beforeunload event
+
+## Identified Gaps
+
+- **Error Handling**: No specification for retry behavior after "Save failed" (how many retries? exponential backoff?)
+- **Edge Cases**: No specification for concurrent editing in two browser tabs with the same character beyond "last write wins"
+- **Performance**: No specification for maximum character data size that auto-save should handle efficiently
+
 ## Dependencies
 - Phase 1 IndexedDB database layer (Dexie.js) and Character type system
 - Phase 1 state management (Zustand) for tracking save state

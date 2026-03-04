@@ -48,6 +48,48 @@ The notes panel is accessible from the character's expanded row in the Party Sta
 - "All DM Notes" view shows all per-character notes organized by character name
 - Notes save to the character's `dmNotes` field in IndexedDB
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should debounce auto-save at 500ms interval`
+- `should parse markdown-lite formatting (bold, italic, headers, bullet lists) for preview`
+- `should exclude dmNotes field from JSON export when export toggle is off`
+- `should include dmNotes field in JSON export when export toggle is explicitly on`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render DM notes panel accessible from party stats grid expanded row`
+- `should display markdown-lite editor with real-time preview`
+- `should auto-save notes to IndexedDB on 500ms debounce after editing`
+- `should NOT render dmNotes when character is viewed from gallery (player context)`
+- `should render dmNotes when character is viewed from campaign dashboard (DM context)`
+- `should add quick-note tags (Secret, Plot Hook, Relationship, Motivation, Weakness) as colored badges`
+- `should display "All DM Notes" view showing notes organized by character name`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should write DM notes for a character, navigate away, return, and verify notes persisted`
+- `should verify DM notes are hidden when viewing the same character from the gallery`
+- `should view "All DM Notes" page and see notes for all campaign characters`
+
+### Test Dependencies
+- Mock character with existing dmNotes field
+- Mock DM context provider (isDMView: true/false)
+- Debounce timer mock for auto-save testing
+- Sample markdown content for preview rendering
+
+## Identified Gaps
+
+- **Error Handling**: No specification for auto-save failure handling or offline save retry
+- **Loading/Empty States**: No empty state for "All DM Notes" view when no notes exist
+- **Accessibility**: No ARIA labels for quick-note tag buttons; no keyboard shortcut for toggling the notes panel
+- **Mobile/Responsive**: Slide-out panel vs inline section behavior on mobile not specified
+- **Edge Cases**: Maximum note length not specified; behavior when two quick-note tags conflict not addressed
+
 ## Dependencies
 
 - Epic 34 Story 34.2 — Party stats grid (expanded rows provide access to DM notes panel)

@@ -44,6 +44,48 @@ As a player using the Rolling method, I need to roll 4d6-drop-lowest six times w
 - Racial bonuses and modifiers are displayed in Phase 2 alongside each ability slot
 - Raw roll data (individual die values per set) is persisted to the wizard store
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute 4d6-drop-lowest correctly (sum of top 3 dice from 4 rolled)`
+- `should identify the lowest die value to cross out from a set of 4 dice`
+- `should determine if total of all 6 scores is below house rule threshold (e.g., 70)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display 6 roll slots each starting as Not Rolled in Phase 1`
+- `should trigger animated dice roll showing 4 d6 when Roll button is clicked for a slot`
+- `should reveal 4 die values with lowest crossed out and total of kept 3 after animation`
+- `should auto-roll all 6 sets in sequence with dramatic pacing when Roll All is clicked`
+- `should show confirmation dialog and re-roll all sets when Reroll All is clicked`
+- `should offer automatic reroll when house rule toggle is enabled and total is below threshold`
+- `should activate Phase 2 assignment interface after all 6 rolls, showing totals as assignable values`
+- `should display racial bonuses and modifiers in Phase 2 alongside each ability slot`
+- `should persist raw roll data (individual die values per set) to wizard store`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete all 6 rolls individually, see animated dice, and proceed to assignment phase`
+- `should use Roll All, assign all 6 values via drag-and-drop, and advance to next step`
+
+### Test Dependencies
+- Mock Phase 1 dice engine for deterministic roll results in tests
+- Mock @dnd-kit for Phase 2 drag-and-drop assignment
+- Mock racial bonuses from wizard store
+- Test fixtures for pre-rolled dice sets (including low-total scenarios)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the dice engine fails or returns unexpected values
+- **Loading/Empty States**: No defined state between roll animation and result display
+- **Accessibility**: Dice animation relies on CSS 3D transforms; no alternative for users with reduced motion preferences
+- **Performance**: No specification for animation frame rate or maximum animation duration
+- **Edge Cases**: Sound effects are opt-in via preferences, but no specification for the preference control location
+
 ## Dependencies
 
 - **Depends on:** Story 11.1 (Method Selection — this renders when Rolling is selected), Story 11.2 (reuses the drag-and-drop/click-to-assign interface for Phase 2), Phase 1 dice engine, Epic 9 Story 9.5 (racial ability bonuses)

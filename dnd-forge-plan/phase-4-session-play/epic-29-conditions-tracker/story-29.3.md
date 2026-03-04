@@ -120,6 +120,56 @@ As a player, I need to see how active conditions modify my rolls and stats direc
 9. `getConditionModifiers()` utility function returns structured modifier data for all active conditions
 10. Multiple simultaneous conditions show all their effects correctly (effects compound)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return disadvantageOn: ['attack_rolls', 'ability_checks'] for Poisoned condition`
+- `should return disadvantageOn: ['attack_rolls'] and autoFailOn: ['sight_checks'] for Blinded condition`
+- `should return speedOverride: 0 for Grappled and Restrained conditions`
+- `should return hpMaxModifier: 0.5 for Exhaustion Level 4`
+- `should return banners with severity for Paralyzed, Stunned, and Unconscious conditions`
+- `should combine modifiers from multiple simultaneous conditions correctly`
+- `should return cumulative exhaustion effects (Level 3 = Level 1 + Level 2 + Level 3 effects)`
+- `should return advantageOn: ['attack_rolls'] for Invisible condition`
+- `should return speedOverride for Exhaustion Level 2 (halved) and Level 5 (0)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display disadvantage icon next to attack rolls when Poisoned is active`
+- `should show "(Disadvantage -- Poisoned)" tooltip on ability check modifiers`
+- `should display "(Auto-fail sight-based checks)" on Perception when Blinded is active`
+- `should show speed as "0 ft" with "(Restrained)" annotation when Restrained`
+- `should render full-width banner "PARALYZED -- Cannot move, speak, or take actions" when Paralyzed`
+- `should display "Advantage -- Invisible" green badge on attack rolls when Invisible`
+- `should show speed as halved at Exhaustion Level 2 (e.g., "15 ft (halved)" instead of "30 ft")`
+- `should show HP max as halved at Exhaustion Level 4`
+- `should render death banner at Exhaustion Level 6`
+- `should display effects from multiple simultaneous conditions correctly`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add Poisoned condition and verify disadvantage icons appear on all attack rolls and ability checks on the character sheet`
+- `should add Paralyzed condition and verify full-width banner, auto-fail on STR/DEX saves`
+- `should add Exhaustion to Level 3 and verify cumulative effects: disadvantage on checks, speed halved, disadvantage on attacks/saves`
+- `should add Blinded + Poisoned simultaneously and verify all combined effects display correctly`
+
+### Test Dependencies
+- Mock character data with skills, saves, attacks, combat stats, speed, HP
+- Mock active conditions state (single conditions, multiple simultaneous, exhaustion levels)
+- Phase 3 character sheet display component stubs for verifying visual indicators
+- `getConditionModifiers()` function fixture data for all 14 conditions + all 6 exhaustion levels
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what `getConditionModifiers()` returns when passed an empty or null conditions array
+- **Edge Cases**: Interaction between Grappled (speed 0) and Exhaustion Level 2 (speed halved) -- which takes precedence; Prone disadvantage on attacks from attackers depends on distance (within 5ft = advantage, ranged = disadvantage) which may not be trackable
+- **Accessibility**: Disadvantage/advantage icons need alt text; banners should be ARIA live regions for screen reader announcement; color alone should not be the only indicator of condition effects
+- **Performance**: Recalculation of condition modifiers on every condition add/remove -- should be memoized; no specification for render time when many conditions are active simultaneously
+
 ## Dependencies
 
 - Story 29.1 (Active Conditions Display) for condition badge data

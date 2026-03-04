@@ -39,6 +39,44 @@ As a developer, I need a reliable client-side PDF generation pipeline that can p
 - A simple test PDF can be generated with a placeholder layout to verify the pipeline works end-to-end
 - Generated PDF is vector output with searchable text, not raster images
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export exportCharacterPDF function with correct signature accepting Character and PDFExportOptions`
+- `should define US Letter coordinate constants (215.9mm x 279.4mm) in pdfLayout`
+- `should define A4 coordinate constants (210mm x 297mm) in pdfLayout`
+- `should define typography constants with correct font families, sizes, and line heights in pdfStyles`
+- `should return a Blob of type application/pdf from exportCharacterPDF`
+- `should embed Cinzel font as base64 TTF for heading typography`
+- `should produce vector text output (not raster images) in generated PDF`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render without errors when PDF export module is loaded`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should generate a valid PDF file with %PDF- header bytes for a test character`
+- `should produce a PDF under 500KB for a standard character`
+- `should generate multi-page PDF when all three pages are selected`
+
+### Test Dependencies
+- Mock Character object with all fields populated (Level 5 Fighter fixture)
+- Mock PDFExportOptions with various configurations
+- jsPDF library mock for unit tests
+- PDF header byte validation utility
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens when jsPDF fails to initialize or font embedding fails
+- **Edge Cases**: Behavior when Character object has missing or null fields not specified
+- **Performance**: No target for PDF generation time (how long should exportCharacterPDF take?)
+- **Dependency Issues**: html2canvas fallback trigger conditions not clearly defined
+
 ## Dependencies
 
 - Character data model from Phase 1 (all character fields available)

@@ -109,6 +109,56 @@ Every value is interactive:
 13. Long-press on any stat shows computation breakdown tooltip
 14. All information fits on a single screen without scrolling (for typical characters)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should determine session view auto-activation based on viewport width (<=640px) and view mode`
+- `should compute HP bar color gradient: green (>50%), yellow (25-50%), red (<25%), gray (0 HP)`
+- `should return correct layout data for all 8 session view sections from character state`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render SessionView as a compact single-screen layout`
+- `should display all 8 sections: header, HP bar, quick actions, attacks, spell slots, key abilities, conditions, features`
+- `should auto-activate session view on viewports <=640px in view mode`
+- `should show "Session Mode" toggle in character sheet header`
+- `should render full-width HP bar with correct color gradient based on HP percentage`
+- `should display 4 quick action buttons: Roll d20, Short Rest, Long Rest, Conditions`
+- `should render attack cards with name, attack bonus, and damage expression`
+- `should render compact spell slot strip with filled/empty circles`
+- `should display pinned skills with large rollable modifiers`
+- `should show active condition badges`
+- `should display limited-use feature counters`
+- `should show "Full Sheet" toggle at the bottom`
+- `should show computation breakdown tooltip on long-press of any stat`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should auto-activate session view on mobile viewport, tap a skill to roll, tap HP bar to open damage modal`
+- `should tap an attack in session view, see roll result, and chain to damage`
+- `should use Quick Actions row to open Short Rest modal from session view`
+- `should toggle between Session Mode and Full Sheet view`
+- `should verify all interactive elements: skill roll, spell slot expend, attack roll, HP damage/heal`
+
+### Test Dependencies
+- Mock character data with attacks, spell slots, skills, conditions, features
+- Viewport mocking for auto-activation testing
+- Mock all Phase 4 epic integrations (dice, HP, spell slots, conditions, rest)
+- Touch/long-press gesture simulation
+
+## Identified Gaps
+
+- **Error Handling**: No specification for characters with no attacks (martial vs caster); behavior when character has no spell slots (non-casters); handling of missing pinned skills data
+- **Loading/Empty States**: No specification for initial render while character data loads; empty state for attacks section, spell slots section, conditions section, features section
+- **Edge Cases**: Fitting all 8 sections on a single screen for characters with many attacks or features; scroll behavior when content exceeds viewport height; HP bar at exactly 50% and 25% threshold boundaries
+- **Accessibility**: No ARIA labels for quick action buttons; no keyboard alternative for long-press tooltip; no focus management for session view activation; all interactive elements need ARIA roles
+- **Mobile/Responsive**: Auto-activation threshold of 640px may not cover all tablets; interaction with dice roller FAB positioning; landscape vs portrait layout differences
+- **Performance**: Single-screen constraint with all sections may cause layout jank; no render time target for session view initialization
+
 ## Dependencies
 
 - Epic 26 (Dice Roller) for roll integration

@@ -36,6 +36,37 @@ As a player on desktop, I need the full 3-column character sheet layout with max
 - Tab content renders with entrance animation
 - Layout matches the spatial conventions of the official D&D 5e character sheet
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Page 1 in three-column layout at 1024px+ with correct width ratios (30/35/35)`
+- `should render top banner spanning full width above the three columns`
+- `should render Page 2 in two-column layout with portrait/appearance left and backstory right`
+- `should render Page 2 equipment section spanning full width at bottom`
+- `should render Page 3 spell levels in multi-column flow (2-3 columns)`
+- `should render tab navigation with three tabs and active state highlighting`
+- `should render tab content with entrance animation`
+- `should apply additional spacing on wide desktop (>1440px) with same column structure`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render full three-column Page 1 layout at 1024px viewport width`
+- `should switch between all three tabs and verify correct content and animations`
+
+### Test Dependencies
+- Mock character data with full content for all three pages
+- Viewport size mocking (1024px, 1440px+)
+- Mock framer-motion or CSS animation library for entrance animations
+
+## Identified Gaps
+
+- **Accessibility**: No specification for keyboard navigation between tabs, no ARIA roles for tab panels
+- **Performance**: No render time targets for tab switching or page layout
+- **Edge Cases**: No specification for exact column width behavior at 1024px boundary (transition from tablet)
+
 ## Dependencies
 - Epic 17 (Page 1 components) — layout targets for columns
 - Epic 18 (Page 2 components) — layout targets for columns

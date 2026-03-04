@@ -36,6 +36,33 @@ As a developer, I need currency conversion and inventory weight tracking functio
 - `rollStartingGold()` correctly parses and rolls each class's formula, including Monk's special case (5d4 without multiplier)
 - Unit tests verify conversions, wealth totals, weight calculations, and starting gold ranges
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should convert 100 CP to 1 GP via convertCurrency`
+- `should convert 1 PP to 10 GP via convertCurrency`
+- `should convert 50 CP to 1 EP via convertCurrency`
+- `should return correct GP-equivalent total wealth via getTotalWealth`
+- `should sum item weights accounting for quantity via getTotalInventoryWeight`
+- `should multiply weight by quantity (20 arrows at 0.05 lbs = 1 lb) via getTotalInventoryWeight`
+- `should return 0 weight for empty inventory via getTotalInventoryWeight`
+- `should roll starting gold for Barbarian (2d4x10 = 20-80 GP range) via rollStartingGold`
+- `should roll starting gold for Monk (5d4 = 5-20 GP, no multiplier) via rollStartingGold`
+- `should parse dice formula with and without multiplier via rollStartingGold`
+
+### Test Dependencies
+- Currency, CurrencyAmount, EquipmentItem types from Story 2.4
+- CURRENCY_CONVERSION_RATES from Story 2.4
+- Starting gold data from Story 3.4
+- Dice engine from Story 7.1
+
+## Identified Gaps
+
+- **Edge Cases**: convertCurrency with fractional results (e.g., 3 CP to GP = 0.03 GP) — rounding behavior not specified
+- **Edge Cases**: EP (electrum) conversion has odd ratios (1 EP = 5 SP) that can produce awkward fractions
+
 ## Dependencies
 - **Depends on:** Story 2.4 (Currency, CurrencyAmount, EquipmentItem, CURRENCY_CONVERSION_RATES types), Story 3.4 (starting gold data), Story 3.7 (currency conversion rates constant), Story 7.1 (dice engine for rolling starting gold)
 - **Blocks:** Story 4.3 (encumbrance calculation uses inventory weight), Story 4.8 (validation checks equipment weight vs capacity)

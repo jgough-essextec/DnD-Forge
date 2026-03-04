@@ -46,6 +46,48 @@ As a player at a table with no Wi-Fi, I need the app to work completely offline 
 - The app never auto-reloads without user action
 - Service worker activates correctly on first visit and caches all required assets
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should configure vite-plugin-pwa with registerType: 'prompt' in vite.config.ts`
+- `should include all SRD JSON files in workbox pre-cache manifest`
+- `should configure CacheFirst strategy for Tier 2/3/4 SRD data runtime caching`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should show non-intrusive toast notification when a new version is available`
+- `should reload and activate new service worker only when user clicks "Reload to update"`
+- `should never auto-reload the app without user action`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should register service worker on first visit and cache all required assets`
+- `should pre-cache all SRD JSON files (~2MB) on service worker install`
+- `should load gallery page fully offline after service worker install`
+- `should render character sheet fully offline after service worker install`
+- `should complete creation wizard fully offline (all SRD data cached)`
+- `should run dice roller offline`
+- `should generate PDF export offline (jsPDF is client-side)`
+- `should load campaign dashboard offline`
+
+### Test Dependencies
+- vite-plugin-pwa configuration with Workbox
+- Playwright offline mode emulation (page.context().setOffline(true))
+- Service worker registration verification
+- Cache storage inspection utilities
+- SRD data file manifest for pre-cache verification
+
+## Identified Gaps
+
+- **Error Handling**: No specification for behavior when service worker install fails mid-caching (partial cache state)
+- **Performance**: SRD pre-caching (~2MB) impact on initial service worker install time not measured
+- **Edge Cases**: Behavior when user closes browser during service worker install not specified
+- **Edge Cases**: skipWaiting() behavior during mid-session updates not fully specified
+
 ## Dependencies
 
 - Epic 42 (Performance) should be complete — don't cache bloated/unoptimized bundles

@@ -60,6 +60,31 @@ As a developer, I need all static game rule tables available as typed constants.
 - `CONDITION_EFFECTS` provides structured mechanical data (not just text descriptions) for each condition
 - All constants pass TypeScript type checking
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should have ability score modifier table covering scores 1-30`
+- `should return modifier -5 for score 1 and +10 for score 30`
+- `should have proficiency bonus table returning +2 for level 1-4, +3 for 5-8, +4 for 9-12, +5 for 13-16, +6 for 17-20`
+- `should have XP thresholds for all 20 levels (level 1=0, level 2=300, level 20=355000)`
+- `should have point buy cost table for scores 8-15 (8=0, 14=7, 15=9)`
+- `should have standard array as [15, 14, 13, 12, 10, 8]`
+- `should have currency conversion rates (pp=1000, gp=100, ep=50, sp=10, cp=1)`
+- `should have all 14 conditions with name, description, and mechanical effects`
+- `should have CONDITION_EFFECTS as structured data (not just text) for each condition`
+- `should have Exhaustion with 6 cumulative levels defined`
+
+### Test Dependencies
+- Condition enum from Story 2.7
+- Currency types from Story 2.4
+
+## Identified Gaps
+
+- **Edge Cases**: CONDITION_EFFECTS needs structured format for programmatic application but the exact schema for mechanical effects is not defined
+- **Edge Cases**: Exhaustion level 6 causes death; this terminal condition is not explicitly modeled beyond description
+
 ## Dependencies
 - **Depends on:** Story 2.7 (Condition enum, ConditionInstance), Story 2.4 (Currency, CurrencyAmount)
 - **Blocks:** Story 4.1 (Modifier and point buy calculations use reference tables), Story 4.2 (Proficiency bonus table), Story 4.5 (XP threshold table), Story 4.6 (Currency conversion rates)

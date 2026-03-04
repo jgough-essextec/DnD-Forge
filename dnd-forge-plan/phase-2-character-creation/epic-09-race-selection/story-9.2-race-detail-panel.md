@@ -40,6 +40,38 @@ As a player, after clicking a race card I need to see the full details — all t
 - Speed & senses section shows walking speed, special movement, and darkvision range
 - The panel can be closed by clicking outside it or pressing a close button
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should open a slide-in detail panel with animated entrance when a race card is clicked`
+- `should render panel on the right side on desktop and as a bottom sheet on mobile`
+- `should display race name, size badge, speed badge, and description in the panel header`
+- `should show ability score bonuses with visual indicators and selectable dropdowns for choice bonuses (Half-Elf, Variant Human)`
+- `should list all racial traits with name, description, and mechanical effect type icons (vision, resistance, advantage, proficiency)`
+- `should display fixed languages and show a language chooser dropdown for races with language choices`
+- `should list granted weapon, armor, and tool proficiencies`
+- `should show walking speed, special movement, and darkvision range in Speed & Senses section`
+- `should close the panel when clicking outside or pressing the close button`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open detail panel for each of the 9 races and display correct race-specific data`
+- `should scroll through long trait lists for races with many traits (e.g., Dwarf)`
+
+### Test Dependencies
+- Mock SRD race data with full trait/proficiency/language details
+- Mock Epic 16 DetailSlidePanel component
+- Test fixtures for races with choice bonuses (Half-Elf, Variant Human) and without
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if race data is incomplete or missing fields
+- **Accessibility**: No ARIA labels specified for panel sections, ability dropdown selectors, or close button
+- **Mobile/Responsive**: Bottom sheet on mobile is mentioned but no swipe-to-close or max height specified
+
 ## Dependencies
 
 - **Depends on:** Story 9.1 (Race Card Gallery — selection triggers panel open), Epic 16 Story 16.1 (DetailSlidePanel), Phase 1 SRD race data

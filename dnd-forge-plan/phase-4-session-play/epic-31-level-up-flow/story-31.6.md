@@ -144,6 +144,56 @@ As a spellcaster leveling up, I need to gain new spell slots, learn or prepare n
 12. Cantrip damage scaling notification appears at character levels 5, 11, 17
 13. Cantrip damage data is updated on the character
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate correct spell slot progression for full casters at each level (e.g., Level 5 Wizard: 4/3/2)`
+- `should calculate correct spell slot progression for half casters (Paladin, Ranger)`
+- `should determine newly unlocked spell levels (e.g., Level 5 unlocks 3rd level slots)`
+- `should return correct cantrip count progression by class and level`
+- `should determine cantrip damage scaling at character levels 5, 11, 17`
+- `should calculate prepared spell limit for each prepared caster type (Cleric: WIS + level, Paladin: CHA + half level)`
+- `should return Warlock Pact Magic slot count and level for each Warlock level`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render SpellProgressionStep only for caster classes`
+- `should display before/after spell slot table with new slots highlighted in gold`
+- `should show excitement message when new spell level is unlocked`
+- `should open cantrip picker when class gains a new cantrip at this level`
+- `should show spell browser for known casters to select new spells`
+- `should offer "swap one known spell" option for known casters (Bard, Sorcerer, Warlock, Ranger)`
+- `should display updated preparation limit for prepared casters`
+- `should show "Add 2 spells to your spellbook" for Wizard`
+- `should display updated Pact Magic slot level and count for Warlock`
+- `should show cantrip damage scaling notification at character levels 5, 11, 17`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should level up Wizard to Level 3, see new 2nd level slots unlocked, add 2 spells to spellbook`
+- `should level up Bard to Level 4, select a new cantrip and a new spell, swap one known spell`
+- `should level up to character Level 5 and see cantrip damage scaling notification (e.g., Fire Bolt 1d10 -> 2d10)`
+- `should level up Warlock and see Pact Magic slot level and count update`
+
+### Test Dependencies
+- Mock character data for each caster type (full, half, known, prepared, Wizard, Warlock)
+- Mock Phase 1 spell data (spell lists by class, spell slot progression tables)
+- Mock Phase 2 spell browser and cantrip picker components
+- Spell slot progression table test fixtures
+- Known spells list fixture for swap testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for non-caster classes accessing this step accidentally; no validation for spell selections that don't match available spell levels
+- **Edge Cases**: Half-casters (Paladin, Ranger) don't start casting until level 2 -- step should not appear at level 1; Wizard spellbook additions are separate from prepared spells (should be clear in UI); domain/circle/oath always-prepared spells display
+- **Accessibility**: Spell browser reuse from Phase 2 should maintain accessibility; cantrip damage scaling notification needs ARIA live region; screen reader should announce each slot change
+- **Mobile/Responsive**: Spell slot before/after table may be wide on mobile; spell browser modal sizing
+- **Performance**: Spell list loading for the browser may be slow for classes with large spell lists
+
 ## Dependencies
 
 - Story 31.1 (Level Up Entry & Overview) for the wizard container

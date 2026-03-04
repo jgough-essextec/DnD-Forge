@@ -33,6 +33,42 @@ As a spellcaster, I need to see my spellcasting ability, spell save DC, and spel
 - Tooltips show full computation breakdown for DC and attack bonus
 - Edit mode provides dropdowns for class and ability, and manual override for DC and attack bonus
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute Spell Save DC as 8 + proficiency bonus + spellcasting ability modifier`
+- `should compute Spell Attack Bonus as proficiency bonus + spellcasting ability modifier`
+- `should determine spellcasting ability by class (Wizard=INT, Cleric=WIS, Bard=CHA, etc.)`
+- `should determine if character has spellcasting based on class data`
+- `should generate DC tooltip breakdown string "8 + Proficiency (+2) + INT Mod (+3) = 13"`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should conditionally render Page 3 only for spellcasting characters`
+- `should show placeholder message for non-spellcasters with future spellcasting info`
+- `should render four stat boxes: Spellcasting Class, Ability, Spell Save DC, Spell Attack Bonus`
+- `should display correctly computed Spell Save DC`
+- `should display correctly computed Spell Attack Bonus`
+- `should show tooltip with full computation breakdown for DC and attack bonus`
+- `should provide dropdowns for class and ability in edit mode`
+- `should allow manual override of DC and attack bonus in edit mode`
+
+### Test Dependencies
+- Mock character data for various spellcasting classes (Wizard, Cleric, Bard)
+- Mock character data for non-spellcaster (Fighter)
+- Mock character data for Fighter subclass that gains spellcasting later (Eldritch Knight)
+- Mock calculation engine for spell save DC and attack bonus
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for multiclass spellcasting (multiple spellcasting abilities)
+- **Accessibility**: No ARIA labels for stat boxes, no screen reader support for tooltip breakdowns
+- **Loading/Empty States**: Placeholder message for non-spellcasters mentions "Eldritch Knight at level 3" but no specification for all class/subclass future spellcasting options
+
 ## Dependencies
 - Story 17.10 (Proficiency Bonus) — used in DC and attack bonus calculations
 - Story 17.2 (Ability Scores) — spellcasting ability modifier used in computations

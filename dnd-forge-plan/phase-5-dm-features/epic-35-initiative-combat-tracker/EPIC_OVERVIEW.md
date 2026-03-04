@@ -71,3 +71,23 @@ interface Encounter {
 - `components/dm/combat/EncounterSetup.tsx`
 - `components/dm/combat/InitiativeRoller.tsx`
 - `components/dm/combat/CombatTracker.tsx`
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 35.1 — Encounter Setup | 5 | 8 | 3 | 16 |
+| 35.2 — Initiative Rolling & Sort | 5 | 8 | 3 | 16 |
+| 35.3 — Combat Tracker Main View | 6 | 9 | 4 | 19 |
+| 35.4 — Combatant HP & Condition Management | 5 | 10 | 4 | 19 |
+| 35.5 — Add Combatants Mid-Combat | 4 | 6 | 2 | 12 |
+| 35.6 — End Encounter & XP Distribution | 6 | 8 | 3 | 17 |
+| **Totals** | **31** | **49** | **19** | **99** |
+
+### Key Gaps Found
+- **Accessibility** is critical for the combat tracker: no keyboard shortcuts for Next/Previous Turn, no screen reader announcements for turn changes or HP updates, no keyboard-accessible alternatives to drag-and-drop or click interactions
+- **Error Handling** gaps in corrupted encounter state recovery, partial XP application failures, and accidental combatant removal (no undo)
+- **Mobile/Responsive** layout behavior not defined for two-panel encounter setup, initiative roller, or combat tracker overlay
+- **Performance** requirements missing for combat tracker responsiveness (most time-sensitive DM tool)
+- **Edge Cases** around all combatants removed mid-combat, 0-XP encounters, massive damage instant death, and healing defeated monsters not fully addressed
+- **Dependency Issues**: Shared XP application logic between Story 35.6 and Story 37.1 not defined as a shared utility

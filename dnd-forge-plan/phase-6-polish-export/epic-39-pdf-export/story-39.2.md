@@ -47,6 +47,44 @@ As a player exporting my character sheet, I need Page 1 to show all combat-relev
 - Features and proficiencies are listed with appropriate truncation for overflow
 - All computed values (modifiers, AC, initiative, passive perception) are correctly calculated
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should correctly position character header fields (name, class, level, race, alignment) using pdfLayout coordinates`
+- `should render all six ability scores with correct score values and computed modifiers`
+- `should render saving throw modifiers with correct proficiency indicators (filled/empty)`
+- `should render all 18 skills with correct modifiers and proficiency circles (filled/empty/double for expertise)`
+- `should compute and display correct passive perception value`
+- `should auto-size personality trait text to fit within box constraints (minimum 8pt)`
+- `should truncate features text with "..." when content exceeds available space`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Page 1 PDF layout with all sections visible for a complete character`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should generate Page 1 PDF containing all combat-relevant stats for a Level 5 Fighter`
+- `should generate Page 1 with correct AC, Initiative, and Speed values in combat stats row`
+- `should include death save circles and hit dice in the HP block on Page 1`
+
+### Test Dependencies
+- Level 5 Fighter fixture with all ability scores, skills, proficiencies, and equipment populated
+- Level 3 Wizard fixture for testing spellcasting attack entries
+- pdfLayout coordinate constants from Story 39.1
+- pdfStyles typography constants from Story 39.1
+
+## Identified Gaps
+
+- **Error Handling**: No specification for behavior when character has no equipped weapons for attacks table
+- **Edge Cases**: Behavior for characters with very long feature lists (where truncation kicks in) not precisely defined; how many features fit before overflow?
+- **Edge Cases**: No specification for multiclass characters with multiple class names in header
+- **Accessibility**: PDF accessibility (tagged PDF, reading order) not mentioned
+
 ## Dependencies
 
 - Story 39.1 (PDF generation architecture must be in place)

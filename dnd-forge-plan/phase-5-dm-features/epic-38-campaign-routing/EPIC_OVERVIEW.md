@@ -45,3 +45,20 @@ Integrate all DM features into the app's routing and navigation structure, with 
 - `pages/JoinCampaign.tsx`
 - Campaign export/import utilities
 - Breadcrumb and navigation updates
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 38.1 — DM Route Structure | 3 | 6 | 4 | 13 |
+| 38.2 — DM vs Player Context | 3 | 7 | 3 | 13 |
+| 38.3 — Join Campaign Flow | 4 | 7 | 3 | 14 |
+| 38.4 — Campaign Export & Import | 6 | 5 | 3 | 14 |
+| **Totals** | **16** | **25** | **13** | **54** |
+
+### Key Gaps Found
+- **Accessibility** consistently missing: no ARIA labels for breadcrumbs, navigation sections, context badges, or join code inputs; no skip-to-content links
+- **Error Handling** gaps in route guards for archived campaigns, corrupted JSON imports, and partial import failures
+- **Edge Cases** around browser back/forward navigation between DM and player contexts, campaign deletion while in DM view, and Date serialization in JSON export/import
+- **Mobile/Responsive** layouts not specified for join campaign page or context-specific views
+- **Dependency Issues**: Export format versioning recommended but not defined as a required field; DM vs participant distinction on import needs clearer specification

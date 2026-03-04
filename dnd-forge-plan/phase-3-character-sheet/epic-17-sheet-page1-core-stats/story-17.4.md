@@ -35,6 +35,48 @@ As a player, I need to see all 18 skills with proficiency indicators, expertise 
 - Custom bonus fields are available in edit mode for situational modifiers
 - Skills list is compact enough to fit in the left column on desktop
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute skill modifier as ability mod + proficiency bonus when proficient`
+- `should compute skill modifier as ability mod + double proficiency bonus when expertise`
+- `should compute skill modifier with half proficiency for Jack of All Trades (non-proficient)`
+- `should compute Passive Perception as 10 + Perception modifier`
+- `should compute Passive Insight as 10 + Insight modifier`
+- `should compute Passive Investigation as 10 + Investigation modifier`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 18 skills in official alphabetical order with governing ability abbreviation`
+- `should display correct proficiency indicator states (empty, filled, double circle, half-filled)`
+- `should display correctly computed modifiers for each skill`
+- `should trigger dice roll and display result when clicking a skill in view mode`
+- `should cycle proficiency dots through three states (not proficient -> proficient -> expertise) on click in edit mode`
+- `should recalculate modifier immediately when proficiency state changes`
+- `should display Passive Perception, Passive Insight, and Passive Investigation below skills list`
+- `should show Custom Bonus field next to each skill in edit mode`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should cycle a skill proficiency state through all three levels and verify modifier updates cascade correctly`
+
+### Test Dependencies
+- Mock character data with mixed proficiency states (proficient, expertise, not proficient)
+- Mock character data for Bard class (Jack of All Trades feature)
+- Mock dice engine for controlled roll results
+- Mock calculation engine for skill modifier computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Accessibility**: No keyboard navigation for the skills list, no ARIA labels for proficiency dot states, no screen reader announcement for proficiency cycling
+- **Edge Cases**: No specification for how Custom Bonus interacts with passive scores (e.g., Observant feat +5)
+- **Mobile/Responsive**: Skills list compactness on desktop is mentioned but no specification for overflow behavior if content exceeds column height
+
 ## Dependencies
 - Story 17.2 (Ability Score Blocks) — skills depend on ability modifiers
 - Story 17.10 (Proficiency Bonus) — skills use proficiency bonus

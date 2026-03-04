@@ -37,6 +37,41 @@ As a player, I need a consistent navigation bar across the app that shows where 
 - Character name remains visible on mobile when viewing a character sheet
 - Top nav doesn't overlap with page content (appropriate padding/margin)
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render fixed top navigation bar on all pages`
+- `should display app name "D&D Character Forge" in Cinzel font`
+- `should display "New Character" button (accent-gold) that navigates to creation wizard`
+- `should display "Import" button that opens import dialog`
+- `should display settings gear icon that navigates to settings`
+- `should render breadcrumbs as "Characters" on gallery page`
+- `should render breadcrumbs as "Characters > [Character Name]" on character sheet`
+- `should render breadcrumbs as "Characters > [Character Name] > Editing" in edit mode`
+- `should make breadcrumb links clickable for navigation`
+- `should collapse nav to hamburger menu with slide-out drawer on mobile`
+- `should keep character name visible on mobile when viewing character sheet`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate between pages using breadcrumbs and verify they update dynamically`
+- `should open hamburger menu on mobile and navigate using slide-out drawer`
+
+### Test Dependencies
+- Mock React Router for navigation testing
+- Mock route state for breadcrumb generation
+- Mock character data for dynamic character name in breadcrumbs
+- Viewport size mocking for mobile hamburger menu
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for navigation bar, breadcrumbs, or hamburger menu. No keyboard navigation specification for mobile drawer
+- **Edge Cases**: No specification for very long character names in breadcrumbs (truncation behavior)
+- **Mobile/Responsive**: No specification for hamburger drawer close behavior (tap outside, swipe, escape key)
+
 ## Dependencies
 - Story 25.1 (Route Structure) — breadcrumbs reflect route structure
 - Epic 20 (View/Edit Mode) — breadcrumbs show "Editing" state

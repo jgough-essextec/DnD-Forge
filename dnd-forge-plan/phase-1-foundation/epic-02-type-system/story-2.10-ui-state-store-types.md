@@ -33,6 +33,30 @@ As a developer, I need types for all application-level state management.
 - `UserPreferences` covers all user-configurable settings
 - The barrel export file at `types/index.ts` re-exports all types from all Story 2.x files, enabling `import { Character, Spell, Race } from '@/types'`
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define DieType with all 7 D&D dice (d4, d6, d8, d10, d12, d20, d100)`
+- `should define DiceRoll with dice array, results, modifier, total, and timestamp`
+- `should define DiceRoll with optional advantage and disadvantage boolean flags`
+- `should define WizardState with currentStep and isComplete fields`
+- `should define UIState with activeModal, sidebarOpen, editMode, mobileNavOpen, diceRollerOpen`
+- `should define UserPreferences with diceAnimations, autoCalculate, theme, showTooltips`
+- `should export barrel file types/index.ts re-exporting all types from Stories 2.1-2.10`
+- `should import Character, Spell, Race from @/types barrel export`
+
+### Test Dependencies
+- No mock data needed — these are type compilation and barrel export verification tests
+- Depends on types from Stories 2.1, 2.2, 2.3, 2.6
+
+## Identified Gaps
+
+- **Edge Cases**: WizardState.equipmentSelections is typed as `any[]` which bypasses type safety; should be refined
+- **Edge Cases**: UserPreferences.defaultAbilityScoreMethod is a string rather than a union type
+- **Edge Cases**: WizardState does not include characterName field (noted in story notes but not in the type definition)
+
 ## Dependencies
 - **Depends on:** Story 2.1 (AbilityScores), Story 2.2 (RaceSelection), Story 2.3 (ClassSelection), Story 2.6 (BackgroundSelection)
 - **Blocks:** Epic 6 (Zustand stores use these types), Epic 7 (Dice engine uses DieType)

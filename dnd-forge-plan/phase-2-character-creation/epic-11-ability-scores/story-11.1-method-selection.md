@@ -37,6 +37,38 @@ As a player, I need to choose how I want to generate my ability scores, with cle
 - Switching methods after starting shows a confirmation dialog warning about reset
 - Confirming the switch resets all in-progress ability score assignments
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render three method options as selectable tabs/cards with descriptions`
+- `should render Standard Array interface below when Standard Array method is selected`
+- `should render Point Buy interface below when Point Buy method is selected`
+- `should render Rolling interface below when Rolling method is selected`
+- `should allow only one method to be active at a time`
+- `should show only allowed methods with explanation when campaign house rules restrict methods`
+- `should show confirmation dialog when switching methods after starting assignments`
+- `should reset all in-progress ability score assignments after confirming method switch`
+- `should default to Standard Array as the most beginner-friendly option`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select each method and see the corresponding interface rendered`
+- `should switch from Point Buy (with partial allocation) to Rolling and confirm reset`
+
+### Test Dependencies
+- Mock wizard store for tracking selected method and in-progress state
+- Mock campaign data with method restrictions for house rule testing
+- Stub method-specific interface components
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if campaign data is unavailable (noted graceful absence in notes but not in acceptance criteria)
+- **Loading/Empty States**: No loading state while campaign data is checked
+- **Accessibility**: No ARIA labels specified for method selection tabs/cards or confirmation dialog
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 3), Phase 1 campaign data (for house rule restrictions)

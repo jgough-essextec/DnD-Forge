@@ -31,6 +31,41 @@ As a player, I need to see my character's backstory narrative and any additional
 - Edit mode for Additional Features supports add, remove, reorder, and edit operations
 - Both sections handle empty states gracefully
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should parse markdown-lite formatting (bold, italic, headers) in backstory text`
+- `should compute character count from backstory text`
+- `should trigger soft warning when backstory exceeds 5,000 characters`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render backstory block in the right column with proper paragraph formatting`
+- `should render markdown-lite formatting (bold, italic, headers) correctly in view mode`
+- `should provide rich textarea with formatting toolbar (bold, italic, heading) in edit mode`
+- `should display character count during editing`
+- `should show soft warning at 5,000 characters without blocking input`
+- `should render Additional Features section below backstory with "Additional" label`
+- `should display Additional Features in same format as Page 1 features (name bold, description below)`
+- `should support add, remove, reorder, and edit operations for Additional Features in edit mode`
+- `should handle empty backstory with placeholder text`
+- `should handle empty Additional Features with graceful empty state`
+
+### Test Dependencies
+- Mock character data with backstory text (plain and with markdown-lite formatting)
+- Mock character data with additional features (multiple items)
+- Mock character data with empty backstory and no additional features
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for malformed markdown-lite input handling
+- **Accessibility**: No ARIA labels for formatting toolbar buttons, no keyboard shortcuts for formatting (Ctrl+B, Ctrl+I)
+- **Performance**: No specification for rendering performance with very long backstory text (5,000+ characters)
+
 ## Dependencies
 - Story 17.9 (Personality & Features) — Additional Features uses same format as Page 1 features
 - Epic 20 view/edit mode toggle system

@@ -41,6 +41,50 @@ As a player with homebrew modifications, I need to manually override computed va
 - Overrides are included in character export (JSON) and preserved on import
 - PDF export displays override values (not computed) for overridden fields
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should store both override value and computed value in character data Map structure`
+- `should use consistent naming convention for override field keys (e.g., "ac", "initiative", "skill.athletics", "save.strength")`
+- `should display override value when present, computed value otherwise`
+- `should continue running calculation engine without overwriting override values`
+- `should remove override flag and restore computed value on "Reset to Computed" action`
+- `should detect computed value changes after level-up and generate change notification`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display override icon (broken chain link or pen) on manually overridden fields`
+- `should show tooltip "This value is manually set. Calculated value: [N]. Click to reset." on override icon`
+- `should reset field to computed value when override indicator is clicked`
+- `should show notification "[Field] has a manual override of [X], but the calculated value changed to [Y]" after level-up`
+- `should persist overrides in IndexedDB as part of character model`
+- `should include overrides in character JSON export and preserve on import`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should override AC in edit mode, display override icon, and show computed value in tooltip`
+- `should persist override through level-up and show change notification when computed value changes`
+- `should export character with overrides as JSON, import, and verify overrides are preserved`
+- `should display override values (not computed) in PDF export for overridden fields`
+
+### Test Dependencies
+- Character fixture with overridable fields (AC, initiative, skill modifiers, saving throws)
+- Edit mode toggle for override editing
+- Level-up flow trigger for override persistence testing
+- Character export/import functions for round-trip testing
+- PDF export verification for override display
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for maximum number of simultaneous overrides per character
+- **Edge Cases**: "View All Overrides" summary mentioned in notes but not in acceptance criteria
+- **Accessibility**: Override icon needs ARIA label and keyboard accessibility — not specified
+- **Mobile/Responsive**: Override icon and tooltip behavior on mobile (touch vs hover) not specified
+
 ## Dependencies
 
 - Phase 3 character sheet edit mode (override editing happens in edit mode)

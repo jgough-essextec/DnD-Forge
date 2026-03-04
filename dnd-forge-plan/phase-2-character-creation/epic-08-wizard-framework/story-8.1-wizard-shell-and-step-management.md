@@ -53,6 +53,53 @@ As a player, I need a guided step-by-step interface so I can create my character
 - Non-caster classes cause Step 6 (Spellcasting) to be skipped and marked "N/A" in the progress bar
 - Keyboard navigation works: Enter/Tab to advance, Escape to go back, number keys to jump to completed steps
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define the wizard step registry with all 8 steps in correct order`
+- `should identify conditional steps (Spellcasting) in the step registry`
+- `should determine non-caster classes skip Step 6 (Fighter, Barbarian, Monk, Paladin, Ranger, Rogue)`
+- `should map cascade dependencies correctly (race change affects ability scores, class change affects spells/equipment/skills)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render the correct step component based on currentStep from the wizard store`
+- `should animate step transitions with framer-motion slide left on advance and slide right on back`
+- `should show progress sidebar with all 8 steps and correct visual states (completed, current, future, N/A)`
+- `should allow clicking completed steps to navigate back but prevent clicking future steps`
+- `should disable the Next button until current step validation passes and show tooltip explaining why`
+- `should show Save Character button on the final step instead of Next`
+- `should preserve all prior selections when navigating back`
+- `should show cascade warning dialog when changing a prior selection that invalidates later steps`
+- `should show Resume or Start Fresh modal when in-progress wizard state is found in sessionStorage`
+- `should skip Step 6 and mark it N/A in progress bar for non-caster classes`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete full wizard navigation from Step 0 to Step 7 for a caster class`
+- `should skip Spellcasting step when non-caster class is selected and navigate directly from Equipment to Review`
+- `should persist wizard state to sessionStorage, survive browser refresh, and offer resume`
+- `should handle keyboard navigation (Enter to advance, Escape to go back, number keys to jump)`
+
+### Test Dependencies
+- Mock Zustand wizard store with sessionStorage persist middleware
+- Mock step components for each wizard step (stub validate functions)
+- Mock framer-motion for animation assertions
+- Test fixtures for caster and non-caster class selections
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the wizard store is corrupted or contains invalid data on resume
+- **Loading/Empty States**: No loading UI defined while wizard state is being restored from sessionStorage
+- **Accessibility**: Keyboard navigation is specified but no ARIA live region announcements for step changes or validation errors
+- **Mobile/Responsive**: Progress sidebar collapse to horizontal bar at 768px is mentioned but no detail on touch/swipe gestures for step navigation
+- **Performance**: No render time criteria for step transitions or initial wizard load
+- **Dependency Issues**: Browser back/forward button integration with React Router is noted but not in acceptance criteria
+
 ## Dependencies
 
 - **Depends on:** Phase 1 Zustand stores with sessionStorage persist middleware, Phase 1 type system for wizard state shape

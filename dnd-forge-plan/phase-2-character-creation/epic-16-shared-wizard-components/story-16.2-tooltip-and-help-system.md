@@ -33,6 +33,44 @@ As a new player, I need tooltips and contextual help throughout the wizard so I 
 - Hints are dismissed after the first interaction and "seen" flags are persisted to user preferences
 - All tooltip interactions are accessible (keyboard focusable, screen reader compatible)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should contain approximately 50 game term entries in the dictionary`
+- `should return correct definition for known terms (e.g., "Proficiency Bonus", "Cantrip", "Armor Class")`
+- `should return undefined or fallback for unknown terms`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render GameTermTooltip wrapping a D&D term with hover tooltip on desktop`
+- `should render GameTermTooltip wrapping a D&D term with tap tooltip on mobile`
+- `should display plain-English definition from the centralized dictionary in the tooltip`
+- `should render StepHelp as a collapsible "Need Help?" panel with step-specific guidance`
+- `should show different help text for each wizard step`
+- `should highlight key interactive areas with pulsing borders on first visit to each step`
+- `should dismiss First-Time Hints after the first interaction`
+- `should persist "seen" flags to user preferences so hints don't reappear`
+- `should make all tooltip interactions accessible (keyboard focusable, screen reader compatible)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should visit Race Step for the first time, see pulsing hints, interact with a hint, and not see it again on return`
+
+### Test Dependencies
+- Mock user preferences store for First-Time Hints "seen" flag persistence
+- Game terms dictionary fixture
+- Step-specific help text fixtures
+
+## Identified Gaps
+
+- **Loading/Empty States**: No specification for what happens if game terms dictionary fails to load
+- **Accessibility**: Tooltip keyboard focusability is mentioned but no specific keyboard shortcut (e.g., Escape to dismiss) is defined
+- **Mobile/Responsive**: Tooltip positioning on mobile (tap) not specified; could overlap with other UI elements
+
 ## Dependencies
 
 - **Depends on:** Phase 1 project scaffolding (React, TypeScript, Tailwind CSS, shadcn/ui)

@@ -43,6 +43,48 @@ As a player, I need to make the starting equipment choices offered by my class, 
 - Inventory Summary panel shows all selected items, total weight, computed AC, and primary weapon damage
 - All choice groups must have selections before proceeding (including drill-down for generic items)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute AC correctly for light armor (base + full DEX mod)`
+- `should compute AC correctly for medium armor (base + DEX mod, max 2)`
+- `should compute AC correctly for heavy armor (flat AC, no DEX)`
+- `should add +2 AC for shield selection`
+- `should parse nested equipment choice groups from class data`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render class starting equipment choice groups as labeled sections with radio-button options`
+- `should open nested item picker filtered to relevant category when generic item choice (e.g., "a martial weapon") is selected`
+- `should display weapons with name, damage dice + type, properties, weight, and cost in WeaponPicker`
+- `should display armor with name, category, AC, DEX cap, stealth penalty, weight, STR requirement, and computed AC in ArmorPicker`
+- `should show background equipment as a separate read-only section`
+- `should show running Inventory Summary panel with total weight, computed AC, and primary weapon damage`
+- `should require all choice groups to have selections (including drill-down) before proceeding`
+- `should support search, filter, and sort in WeaponPicker and ArmorPicker`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete Fighter starting equipment selection with chain mail, martial weapon drill-down, and pack choice`
+- `should see computed AC update in real-time as armor/shield selections change`
+
+### Test Dependencies
+- Mock SRD equipment data (weapons, armor, packs with contents)
+- Mock class starting equipment choice groups for Fighter, Wizard, Rogue
+- Mock wizard store with DEX/STR ability scores for AC/carrying capacity computation
+- Mock background equipment data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling missing or incomplete equipment data for a class
+- **Loading/Empty States**: No loading state for equipment catalog loading
+- **Accessibility**: No ARIA labels for radio-button equipment choices, weapon/armor picker tables, or nested drill-down navigation
+- **Mobile/Responsive**: Inventory Summary panel placement (right on desktop, bottom on mobile) mentioned but no detail on mobile interaction
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 5), Epic 10 Story 10.6 (class determines starting equipment options), Epic 11 Story 11.6 (DEX for armor AC computation, STR for carrying capacity), Epic 12 Story 12.4 (background equipment), Epic 16 Story 16.1 (ChoiceGroup for radio selections), Phase 1 SRD equipment data, Phase 1 calculation engine

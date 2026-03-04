@@ -36,3 +36,18 @@ An interactive spell slot management system integrated into the character sheet'
 - Enhanced `SpellLevelSection.tsx` (clickable slot circles)
 - Pact Magic slot section
 - Arcane Recovery modal
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 28.1 — Spell Slot Expend & Recover UI | 5 | 9 | 4 | 18 |
+| 28.2 — Warlock Pact Magic Slots | 5 | 6 | 2 | 13 |
+| 28.3 — Arcane Recovery (Wizard) | 5 | 7 | 3 | 15 |
+| **Totals** | **15** | **22** | **9** | **46** |
+
+### Key Gaps Found
+- Accessibility gaps: missing ARIA labels for slot circles (available/expended state), Pact Magic section, Arcane Recovery budget display; no keyboard interaction for toggling slots or navigating the recovery modal
+- Edge cases: Mystic Arcanum (Warlock 6th-9th level 1/day spells) tracking not specified in tasks; slot state inconsistency handling; multiclass Wizard using Wizard class level (not total) for Arcane Recovery budget
+- Dependency issues: circular dependency between Epic 28 (spell slots) and Epic 30 (rest automation) -- both depend on each other
+- Performance: slot state auto-save frequency and Arcane Recovery modal render time not specified

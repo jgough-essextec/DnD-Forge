@@ -32,6 +32,43 @@ As a developer, I need the styling framework configured so all components can us
 - The kitchen sink page at `/dev/kitchen-sink` shows all installed components with correct styling
 - The `ThemeProvider` wraps the app and provides consistent theming
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export ThemeProvider component that renders children`
+- `should apply dark fantasy theme CSS custom properties`
+- `should have correct color values for bg-primary (#1a1a2e) and accent-gold (#e8b430)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render ThemeProvider wrapping child components`
+- `should render kitchen sink page with all shadcn components visible`
+- `should apply Cinzel font-family to heading elements`
+- `should apply Inter font-family to body text elements`
+- `should render Button component with dark fantasy styling`
+- `should render Card component with correct border and background`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should load /dev/kitchen-sink page and display all shadcn components`
+- `should apply correct Google Fonts (Cinzel, Inter, JetBrains Mono)`
+- `should display dark fantasy color palette across all components`
+
+### Test Dependencies
+- ThemeProvider wrapper for rendering themed components in tests
+- Kitchen sink route must be accessible in test environment
+
+## Identified Gaps
+
+- **Loading/Empty States**: No specification for font loading fallback behavior (FOUT/FOIT)
+- **Accessibility**: No contrast ratio requirements specified for dark fantasy color palette
+- **Mobile/Responsive**: No specification for how the kitchen sink page renders on mobile viewports
+- **Performance**: No font loading performance targets (time to first render with custom fonts)
+
 ## Dependencies
 - **Depends on:** Story 1.1 (project must be initialized with Vite + React + TypeScript)
 - **Blocks:** All UI work in Phases 2-6 depends on the styling framework being configured

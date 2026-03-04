@@ -22,6 +22,10 @@ As a developer, I need a test runner configured so I can write and run unit test
 - [ ] **T1.4.4** — Write a trivial smoke test (`src/App.test.tsx`) that renders the root component and verifies it mounts
 - [ ] **T1.4.5** — Add npm scripts: `test`, `test:watch`, `test:coverage`
 - [ ] **T1.4.6** — Verify coverage reporting produces an HTML report in `coverage/`
+- [ ] **T1.4.7** — Install and configure Playwright for E2E testing with `npx playwright install`
+- [ ] **T1.4.8** — Create `src/test/utils/` with: `renderWithProviders.tsx` (test render wrapper), `mockStores.ts` (Zustand store mocks), `testData.ts` (character/race/class fixtures)
+- [ ] **T1.4.9** — Create `e2e/` directory with Playwright config and base fixtures
+- [ ] **T1.4.10** — Add npm scripts: `test:e2e`, `test:e2e:headed`, `test:all`
 
 ## Acceptance Criteria
 - `npm run test` runs all test files and reports results
@@ -30,6 +34,46 @@ As a developer, I need a test runner configured so I can write and run unit test
 - The smoke test passes, confirming the test environment is correctly configured
 - Path aliases (`@/`) resolve correctly in test files
 - Testing Library matchers (e.g., `toBeInTheDocument()`) are available globally in tests
+
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should run vitest and execute test files matching *.test.ts(x) pattern`
+- `should resolve @/ path alias in test files to src/`
+- `should have Testing Library matchers (toBeInTheDocument) available globally`
+- `should render App component in jsdom environment without errors`
+- `should generate HTML coverage report in coverage/ directory`
+- `should support watch mode via test:watch script`
+- `should export renderWithProviders utility that wraps components with required providers`
+- `should export mockStores utility with Zustand store mocks for character, wizard, UI, and dice stores`
+- `should export testData utility with character, race, and class fixture data`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should install Playwright browsers successfully via npx playwright install`
+- `should run Playwright test suite via test:e2e npm script`
+- `should run Playwright in headed mode via test:e2e:headed npm script`
+- `should run all tests (unit + E2E) via test:all npm script`
+- `should load application in Playwright browser and verify page title`
+- `should have e2e/ directory with Playwright config and base fixtures`
+
+### Test Dependencies
+- jsdom environment for component rendering
+- @testing-library/jest-dom for extended matchers
+- Playwright browsers installed via `npx playwright install`
+- `src/test/utils/renderWithProviders.tsx` — test render wrapper with providers
+- `src/test/utils/mockStores.ts` — Zustand store mocks
+- `src/test/utils/testData.ts` — character/race/class fixture data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens when coverage thresholds are not met (fail CI vs warning)
+- **Accessibility**: No mention of accessibility testing tools (axe-core integration with Testing Library)
+- **Performance**: No test execution time targets for CI pipeline
+- **Dependency Issues**: Playwright browser installation may require system-level dependencies not specified
 
 ## Dependencies
 - **Depends on:** Story 1.1 (project must be initialized with Vite + TypeScript)

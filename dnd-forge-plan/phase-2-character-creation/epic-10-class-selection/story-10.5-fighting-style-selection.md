@@ -38,6 +38,41 @@ As a Fighter, Paladin, or Ranger player, I need to choose my Fighting Style at l
 - The selected fighting style is captured in the wizard store
 - Classes other than Fighter/Paladin/Ranger do not see the fighting style selector
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct fighting style options for Fighter (6 options), Paladin (4 options), and Ranger (4 options)`
+- `should compute ability-based recommendation (high DEX -> Archery, high STR -> Great Weapon Fighting)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render fighting style selector only for Fighter, Paladin, and Ranger`
+- `should display each class's available fighting style options as radio cards with name and mechanical description`
+- `should allow selecting only one fighting style at a time`
+- `should show recommendation tip based on character ability scores when already assigned`
+- `should capture selected fighting style in the wizard store`
+- `should not render fighting style selector for non-martial classes (Wizard, Bard, etc.)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select Fighter, choose Archery fighting style, and see it captured in wizard store`
+- `should select Ranger with high DEX, see Archery recommendation, and select Two-Weapon Fighting`
+
+### Test Dependencies
+- Mock SRD class data with fighting style options per class
+- Mock wizard store with pre-assigned ability scores for recommendation testing
+- Mock Epic 16 ChoiceGroup component
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if fighting style data is missing from class data
+- **Accessibility**: No keyboard navigation specified for radio card selection
+- **Dependency Issues**: Fighting style affects equipment recommendations in Step 5 but no bidirectional dependency is documented in this story
+
 ## Dependencies
 
 - **Depends on:** Story 10.1 (class must be selected to determine if fighting style applies), Epic 11 (ability scores may be assigned via back-navigation for recommendations), Epic 16 Story 16.1 (ChoiceGroup component), Phase 1 SRD class data

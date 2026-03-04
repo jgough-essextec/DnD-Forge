@@ -38,6 +38,35 @@ As a developer, I need repository functions for campaign management.
 - Join codes are unique across all campaigns
 - Integration tests verify the full campaign lifecycle including character association
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate UUID and unique 6-char join code when creating a campaign via createCampaign`
+- `should set timestamps on campaign creation via createCampaign`
+- `should retrieve a campaign by ID via getCampaign`
+- `should return undefined for non-existent campaign ID via getCampaign`
+- `should return all campaigns sorted by most recently updated via getAllCampaigns`
+- `should update specified fields and updatedAt timestamp via updateCampaign`
+- `should add characterId to campaign and set campaignId on character via addCharacterToCampaign`
+- `should remove characterId from campaign and clear campaignId on character via removeCharacterFromCampaign`
+- `should return all characters associated with a campaign via getCharactersByCampaign`
+- `should generate unique join codes across campaigns`
+- `should apply default house rules when not specified`
+
+### Test Dependencies
+- `fake-indexeddb` for IndexedDB mocking
+- Database singleton from Story 5.1
+- Character CRUD functions from Story 5.2
+- Campaign type from Story 2.9
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens when adding a character that is already in a campaign (move or reject?)
+- **Error Handling**: Campaign deletion behavior for associated characters (clear campaignId) should be explicit in acceptance criteria
+- **Edge Cases**: Join code collision handling (extremely unlikely but should retry on uniqueness failure)
+
 ## Dependencies
 - **Depends on:** Story 5.1 (database schema and singleton), Story 5.2 (Character CRUD for updating character's campaignId), Story 2.9 (Campaign, HouseRules, SessionNote, NPC types)
 - **Blocks:** Epic 6 (Stores will bridge to campaign CRUD), Phase 4+ (Campaign management UI)

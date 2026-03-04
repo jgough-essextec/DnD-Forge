@@ -52,6 +52,31 @@ As a developer, I need class types that capture the full complexity of class fea
 - `ClassSelection` captures all player choices made during class selection
 - `ASILevel` correctly represents the different ASI schedules for Fighter, Rogue, and standard classes
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define HitDie type with values 4, 6, 8, 10, 12`
+- `should define MechanicalEffect as discriminated union with type field for runtime discrimination`
+- `should define Feature interface with recharge (shortRest/longRest/none) and usage counting`
+- `should define ClassSpellcasting supporting all SpellcastingType values (full, half, third, pact, none)`
+- `should define SpellSlotProgression as 20-element array`
+- `should define Class interface with features as Record<number, Feature[]>`
+- `should define ClassSelection with classId, level, chosenSkills, and hpRolls`
+- `should define ASILevel arrays correctly for standard (4,8,12,16,19), Fighter (4,6,8,12,14,16,19), and Rogue (4,8,10,12,16,19)`
+- `should define FightingStyle union with all 6 styles`
+- `should define ClassProficiencies with skillChoices using choose-from pattern`
+
+### Test Dependencies
+- No mock data needed — these are type compilation and constant verification tests
+- Depends on AbilityName, SkillName from Story 2.1
+
+## Identified Gaps
+
+- **Edge Cases**: MechanicalEffect union may need to be extensible for future class features not yet enumerated
+- **Dependency Issues**: MechanicalEffect is consumed by Story 2.2 (Race types) but defined here; should be in a shared types file to prevent import cycles
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses AbilityName, SkillName, AbilityScores types)
 - **Blocks:** Story 2.4 (Equipment types use WeaponCategory, ArmorCategory), Story 2.5 (Spell types use SpellcastingType), Story 2.8 (Character master type), Story 3.2 (Class data files), Story 4.3 (Combat calculations)

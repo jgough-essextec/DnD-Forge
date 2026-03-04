@@ -41,6 +41,45 @@ As a player sensitive to motion, I need all animations to respect my system pref
 - Loading spinners are replaced with static "Loading..." text or simple progress bar when reduced motion is active
 - No vestibular triggers remain when reduced motion is enabled
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should detect system prefers-reduced-motion preference via window.matchMedia`
+- `should provide useReducedMotion() hook returning correct value based on system and in-app preferences`
+- `should allow in-app toggle to override system reduced motion preference`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should show dice results instantly (no tumble animation) when reduced motion is active`
+- `should apply instant page transitions (no slide/fade) when reduced motion is active`
+- `should show modals without open/close animation when reduced motion is active`
+- `should apply instant HP bar changes (no animated counting) when reduced motion is active`
+- `should show toast notifications without slide-in animation when reduced motion is active`
+- `should replace spinning loaders with static "Loading..." text when reduced motion is active`
+- `should persist reduced motion toggle preference in IndexedDB across sessions`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should respect system prefers-reduced-motion and disable all animations app-wide`
+- `should toggle in-app reduced motion setting and verify all animations are disabled`
+- `should load the app with no vestibular triggers when reduced motion is enabled`
+
+### Test Dependencies
+- System `prefers-reduced-motion` media query mock
+- useReducedMotion() React context
+- All animated components (dice roller, framer-motion pages, modals, HP bar, toasts, loaders)
+- IndexedDB preferences mock for toggle persistence
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior when system preference and in-app toggle conflict not explicitly specified (in-app overrides, but what if system is "reduce" and in-app is "normal"?)
+- **Error Handling**: No fallback if `window.matchMedia` is unsupported
+- **Performance**: No specification for how instant transitions affect perceived performance vs. animated ones
+
 ## Dependencies
 
 - All Phase 1-5 features complete (animation audit spans entire app)

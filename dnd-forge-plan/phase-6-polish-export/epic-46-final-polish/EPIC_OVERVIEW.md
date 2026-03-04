@@ -40,3 +40,25 @@ Address all the small UX improvements deferred from earlier phases. This is the 
 - Polished micro-interactions (button press, HP change, level-up, nat-20, card hover)
 - Manual override system for computed character values
 - Complete settings page with first-run welcome experience
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 46.1 — Loading States & Skeleton Screens | 0 | 7 | 3 | 10 |
+| 46.2 — Empty States | 0 | 11 | 2 | 13 |
+| 46.3 — Error States & Recovery | 5 | 6 | 3 | 14 |
+| 46.4 — Micro-Interactions & Delight | 2 | 8 | 4 | 14 |
+| 46.5 — Manual Override System | 6 | 6 | 4 | 16 |
+| 46.6 — Settings & Preferences Polish | 3 | 10 | 3 | 16 |
+| **Totals** | **16** | **48** | **19** | **83** |
+
+### Key Gaps Found
+- Skeleton screen accessibility (aria-busy, aria-label) not specified
+- Empty state race condition with skeleton screens (briefly showing empty before data loads) not addressed
+- React error boundary limitation (doesn't catch event handler or async errors) -- catch strategy needed
+- Emergency "Export All Data" failure scenario (completely corrupted IndexedDB) not addressed
+- Sound effects toggle needed in settings but not in acceptance criteria for Story 46.4
+- Screen-edge flash for nat-20 could be a vestibular trigger under reduced motion -- not explicitly addressed
+- "Clear All Data" double confirmation (type "DELETE") mentioned in notes but not in acceptance criteria
+- Settings page mobile layout and keyboard navigation not specified

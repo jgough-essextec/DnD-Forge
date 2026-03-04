@@ -36,3 +36,20 @@ Make the app installable on any device (desktop, mobile) with full offline funct
 - Network status indicator (online/offline badge)
 - "Changes saved locally" reassurance messaging
 - First-time cache completion tracking
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 43.1 — Service Worker & Offline Caching | 3 | 3 | 8 | 14 |
+| 43.2 — Web App Manifest | 4 | 4 | 3 | 11 |
+| 43.3 — Offline UX Indicators | 2 | 7 | 3 | 12 |
+| **Totals** | **9** | **14** | **14** | **37** |
+
+### Key Gaps Found
+- Service worker partial install failure recovery not specified
+- iOS Safari custom install prompt not possible (no beforeinstallprompt support) -- manual "Add to Home Screen" only
+- navigator.onLine false positives mitigation not addressed
+- Offline badge ARIA announcement for screen reader users not specified
+- SRD caching progress indicator design (bar, percentage, style) not detailed
+- Install prompt banner accessibility (focus management, ARIA) not specified

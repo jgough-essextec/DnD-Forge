@@ -43,6 +43,46 @@ The campaign list uses the same visual patterns as the character gallery (respon
 - "Show Archived" toggle reveals archived campaigns with muted styling
 - Sort dropdown provides Last Updated, Name A-Z, and Date Created options
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should sort campaigns by Last Updated (default), Name A-Z, and Date Created`
+- `should filter campaigns to exclude archived when "Show Archived" toggle is off`
+- `should include archived campaigns with muted styling when "Show Archived" toggle is on`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render campaign cards in a responsive grid with name, description preview, player count, and setting tag`
+- `should display empty state message when no campaigns exist`
+- `should navigate to /campaign/:id when a campaign card is clicked`
+- `should open kebab menu with Edit, Archive, Delete, Export, Copy Join Code actions`
+- `should open create campaign modal when FAB is clicked`
+- `should toggle archived campaigns visibility with "Show Archived" toggle`
+- `should apply selected sort order from dropdown to the campaign list`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display campaign list accessible from main navigation alongside character gallery`
+- `should create a campaign via FAB and see it appear in the list`
+- `should archive a campaign and verify it appears only when "Show Archived" is enabled`
+
+### Test Dependencies
+- Mock Zustand campaign store with sample campaigns (active, archived, empty)
+- Mock React Router navigation
+- Sample campaign fixtures with varied states (active, archived, different sort dates)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling failed campaign deletion or archive operations
+- **Loading/Empty States**: No loading spinner specified while campaigns load from IndexedDB
+- **Accessibility**: No keyboard navigation spec for card grid or kebab menu (focus management, arrow keys)
+- **Mobile/Responsive**: Grid column breakpoints (1-3 columns) not explicitly defined
+- **Edge Cases**: Behavior with large number of campaigns (50+) not specified; no pagination or virtual scrolling mentioned
+
 ## Dependencies
 
 - Story 33.1 — Campaign data model and Zustand store

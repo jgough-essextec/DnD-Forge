@@ -38,6 +38,32 @@ As a developer, I need all SRD weapons, armor, adventuring gear, tools, and pack
 - Starting gold formulas are correct for all 12 classes
 - Every data entry passes TypeScript type checking against its respective interface (Weapon, Armor, EquipmentItem)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export weapons array with all SRD weapons across 4 categories`
+- `should have Longsword with versatile property and 1d8/1d10 damage dice`
+- `should have all 13 armor types plus shield with correct AC values`
+- `should have Plate armor with base AC 18, dexCap 0, and STR requirement 15`
+- `should have Studded Leather with base AC 12 and dexCap null (uncapped)`
+- `should have all 7 equipment packs with complete contents`
+- `should have starting gold formulas for all 12 classes`
+- `should have Monk starting gold as 5d4 (no x10 multiplier)`
+- `should have all adventuring gear items with name, cost, and weight`
+- `should have all tool types including artisan tools, gaming sets, and instruments`
+
+### Test Dependencies
+- Weapon, Armor, EquipmentItem type interfaces from Story 2.4
+- Import via `@/data/weapons`, `@/data/armor`, etc.
+
+## Identified Gaps
+
+- **Edge Cases**: Lance and Net weapons have "Special" property with unique rules; structured representation not specified
+- **Edge Cases**: Equipment pack contents should reference item IDs from adventuring gear but cross-referencing mechanism not specified
+- **Dependency Issues**: Monk weapon eligibility (simple melee without Two-Handed or Heavy) is a class-specific rule that should be queryable from data
+
 ## Dependencies
 - **Depends on:** Story 2.4 (Weapon, Armor, EquipmentItem, EquipmentCategory, WeaponProperty, ArmorType, CurrencyAmount types)
 - **Blocks:** Story 4.3 (Combat calculations use weapon/armor data), Story 4.6 (Currency/inventory calculations), Epic 6 Story 6.2 (Wizard store equipment selections)

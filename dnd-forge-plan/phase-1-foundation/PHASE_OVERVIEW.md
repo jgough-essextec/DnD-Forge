@@ -117,3 +117,30 @@ Parallelizable: Epics 3 and 7 can be worked simultaneously after Epic 2 is compl
 | Calculation Functions | ~35+ pure functions |
 | Database Functions | ~20+ CRUD operations |
 | Zustand Stores | 4 |
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 1 — Project Scaffolding | 27 | 13 | 21 | 61 | 5 |
+| 2 — Complete Type System | 87 | 0 | 0 | 87 | 5 |
+| 3 — SRD Game Data Layer | 67 | 0 | 0 | 67 | 6 |
+| 4 — Calculation Engine | 111 | 0 | 0 | 111 | 7 |
+| 5 — Database Layer | 44 | 2 | 0 | 46 | 6 |
+| 6 — State Management Stores | 38 | 3 | 0 | 41 | 7 |
+| 7 — Dice Engine | 15 | 0 | 0 | 15 | 3 |
+| **Totals** | **389** | **18** | **21** | **428** | **39** |
+
+### Testing Infrastructure Needed
+- **Vitest + jsdom**: Primary test runner for all unit and functional tests (configured in Story 1.4)
+- **@testing-library/react + @testing-library/jest-dom**: Component rendering and assertion utilities
+- **Playwright**: E2E testing framework for full browser integration tests (Story 1.4 T1.4.7-T1.4.10)
+- **fake-indexeddb**: IndexedDB mock for database layer tests in jsdom environment (Epic 5)
+- **src/test/utils/renderWithProviders.tsx**: Test render wrapper with all providers (Zustand stores, Router, Theme)
+- **src/test/utils/mockStores.ts**: Zustand store mocks for character, wizard, UI, and dice stores
+- **src/test/utils/testData.ts**: Character, race, class, and equipment fixture data for consistent test inputs
+- **Mock sessionStorage**: For Zustand persist middleware testing in wizard store (Epic 6)
+- **Mock window.matchMedia**: For responsive breakpoint testing in UI store (Story 6.3)
+- **Timer mocking (vi.useFakeTimers)**: For debounce testing in auto-save (Story 5.4)
+- **crypto.getRandomValues**: Must be available or polyfilled in test environment for dice engine tests (Epic 7)
+- **Mock calculation engine**: Deterministic mocks for calculation functions in store tests (Epic 6)

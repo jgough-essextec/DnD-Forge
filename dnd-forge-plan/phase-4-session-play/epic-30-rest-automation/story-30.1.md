@@ -90,6 +90,55 @@ Average value for spending = ceil(die/2) + CON modifier
 11. "Finish Short Rest" saves all changes
 12. Duration note displays at the top of the modal
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate hit die HP recovery as roll result + CON modifier (minimum 0 per die)`
+- `should cap HP recovery at max HP`
+- `should track available hit dice (total minus used) for each class in multiclass`
+- `should calculate average hit die value as ceil(die/2) + CON modifier`
+- `should recover all short-rest class features (Second Wind, Action Surge, Channel Divinity, Wild Shape, Ki Points, Warlock slots, Bardic Inspiration Lv5+)`
+- `should generate complete rest summary with HP before/after, dice spent, features recovered`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render ShortRestModal when "Short Rest" button is clicked`
+- `should display available hit dice with "Spend" buttons`
+- `should show roll result "Spent 1d10 + 2 = 8 HP recovered (HP: 18 -> 26)" after spending a die`
+- `should allow spending multiple hit dice sequentially`
+- `should show separate hit dice types for multiclass characters`
+- `should toggle "Take Average" to use fixed value instead of rolling`
+- `should display auto-recovered features in summary list`
+- `should prompt "Use Arcane Recovery?" for Wizard who hasn't used it today`
+- `should show complete rest summary with before/after comparison`
+- `should display duration note "A short rest takes at least 1 hour"`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete full short rest flow: spend 2 hit dice, see features recover, review summary, and finish`
+- `should take short rest as multiclass Fighter/Wizard, spend different die types, and use Arcane Recovery`
+- `should verify "Take Average" mode calculates correct HP recovery without rolling`
+- `should verify Warlock Pact Magic slots recover after short rest`
+
+### Test Dependencies
+- Mock character data for single-class and multiclass characters with hit dice, HP, class features
+- Mock dice engine for hit die roll results
+- Mock Arcane Recovery modal integration (Story 28.3)
+- Mock Zustand character store for feature recovery state
+- Feature recovery mapping data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the user has 0 available hit dice; no error state if the rest is interrupted
+- **Loading/Empty States**: No specification for the summary when no hit dice were spent and no features needed recovery
+- **Edge Cases**: "Quick Short Rest" option mentioned in notes but not in tasks or acceptance criteria; behavior when HP is already at max and no features need recovery (trivial rest); interaction between hit die spending and CON modifier changes
+- **Accessibility**: No keyboard navigation for the multi-step modal flow; no ARIA labels for "Spend" buttons; screen reader should announce HP recovery results
+- **Mobile/Responsive**: Modal sizing on mobile not specified; scroll behavior for long feature recovery lists
+
 ## Dependencies
 
 - Epic 26 (Dice Roller) for hit dice rolling animation

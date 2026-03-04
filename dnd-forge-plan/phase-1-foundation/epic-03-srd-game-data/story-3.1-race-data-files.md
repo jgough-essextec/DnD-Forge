@@ -39,6 +39,32 @@ As a developer, I need complete race data for all 9 SRD races so the wizard can 
 - Languages file includes all 16 SRD languages with script information
 - Data is importable via `@/data/races` path alias with full TypeScript type inference
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export races array with exactly 9 races`
+- `should have Dwarf race with CON+2 ability score increase and subraces Hill and Mountain`
+- `should have Elf race with DEX+2 and subraces High, Wood, Dark/Drow`
+- `should have Halfling race with DEX+2 and subraces Lightfoot and Stout`
+- `should have Human race with standard and Variant Human subraces`
+- `should have Dragonborn race with all 10 draconic ancestry types`
+- `should have all race entries pass TypeScript type checking against Race interface`
+- `should have Half-Elf with +1 to two chosen abilities modeled as player choice`
+- `should have Variant Human with feat selection modeled as player choice`
+- `should export languages array with all 16 SRD languages with script families`
+
+### Test Dependencies
+- Race type interface from Story 2.2
+- Import via `@/data/races` path alias
+
+## Identified Gaps
+
+- **Edge Cases**: Dragonborn Breath Weapon damage scaling (2d6 at 1st, 3d6 at 6th, etc.) storage format not specified
+- **Edge Cases**: Drow Sunlight Sensitivity is a mechanical penalty not covered in standard trait format
+- **Dependency Issues**: Variant Human requires feat data from Story 3.6, creating a cross-dependency during character creation
+
 ## Dependencies
 - **Depends on:** Story 2.2 (Race, Subrace, RacialTrait, Size, Sense, Resistance, DamageType types must be defined first)
 - **Blocks:** Story 4.1 (Ability score calculations use racial bonuses), Story 4.3 (Speed and AC calculations use race data)

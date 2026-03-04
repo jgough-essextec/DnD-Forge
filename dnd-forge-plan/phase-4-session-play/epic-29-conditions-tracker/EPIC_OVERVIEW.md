@@ -48,3 +48,18 @@ A visual conditions management system showing all 14 standard 5e conditions plus
 
 - `components/character/ConditionsTracker.tsx`
 - `utils/conditionModifiers.ts` (getConditionModifiers utility)
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 29.1 — Active Conditions Display | 3 | 10 | 3 | 16 |
+| 29.2 — Add / Remove Conditions | 6 | 10 | 4 | 20 |
+| 29.3 — Condition Effects on Sheet Display | 9 | 10 | 4 | 23 |
+| **Totals** | **18** | **30** | **11** | **59** |
+
+### Key Gaps Found
+- Accessibility gaps: missing ARIA labels for condition badges, Add Condition dropdown, exhaustion stepper; badges need keyboard navigation; popover and banners should be keyboard-dismissible and screen-reader accessible; color alone used for severity (needs additional indicators)
+- Edge cases: Incapacitated condition (condition #6) present in data but categorization uncertain; Prone condition attacker distance dependency (melee vs ranged) cannot be tracked; interaction between Grappled (speed 0) and Exhaustion Level 2 (speed halved) precedence
+- Performance: `getConditionModifiers()` recalculation should be memoized; no render time target for many simultaneous conditions
+- Error handling: missing/corrupted SRD data scenarios; no undo for accidental condition removal

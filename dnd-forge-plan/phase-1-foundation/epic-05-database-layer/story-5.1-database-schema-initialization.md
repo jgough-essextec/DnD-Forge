@@ -35,6 +35,30 @@ As a developer, I need the IndexedDB database schema created and auto-upgrading.
 - Integration tests verify table existence and index functionality
 - TypeScript generics provide type-safe table operations
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should initialize Dexie database without errors`
+- `should define characters table with correct indexes (id, name, campaignId, isArchived, updatedAt)`
+- `should define campaigns table with correct indexes (id, name, joinCode)`
+- `should define preferences table with id index`
+- `should export singleton database instance (same reference on multiple imports)`
+- `should have version 1 schema defined`
+- `should have TypeScript generics providing type-safe table operations`
+- `should create all 3 tables on first initialization`
+
+### Test Dependencies
+- `fake-indexeddb` library for mocking IndexedDB in Vitest jsdom environment
+- Character, Campaign, UserPreferences types from Epic 2
+
+## Identified Gaps
+
+- **Error Handling**: No specification for database initialization failure handling (corrupted IndexedDB, storage quota exceeded)
+- **Edge Cases**: No deleteDatabase() utility specified for development/testing cleanup
+- **Performance**: No specification for IndexedDB storage size limits or warnings
+
 ## Dependencies
 - **Depends on:** Story 1.3 (Dexie.js installed), Story 2.8 (Character type), Story 2.9 (Campaign type), Story 2.10 (UserPreferences type)
 - **Blocks:** Story 5.2 (Character CRUD), Story 5.3 (Campaign CRUD), Story 5.4 (Auto-save & Preferences)

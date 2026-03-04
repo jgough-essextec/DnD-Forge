@@ -51,6 +51,49 @@ As a player, I need to see a full preview of my finished character with all deri
 - The preview is read-only and styled with the dark fantasy theme (parchment textures, Cinzel headings)
 - Non-spellcasters do not see Page 3
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute all derived stats correctly: ability modifiers, saving throws with proficiency, skill modifiers with proficiency`
+- `should compute AC correctly based on equipped armor type, DEX modifier, shield, and class features`
+- `should compute HP as hit die max + CON modifier + subclass bonuses (Draconic Resilience, Hill Dwarf Toughness)`
+- `should compute initiative as DEX modifier`
+- `should compute passive Perception as 10 + Perception skill modifier`
+- `should compute attack bonuses (melee STR + prof, ranged DEX + prof, finesse best of STR/DEX + prof)`
+- `should compute spell save DC as 8 + proficiency + spellcasting ability modifier`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Page 1 with character header, ability scores, saving throws, skills, AC, HP, initiative, attacks, personality, features`
+- `should render Page 2 with appearance, backstory, allies, equipment inventory, and treasure`
+- `should render Page 3 with spellcasting details only for spellcasters`
+- `should not render Page 3 for non-spellcasters`
+- `should display all values correctly computed by the calculation engine`
+- `should style the preview with dark fantasy theme (parchment textures, Cinzel headings)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display a complete character sheet preview for a High Elf Wizard with all 3 pages`
+- `should display a complete character sheet preview for a Human Fighter with only 2 pages (no spellcasting)`
+- `should show correct attack strings (e.g., "Longsword: +5 to hit, 1d8+3 slashing")`
+
+### Test Dependencies
+- Mock complete wizard state for a fully-built character (all steps completed)
+- Mock Phase 1 calculation engine for all derived stat computations
+- Mock Epic 16 display components (AbilityScoreDisplay, ProficiencyDot, ModifierBadge, DiceNotation)
+- Test fixtures for caster and non-caster complete characters
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if wizard state is incomplete when reaching review (e.g., skipped optional fields)
+- **Loading/Empty States**: No loading state while calculation engine computes all derived stats
+- **Performance**: Computing all derived stats from full wizard state could be expensive; no render time target specified
+- **Mobile/Responsive**: 3-page layout navigation (tabs vs. scroll) is mentioned but not formalized in acceptance criteria
+
 ## Dependencies
 
 - **Depends on:** ALL previous Epics (8-14, 16) — all wizard state must be available to assemble the complete character preview; Phase 1 calculation engine for all derived stats; Epic 16 Story 16.3 (AbilityScoreDisplay, ProficiencyDot, ModifierBadge, DiceNotation)

@@ -30,6 +30,27 @@ As a developer, I need campaign, session, and DM note types.
 - `NPC` supports optional partial character stats for DM reference
 - `Campaign.joinCode` is typed as a string (6-char alphanumeric, enforced at runtime)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define Campaign interface with id, name, dmId, playerIds, characterIds, joinCode`
+- `should define HouseRules with abilityScoreMethod supporting standard, pointBuy, rolled, and any`
+- `should define HouseRules with allowMulticlass and allowFeats boolean flags`
+- `should define SessionNote with optional xpAwarded and lootDistributed per character`
+- `should define NPC with optional stats as Partial<Character>`
+- `should define Campaign.joinCode as string type`
+
+### Test Dependencies
+- No mock data needed — these are type compilation tests
+- Depends on Character type from Story 2.8
+
+## Identified Gaps
+
+- **Edge Cases**: Campaign.joinCode is typed as string but should be validated at runtime as 6-char alphanumeric; no type-level constraint
+- **Edge Cases**: No specification for maximum number of characters or players per campaign
+
 ## Dependencies
 - **Depends on:** Story 2.8 (NPC uses Partial<Character>)
 - **Blocks:** Epic 5 Story 5.3 (Campaign CRUD operations), Phase 4+ DM features

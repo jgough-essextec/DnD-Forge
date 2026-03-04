@@ -50,6 +50,45 @@ This story establishes the visual and functional distinction between DM context 
 - Changes made in DM context are immediately visible in player context and vice versa
 - Navigation between contexts is seamless (no data reload required)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should determine DM context when character is viewed from campaign dashboard route`
+- `should determine player context when character is viewed from gallery route`
+- `should share the same IndexedDB record for edits in both contexts`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "DM View" badge in header when character is in DM context`
+- `should NOT render "DM View" badge in player context`
+- `should show DM notes panel in DM context and hide it in player context`
+- `should display campaign context badge with campaign name and quick link to dashboard in DM view`
+- `should show "Award XP" and "Add to Encounter" actions in DM context only`
+- `should show session play tools (dice, HP, spell slots) prominently in player context`
+- `should reflect edits from DM context immediately in player context without data reload`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should view a character from campaign dashboard with DM badge and notes visible`
+- `should view the same character from gallery without DM badge and notes hidden`
+- `should edit HP in DM context and verify the change is visible in player context`
+
+### Test Dependencies
+- Mock DMContextProvider with isDMView flag
+- Character fixture in a campaign (for DM context testing)
+- Mock React Router location for context detection
+- Mock DM notes panel component
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for context badges; no screen reader announcement when switching contexts
+- **Edge Cases**: Behavior when character is removed from campaign while DM view is open; behavior when campaign is deleted while viewing a character in DM context
+- **Mobile/Responsive**: No mobile-specific layout for DM vs player context indicators
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model, character-campaign relationship

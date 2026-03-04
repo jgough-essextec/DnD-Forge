@@ -39,6 +39,31 @@ As a developer, I need a store for dice roll history and configuration.
 - `removeRoll(id)` removes a specific roll from history
 - Tests verify result ranges, advantage/disadvantage mechanics, and history management
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should initialize with empty roll history and maxHistory of 50`
+- `should produce valid DiceRoll result within die range via roll`
+- `should add roll result to front of history via roll`
+- `should take higher of 2d20 when advantage is true via roll`
+- `should take lower of 2d20 when disadvantage is true via roll`
+- `should cancel out advantage and disadvantage (roll normally) when both true via roll`
+- `should include individual die results, modifier, total, label, and timestamp in roll result`
+- `should truncate history at maxHistory (remove oldest when exceeded)`
+- `should clear all roll history via clearHistory`
+- `should remove specific roll by ID via removeRoll`
+
+### Test Dependencies
+- Mock dice engine from Story 7.1 for deterministic testing
+- DiceRoll, DieType types from Story 2.10
+
+## Identified Gaps
+
+- **Edge Cases**: Advantage/disadvantage results array should contain both d20 values for transparency but this is mentioned in notes only
+- **Edge Cases**: No specification for roll behavior with empty dice array
+
 ## Dependencies
 - **Depends on:** Story 2.10 (DiceRoll, DieType types), Story 7.1 (dice engine for actual random number generation)
 - **Blocks:** Phase 2+ Dice Roller UI, character sheet roll actions

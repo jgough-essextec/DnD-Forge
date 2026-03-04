@@ -72,6 +72,46 @@ Note: Warlock spell slots never exceed 5th level. Higher-level spells (6th-9th) 
 7. Pact Magic slot progression matches the Warlock level table
 8. Clickable circles for expend/recover work the same as standard slots
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should detect Warlock class from character data and return Pact Magic slot configuration`
+- `should return correct slot count and level for each Warlock level (e.g., Lv5 = 2 slots at 3rd level)`
+- `should recover all Pact Magic slots on short rest`
+- `should not recover standard spell slots on short rest for multiclass Warlock/caster`
+- `should keep Pact Magic slots separate from standard slots in multiclass configuration`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Pact Magic slots in a distinct purple-accented section`
+- `should display "Pact Magic Slots (Short Rest Recovery)" label`
+- `should show slot format as "N x Level M Slots" (e.g., "2 x 3rd Level Slots")`
+- `should render clickable expend/recover circles matching Story 28.1 pattern`
+- `should show Pact Magic slots visually separated from standard spell slots for multiclass characters`
+- `should recover all Pact Magic slots when short rest is triggered`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display Warlock Pact Magic section with correct slot count and level, expend a slot, take short rest, and verify recovery`
+- `should show both Pact Magic and standard slots for a multiclass Warlock/Wizard, short rest recovers only Pact Magic`
+
+### Test Dependencies
+- Mock Warlock character data at various levels (Lv1, Lv5, Lv11, Lv17)
+- Mock multiclass Warlock/Wizard character data
+- Mock short rest flow integration
+- Phase 1 Warlock Pact Magic table data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for Warlock characters with corrupted or missing Pact Magic data
+- **Edge Cases**: Mystic Arcanum (6th-9th level 1/day spells at Warlock levels 11+) tracking is mentioned in notes but not specified in tasks or acceptance criteria
+- **Accessibility**: No ARIA labels for the Pact Magic section; purple accent color contrast ratio for accessibility compliance not specified
+- **Dependency Issues**: Story depends on Story 30.1 for short rest recovery but also on Story 28.1 for the clickable circle pattern -- circular dependency between Epics 28 and 30 should be noted
+
 ## Dependencies
 
 - Story 28.1 (Spell Slot Expend & Recover UI) for clickable circle pattern

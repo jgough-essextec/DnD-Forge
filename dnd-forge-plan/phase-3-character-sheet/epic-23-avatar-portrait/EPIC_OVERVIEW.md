@@ -31,3 +31,17 @@ Allow players to upload, crop, and display a character portrait/avatar throughou
 - Avatar sizes: sm (32px), md (48px), lg (64px), xl (128px)
 - Parchment-textured border ring for dark fantasy aesthetic
 - Independent epic — can be built in parallel with other Phase 3 work
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 23.1 — Avatar Upload & Storage | 7 | 8 | 1 | 16 |
+| 23.2 — Avatar Display Across the App | 0 | 9 | 0 | 9 |
+| **Totals** | **7** | **17** | **1** | **25** |
+
+### Key Gaps Found
+- **Accessibility**: Missing ARIA labels for upload dialog, crop interface, and avatar images. No keyboard support for crop drag. No alt text specification for avatars
+- **Performance**: No specification for image processing time limits (large images may be slow to resize via canvas)
+- **Edge Cases**: Corrupted base64 avatar data fallback not specified. Touch-based crop interaction for mobile not specified
+- **Error Handling**: Canvas API failure during image processing not specified

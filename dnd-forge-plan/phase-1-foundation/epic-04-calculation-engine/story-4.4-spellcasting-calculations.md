@@ -50,6 +50,38 @@ As a developer, I need functions for spell save DC, spell attack bonus, spell sl
 - `getPactMagicSlots()` returns correct slot count and level for Warlock at all levels
 - Unit tests verify multiclass spell slot interaction, Warlock separation, and all preparation formulas
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return 8 + proficiency + INT mod for Wizard spell save DC via getSpellSaveDC`
+- `should return 8 + proficiency + WIS mod for Cleric spell save DC via getSpellSaveDC`
+- `should return 8 + proficiency + CHA mod for Bard spell save DC via getSpellSaveDC`
+- `should return proficiency + ability modifier for spell attack bonus via getSpellAttackBonus`
+- `should return correct spell slots for single-class Wizard at level 5 via getSpellSlots`
+- `should return correct spell slots for multiclass Cleric 3/Wizard 5 (combined level 8) via getSpellSlots`
+- `should return correct spell slots for multiclass Paladin 4/Sorcerer 3 (combined level 5) via getSpellSlots`
+- `should keep Warlock Pact Magic separate from multiclass spell slot pool via getSpellSlots`
+- `should return correct cantrips known for Wizard at level 1 and level 10 via getCantripsKnown`
+- `should return WIS mod + class level (min 1) for Cleric spells prepared via getSpellsPrepared`
+- `should return fixed table value for Bard spells known via getSpellsPrepared`
+- `should return correct Warlock pact slot count and level at all levels via getPactMagicSlots`
+- `should contribute 0 caster levels for Paladin level 1 (floor(1/2)=0) in multiclass`
+- `should contribute 1 caster level for Fighter (Eldritch Knight) level 3 (floor(3/3)=1) in multiclass`
+
+### Test Dependencies
+- Character type fixtures with Wizard, Cleric, Bard, Warlock, and multiclass configurations
+- Spell slot progression tables from Story 3.2
+- MULTICLASS_SPELL_SLOT_TABLE from Story 2.5
+- getModifier, getProficiencyBonus from Stories 4.1 and 4.2
+
+## Identified Gaps
+
+- **Edge Cases**: Multiclass characters with multiple spellcasting abilities have per-class spell save DCs; function signature returns single number but may need per-class support
+- **Edge Cases**: Minimum 1 prepared spell rule for prepared casters not explicitly tested
+- **Dependency Issues**: Half casters at level 1 contribute 0 caster levels; edge case of all-level-1 multiclass spellcasters should be tested
+
 ## Dependencies
 - **Depends on:** Story 2.3 (SpellcastingType, ClassSpellcasting), Story 2.5 (SpellSlots, PactMagic, SpellcastingData, MULTICLASS_SPELL_SLOT_TABLE), Story 2.8 (Character), Story 3.2 (class data, spell slot progression tables), Story 4.1 (getModifier, getEffectiveAbilityScores), Story 4.2 (getProficiencyBonus)
 - **Blocks:** Story 4.5 (level up shows new spell slots), Story 4.8 (validation checks spell counts)

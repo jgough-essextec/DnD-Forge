@@ -31,3 +31,20 @@ A seamless mode-switching system that transforms the character sheet between a c
 - Auto-save uses 500ms debounce with optimistic concurrency (version field)
 - Undo/redo uses full state snapshots (max 50 states, ~20KB each)
 - Cascade recalculation uses a dependency map for efficient partial recalculation
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 20.1 — Mode Toggle & Visual Differentiation | 2 | 11 | 2 | 15 |
+| 20.2 — Auto-Save with Debouncing | 5 | 7 | 1 | 13 |
+| 20.3 — Undo / Redo History | 5 | 10 | 0 | 15 |
+| 20.4 — Cascade Recalculation on Edit | 6 | 7 | 0 | 13 |
+| **Totals** | **18** | **35** | **3** | **56** |
+
+### Key Gaps Found
+- **Accessibility**: Missing ARIA labels for mode toggle button, undo/redo buttons, and save status indicator. No screen reader announcements for mode changes or save status
+- **Error Handling**: Missing retry behavior specification for auto-save failures, missing specification for calculation engine errors during cascade recalculation
+- **Performance**: No latency budget for cascade recalculation, no memory monitoring for undo stack (50 states x 20KB)
+- **Edge Cases**: Concurrent editing in multiple tabs, undo during in-progress auto-save, and simultaneous field changes within debounce window not fully specified
+- **Mobile/Responsive**: Keyboard shortcuts (Ctrl+E, Ctrl+Z) have no mobile equivalent specified

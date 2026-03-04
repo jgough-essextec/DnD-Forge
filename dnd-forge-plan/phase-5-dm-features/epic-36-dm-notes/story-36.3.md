@@ -65,6 +65,48 @@ NPC entries are stored on the Campaign object (as part of campaign data in Index
 - NPC entries persist to the campaign data in IndexedDB
 - All 6 role types and 4 status types are available
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should filter NPCs by name search (case-insensitive)`
+- `should filter NPCs by role (Ally, Enemy, Neutral, Patron, Merchant, Quest Giver)`
+- `should filter NPCs by status (Alive, Dead, Unknown, Captured)`
+- `should filter NPCs by location`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render NPC tracker in the "Notes" tab on campaign dashboard`
+- `should display NPC cards with name, role badges, status badge, and description preview`
+- `should create a new NPC with only a name (all other fields optional) via "Add NPC" button`
+- `should expand NPC detail view with all fields editable on card click`
+- `should auto-save NPC changes on field edit`
+- `should search NPCs by name and filter by role, status, and location`
+- `should cross-reference NPC names in session notes to tracker entries`
+- `should offer quick-add from session log with autocomplete for existing NPCs`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should create an NPC with minimal info (just name), then edit to add description, role, and status`
+- `should filter NPCs by role and status and verify correct results`
+- `should click an NPC name in a session note and navigate to their tracker entry`
+
+### Test Dependencies
+- Mock campaign with 5-10 NPC entries with varied roles and statuses
+- Session note fixtures with NPC references for cross-referencing
+- NPC fixture data with all 6 role types and 4 status types
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling NPC deletion when NPC is referenced in session notes
+- **Loading/Empty States**: No empty state for NPC tracker when no NPCs exist
+- **Accessibility**: No ARIA labels for role and status badges; no keyboard navigation for NPC card grid
+- **Mobile/Responsive**: No mobile-specific layout for NPC cards or detail view
+- **Edge Cases**: Maximum number of NPCs not specified; behavior with duplicate NPC names not addressed
+
 ## Dependencies
 
 - Epic 34 Story 34.1 — Campaign dashboard ("Notes" tab host)

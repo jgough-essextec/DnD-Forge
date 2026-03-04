@@ -63,6 +63,49 @@ Initiative rolls use the same dice rolling system from Phase 4 (1d20 + modifier)
 - Sort preview updates in real-time as rolls are made
 - "Confirm Order" locks initiative order and starts active combat
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should roll 1d20 + initiative modifier for each combatant and produce valid results (1-20 + mod)`
+- `should sort combatants by initiative total in descending order`
+- `should break ties by initiative modifier (higher goes first)`
+- `should maintain original add order when initiative total and modifier are tied`
+- `should apply a single initiative roll to all combatants in the same group`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render initiative roller screen with all combatants and editable initiative fields`
+- `should populate all initiative fields with staggered animation on "Roll All" click`
+- `should roll initiative for a single combatant when its d20 icon is clicked`
+- `should accept manual override of initiative value typed directly into the field`
+- `should toggle "Auto-roll monsters, manual for players" mode correctly`
+- `should show "Tie" indicator on combatants with identical initiative totals`
+- `should display real-time sort preview as rolls are made`
+- `should lock initiative order and start combat on "Confirm Order" click`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should roll initiative for all combatants with animation and display sorted order`
+- `should manually enter initiative values for players while auto-rolling for monsters`
+- `should confirm order and transition to the combat tracker main view`
+
+### Test Dependencies
+- Mock dice roller (deterministic results for testing sort order)
+- Combatant fixture list with varied initiative modifiers
+- Grouped monster fixtures for group rolling tests
+- Animation timing mocks for staggered roll effect
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling non-numeric manual initiative input
+- **Accessibility**: No keyboard shortcut for "Roll All"; no ARIA live region for real-time sort preview updates
+- **Mobile/Responsive**: No mobile layout specified for the initiative roller screen
+- **Edge Cases**: Behavior when all combatants have the same initiative modifier (all ties); behavior with only 1 combatant
+
 ## Dependencies
 
 - Story 35.1 — Encounter setup (provides the combatant list)

@@ -45,6 +45,47 @@ As a developer, I need SRD data to load on demand, not at initial page load, to 
 - TTI remains under 3 seconds with only Tier 1 data loaded at startup
 - Gallery and basic character sheet render correctly with only Tier 1 data
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should load Tier 1 SRD data (~50KB) at initial page load with races and classes names only`
+- `should load Tier 2 data on demand via dynamic import when race/class step opens`
+- `should load Tier 3 spells data on demand when spell step or spell page renders`
+- `should load Tier 4 monsters data on demand when DM starts an encounter`
+- `should cache loaded SRD data in Zustand store for instant subsequent access`
+- `should deduplicate concurrent requests for the same data file`
+- `should use requestIdleCallback for preloading hints to avoid blocking main thread`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should show skeleton loading states while SRD data loads`
+- `should render gallery and basic character sheet correctly with only Tier 1 data`
+- `should preload Tier 2 data when user navigates to creation wizard`
+- `should preload Tier 3 spell data when navigating to a caster character sheet`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should achieve TTI under 3 seconds with only Tier 1 data loaded at startup`
+- `should keep total SRD data payload across all tiers under 2MB`
+- `should load spell data seamlessly when opening spell browser for the first time`
+
+### Test Dependencies
+- SRD data files split into 4 tiers
+- DataLoader utility with Zustand store integration
+- requestIdleCallback mock for testing preload hints
+- Network request monitoring for verifying lazy loading behavior
+
+## Identified Gaps
+
+- **Loading/Empty States**: Skeleton loading state design for SRD data loading not detailed (just "skeleton")
+- **Error Handling**: No specification for what happens if a Tier 2/3/4 data file fails to load
+- **Edge Cases**: Behavior when user navigates away before data file finishes loading
+- **Performance**: No target for individual data tier load time
+
 ## Dependencies
 
 - Story 42.1 (bundle size analysis — need to understand current SRD data sizes)

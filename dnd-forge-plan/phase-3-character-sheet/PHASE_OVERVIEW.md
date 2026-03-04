@@ -86,3 +86,41 @@ Support image upload (JPEG/PNG, max 2MB) stored as base64 in IndexedDB, crop/res
 | Edit Mode Features | Auto-save, undo/redo, cascade recalc, mode toggle |
 | Import Validation Stages | 5 |
 | Gallery Features | Search, 4 filter types, 6 sort options, grid/list toggle |
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 17 — Sheet Page 1 (Core Stats) | 53 | 90 | 11 | 154 | 5 |
+| 18 — Sheet Page 2 (Backstory) | 13 | 46 | 3 | 62 | 5 |
+| 19 — Sheet Page 3 (Spellcasting) | 16 | 35 | 3 | 54 | 5 |
+| 20 — View / Edit Mode | 18 | 35 | 3 | 56 | 5 |
+| 21 — Character Gallery | 13 | 33 | 7 | 53 | 5 |
+| 22 — JSON Import / Export | 23 | 23 | 3 | 49 | 4 |
+| 23 — Avatar / Portrait | 7 | 17 | 1 | 25 | 4 |
+| 24 — Responsive Design | 0 | 33 | 6 | 39 | 4 |
+| 25 — Routing & Navigation | 5 | 35 | 7 | 47 | 4 |
+| **Phase 3 Totals** | **148** | **347** | **44** | **539** | **41** |
+
+### Test Distribution
+- **Unit Tests**: 148 (27%) -- Pure logic, calculations, data transforms, validators
+- **Functional Tests**: 347 (65%) -- Component rendering, user interactions, state changes
+- **E2E Tests**: 44 (8%) -- Critical user journeys, multi-step flows
+- Target ratio: Functional (70%) + E2E (20%) -- actual Functional+E2E = 73%, aligns with Phase 3 testing focus
+
+### Testing Infrastructure Needed
+- **Mock Data Fixtures**: Complete character data fixtures for various classes (Fighter, Wizard, Cleric, Bard, Warlock, Barbarian, Monk), races, levels, equipment loadouts, and spell lists
+- **Mock Stores/Contexts**: View/edit mode context provider, Zustand store mocks (character store, preferences store, save state store, undo/redo stack)
+- **Mock Services**: IndexedDB/Dexie.js mock layer, dice engine mock with controlled results, calculation engine mock with known input/output mappings
+- **Mock Components**: Phase 2 shared components (AbilityScoreDisplay, SpellDetailCard, spell browser, equipment picker)
+- **Mock APIs**: Canvas API mock for avatar processing, URL.createObjectURL/Blob mock for export, clipboard API mock, pako compression mock, File/drag-and-drop event mocks
+- **Viewport Utilities**: Viewport size mocking for responsive tests (375px, 640px, 768px, 1024px, 1440px+)
+- **Timer Utilities**: Fake timer support for debounce testing (500ms auto-save, 300ms recalculation, 200ms search debounce, 5-second undo window)
+- **Browser Compatibility**: Print stylesheet testing across Chrome, Firefox, Safari
+
+### Cross-Cutting Gaps
+- **Accessibility**: The most pervasive gap across all epics. Missing ARIA labels, keyboard navigation, screen reader support, and focus management across nearly every component. Recommend creating an accessibility audit checklist and dedicated accessibility test suite
+- **Error Handling**: Missing error states for IndexedDB operations (read failures, write failures, storage quota exceeded), invalid user input, and corrupted data across many stories
+- **Loading/Empty States**: Many sections start empty for new characters (Gap S1) but the specific loading UI and empty state treatments are inconsistently specified
+- **Performance**: No render time budgets, no specification for large data sets (100+ characters, 50+ equipment items, full 9-level spellcasters), no memory monitoring for undo stack
+- **Mobile/Responsive**: Several mobile-specific interactions (swipe gestures, touch crop, mobile keyboard shortcuts) mentioned in notes but not in acceptance criteria

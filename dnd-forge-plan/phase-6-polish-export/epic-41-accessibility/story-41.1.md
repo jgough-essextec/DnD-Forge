@@ -49,6 +49,47 @@ As a player who uses a keyboard, I need to navigate the entire app without a mou
 - Every focusable element has a visible focus indicator (gold or white outline, 2px minimum)
 - No instances of `outline: none` without a replacement focus style
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define all 9 keyboard shortcuts with correct key bindings and descriptions`
+- `should prevent keyboard shortcuts from firing when an input or textarea is focused`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should trap focus within modal when creation wizard modal is open`
+- `should return focus to the triggering element when a modal is closed`
+- `should close modal when Esc key is pressed`
+- `should show keyboard shortcuts help dialog when ? key is pressed`
+- `should activate proficiency circles, spell slot circles, and condition badges via Enter or Space key`
+- `should provide Move Up/Move Down keyboard alternatives for drag-and-drop ability score assignment`
+- `should display visible focus indicator (gold or white, 2px minimum) on every focusable element`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate through the entire gallery page in logical reading order using Tab key`
+- `should navigate through the full character sheet using Tab key without skipping elements`
+- `should open dice roller with D key, roll d20 with R key, and close with Esc`
+- `should toggle edit mode with E key on character sheet`
+- `should reorder ability scores using arrow keys in creation wizard`
+
+### Test Dependencies
+- Full app rendered with all Phase 1-5 features for tab order testing
+- Modal components (creation wizard, dice roller, PDF export, rest, level-up, campaign management)
+- @dnd-kit keyboard accessibility API
+- Focus indicator style verification utility
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior when multiple keyboard shortcuts conflict (e.g., D in a text field vs. dice roller shortcut)
+- **Accessibility**: No specification for skip navigation links (skip to main content)
+- **Accessibility**: No specification for landmark regions (main, nav, aside) for screen reader navigation
+- **Mobile/Responsive**: Keyboard shortcuts relevance on mobile not discussed (external keyboards on tablets)
+
 ## Dependencies
 
 - All Phase 1-5 features complete (audit spans the entire app)

@@ -37,6 +37,36 @@ As a developer, I need all non-UI runtime dependencies installed and import-veri
 - No version conflicts or peer dependency warnings in `npm install` output
 - Tree-shaking works correctly for `lodash-es` (verify with bundle analysis)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should import zustand and create a basic store without errors`
+- `should import Dexie and instantiate a database class without errors`
+- `should import react-router-dom and access BrowserRouter without errors`
+- `should import uuid and generate a valid UUID v4`
+- `should import lodash-es functions with tree-shaking (debounce, cloneDeep, set)`
+- `should import jspdf and create a new document instance`
+- `should import @dnd-kit/core and access DndContext`
+- `should import framer-motion and access motion component`
+- `should import lucide-react and access icon components`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should build the application successfully with all dependencies bundled`
+
+### Test Dependencies
+- No mock data needed — these are import verification tests
+- Dependency verification script from T1.3.9
+
+## Identified Gaps
+
+- **Performance**: No bundle size targets specified for tree-shaking verification of lodash-es
+- **Dependency Issues**: No specification for handling peer dependency conflicts between @dnd-kit and React version
+- **Dependency Issues**: framer-motion `prefers-reduced-motion` configuration not specified as acceptance criteria
+
 ## Dependencies
 - **Depends on:** Story 1.1 (project must be initialized)
 - **Blocks:** Epic 5 (Database Layer — needs Dexie), Epic 6 (State Management — needs Zustand), Story 1.5 (Routing — needs React Router)

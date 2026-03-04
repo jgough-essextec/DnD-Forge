@@ -45,6 +45,48 @@ As a player, when something goes wrong, I need clear error messages and a way to
 - `utils/errorHandler.ts` exists with categorized error handling (STORAGE, NETWORK, VALIDATION, RENDER)
 - Error handler is structured to support future sync/network features
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should categorize errors into STORAGE, NETWORK, VALIDATION, and RENDER in errorHandler.ts`
+- `should serialize all IndexedDB data to JSON via emergency export function independently of React rendering`
+- `should generate specific import error message for version mismatch: "exported from a newer version"`
+- `should generate specific import error message for unknown class: "unrecognized class: [name]"`
+- `should generate "Invalid file format" message for malformed import files`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render global error boundary with "Something went wrong. Your data is safe." message when unhandled error occurs`
+- `should render "Reload App" button on error boundary page`
+- `should render "Report Bug" link on error boundary page`
+- `should render "Export All Data" emergency button that works even in error state`
+- `should render IndexedDB quota exceeded error with guidance to clear old characters or export data`
+- `should render specific actionable import error messages for version mismatch and unknown class`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should catch unhandled React errors and display error boundary instead of white screen`
+- `should successfully export all data via emergency button even when app is in error state`
+- `should show specific import error message when importing a file with invalid format`
+
+### Test Dependencies
+- Error boundary trigger mechanism (intentional throw in child component)
+- IndexedDB error simulation (quota exceeded, corruption, version mismatch)
+- Invalid import file fixtures (wrong format, newer version, unknown class)
+- Emergency export function that bypasses React rendering
+- errorHandler.ts with categorized error handling
+
+## Identified Gaps
+
+- **Error Handling**: React error boundaries don't catch errors in event handlers or async code — catch strategy for those not specified
+- **Edge Cases**: Behavior when emergency "Export All Data" button itself fails (IndexedDB completely corrupted)
+- **Edge Cases**: Error count tracking and frequent-error warning mentioned in notes but not in acceptance criteria
+- **Accessibility**: Error messages need proper ARIA roles and live region announcements — not specified
+
 ## Dependencies
 
 - Phase 3 import/export functionality (import error enhancement)

@@ -39,6 +39,29 @@ As a developer, I need types for all gameplay-state tracking: conditions, combat
 - `Encounter` can track a full combat encounter with initiative order, rounds, and current turn
 - `RestType` distinguishes short and long rests
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define Condition enum with all 14 standard conditions`
+- `should define ConditionInstance with optional exhaustionLevel (1-6) for Exhaustion`
+- `should define DeathSaves with successes and failures as 0|1|2|3 literal types`
+- `should define Speed interface with required walk and optional fly, swim, climb, burrow`
+- `should define Attack interface with attackBonus, damage, abilityUsed, and isProficient`
+- `should define InitiativeEntry supporting both player characters and NPCs`
+- `should define Encounter with currentTurnIndex, round counter, and isActive flag`
+- `should define RestType as short or long`
+
+### Test Dependencies
+- No mock data needed — these are type compilation tests
+- Depends on AbilityName from Story 2.1, DamageDice from Story 2.4
+
+## Identified Gaps
+
+- **Edge Cases**: ConditionInstance.exhaustionLevel is optional even when condition is not Exhaustion; a discriminated union would be stricter
+- **Edge Cases**: DeathSaves does not track whether the last roll was a natural 1 (2 failures) or natural 20 (regain 1 HP)
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses AbilityName), Story 2.2 (uses DamageType via DamageDice), Story 2.4 (uses DamageDice)
 - **Blocks:** Story 2.8 (Character master type includes conditions, death saves, speed), Story 2.9 (Campaign types reference Encounter), Story 3.7 (Condition data), Story 4.3 (Combat calculations), Story 4.7 (Rest mechanics)

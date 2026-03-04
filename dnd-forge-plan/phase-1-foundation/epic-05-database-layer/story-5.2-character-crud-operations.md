@@ -43,6 +43,42 @@ As a developer, I need repository functions for all character data operations.
 - `importCharacter()` validates the format, generates a new ID, and saves to the database
 - Integration tests verify the complete CRUD lifecycle, duplicate data integrity, export/import roundtrip, and concurrent update rejection
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate UUID and set timestamps when creating a character via createCharacter`
+- `should set version to 1 for newly created character via createCharacter`
+- `should apply default values for missing fields in createCharacter`
+- `should retrieve a character by ID via getCharacter`
+- `should return undefined for non-existent character ID via getCharacter`
+- `should return CharacterSummary projections (not full objects) via getAllCharacters`
+- `should filter archived characters by default in getAllCharacters`
+- `should include archived characters when includeArchived is true via getAllCharacters`
+- `should increment version and update timestamp via updateCharacter`
+- `should reject update with version mismatch (optimistic concurrency) via updateCharacter`
+- `should set isArchived=true without deleting data via archiveCharacter`
+- `should permanently remove character from database via deleteCharacter`
+- `should deep clone with new UUID and timestamps via duplicateCharacter`
+- `should name duplicate "Copy of [name]" by default via duplicateCharacter`
+- `should export character with formatVersion string via exportCharacter`
+- `should import character with new ID and save to database via importCharacter`
+- `should roundtrip export then import preserving all data via exportCharacter/importCharacter`
+
+### Test Dependencies
+- `fake-indexeddb` for IndexedDB mocking
+- Database singleton from Story 5.1
+- Character type fixtures with various field configurations
+- uuid library from Story 1.3
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling database write failures (quota exceeded, transaction aborted)
+- **Error Handling**: Import validation does not specify behavior for unrecognized formatVersion
+- **Edge Cases**: Concurrent update detection error message format not specified
+- **Edge Cases**: No specification for getAllCharacters sort order (by updatedAt? by name?)
+
 ## Dependencies
 - **Depends on:** Story 5.1 (database schema and singleton), Story 2.8 (Character, CharacterSummary, CharacterExport types), Story 1.3 (uuid library)
 - **Blocks:** Story 5.4 (auto-save depends on updateCharacter), Epic 6 Story 6.1 (Character store bridges to these functions)

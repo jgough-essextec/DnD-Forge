@@ -69,6 +69,54 @@ When a spell requires the target to make a saving throw, the caster doesn't roll
 11. Death save natural 20 triggers HP recovery and stabilization
 12. Death save natural 1 counts as 2 failures
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should construct correct roll expression for each skill (1d20 + skill modifier)`
+- `should construct correct roll expression for each saving throw (1d20 + save modifier)`
+- `should double damage dice on critical hit (e.g., 1d8+3 becomes 2d8+3)`
+- `should process death save result: 10+ as success, 9- as failure, 20 as critical success, 1 as two failures`
+- `should determine death outcome: 3 failures = death, 3 successes = stabilized`
+- `should generate correct source label for each rollable value (e.g., "Stealth Check (+7)")`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render d20 icon next to each of the 18 skills on the character sheet`
+- `should render d20 icon next to each of the 6 saving throws`
+- `should show d20 icon on hover in view mode (subtle by default)`
+- `should open dice panel and auto-populate roll expression when a skill is clicked`
+- `should prompt "Roll Damage?" after a successful attack roll`
+- `should display "CRITICAL HIT!" banner and double damage dice on natural 20 attack`
+- `should display "Spell Save DC: [N]" for spells requiring saves instead of rolling`
+- `should roll death save and fill success/failure circle based on result`
+- `should fill two failure circles on death save natural 1`
+- `should trigger HP recovery and stabilization on death save natural 20`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click Stealth skill on character sheet, see dice panel open, roll execute, and result appear in history labeled "Stealth Check (+7)"`
+- `should click an attack, roll to hit, get prompted for damage, roll damage, and see both results`
+- `should roll a critical hit attack (nat 20), see CRITICAL HIT banner, and verify doubled damage dice`
+- `should roll a death save at 0 HP, see success/failure circle fill correctly`
+- `should roll death save natural 20 and verify character regains 1 HP and stabilizes`
+
+### Test Dependencies
+- Mock character data with known skill modifiers, attack bonuses, and spell save DCs
+- Mock dice engine to return specific values for testing critical hits, death saves
+- Mock character state for 0 HP death save scenario
+- Phase 3 character sheet component stubs for skill/save/attack sections
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if character data is incomplete (e.g., missing attack entries); no error state if dice engine fails
+- **Edge Cases**: Interaction with conditions that impose advantage/disadvantage on rolls (Epic 29 dependency); behavior when clicking a rollable value while an animation is in progress; attack-to-damage chain when target AC is unknown (always prompt?)
+- **Accessibility**: No keyboard shortcut for triggering rolls from sheet values; no focus management after dice panel opens; screen reader announcement for death save outcomes
+- **Performance**: No specification for response time from click to panel open + roll execution
+
 ## Dependencies
 
 - Story 26.1 (Dice Roller Panel) for opening/populating the panel

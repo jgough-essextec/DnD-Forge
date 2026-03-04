@@ -60,6 +60,45 @@ interface Combatant {
 - Lair actions display with a distinct castle/cave icon
 - Adding combatants mid-combat does not disrupt the current turn or round tracking
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should insert new combatant at correct position in initiative order based on roll`
+- `should determine if new combatant acts this round or next based on initiative vs current turn`
+- `should create lair action combatant on initiative count 20 by default`
+- `should not disrupt current turn or round tracking when adding mid-combat`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Add Combatant" button during active combat`
+- `should open the same add combatant form from encounter setup (Story 35.1)`
+- `should roll initiative immediately for newly added combatant`
+- `should display message "[Name] joins at initiative [N] -- acts this round!" or "acts next round"`
+- `should render "Add Lair Action" option with distinct castle/cave icon`
+- `should insert lair action at initiative count 20 with custom count option`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add a monster mid-combat, see it inserted in initiative order, and verify turn cycling remains correct`
+- `should add a lair action and verify it acts on initiative count 20 each round`
+
+### Test Dependencies
+- Active encounter fixture mid-combat (Round 2, Turn 3)
+- Mock dice roller for initiative roll
+- SRD monster data for mid-combat search
+- Lair action fixture data
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if the add combatant form is cancelled mid-combat (partial state)
+- **Accessibility**: No keyboard navigation for the mid-combat add combatant form
+- **Edge Cases**: Behavior when adding a combatant with initiative exactly matching the current turn combatant; DM manually setting initiative for new combatant (mentioned in notes but not in tasks)
+- **Mobile/Responsive**: No mobile layout for the mid-combat add combatant panel
+
 ## Dependencies
 
 - Story 35.1 — Encounter setup (add combatant form reused)

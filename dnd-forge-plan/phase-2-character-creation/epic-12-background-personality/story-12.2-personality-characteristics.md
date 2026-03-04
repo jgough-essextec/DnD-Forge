@@ -42,6 +42,38 @@ As a player, I need to define my character's personality traits, ideals, bonds, 
 - Ideals show alignment tags to help alignment-consistent selection
 - "Randomize All" button rolls all four sections simultaneously
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display four personality sections: Traits (2), Ideal (1), Bond (1), Flaw (1)`
+- `should show the selected background's characteristic table as selectable options in each section`
+- `should allow selecting 2 traits from the d8 table`
+- `should allow selecting 1 ideal, 1 bond, and 1 flaw from their respective tables`
+- `should randomly select from the table with animated dice roll when Roll Randomly is clicked`
+- `should replace table with text input when Write Custom toggle is activated`
+- `should support mixed selection (one trait from table + one custom trait)`
+- `should show alignment tags on ideal options (e.g., "(Good)", "(Chaotic)")`
+- `should roll all four sections simultaneously when Randomize All is clicked`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select 2 traits, 1 ideal, 1 bond, and 1 flaw from background tables and advance`
+- `should use Randomize All to generate all personality characteristics and verify entries are populated`
+
+### Test Dependencies
+- Mock SRD background data with personality characteristic tables
+- Mock Phase 1 dice engine for deterministic random roll results
+- Test fixtures for background personality tables (d8 traits, d6 ideals/bonds/flaws)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if personality tables are empty or missing for a background
+- **Edge Cases**: Character limit for custom entries is mentioned (200 chars) in notes but not in acceptance criteria
+- **Accessibility**: No keyboard navigation specified for table selection, custom input toggle, or dice roll animation
+
 ## Dependencies
 
 - **Depends on:** Story 12.1 (Background Selection — personality tables come from the selected background), Phase 1 dice engine (for random rolls), Phase 1 SRD background data (personality tables)

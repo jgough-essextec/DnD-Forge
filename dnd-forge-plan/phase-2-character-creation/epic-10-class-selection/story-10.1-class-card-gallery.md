@@ -59,6 +59,43 @@ As a player, I need to see all 12 classes with their roles and key features so I
 - If a race was previously selected, synergy indicators appear on classes matching the race's ability bonuses
 - The grid layout mirrors the Race Step (2 columns mobile, 3 tablet, 4-5 desktop)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define correct role archetype tags for all 12 classes`
+- `should compute race synergy indicators based on race ability bonuses vs. class primary abilities`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 12 SRD classes as selectable cards in a responsive grid`
+- `should display class name, icon placeholder, role archetype tags, hit die badge, primary ability icons, and role summary on each card`
+- `should select only one class at a time with gold border and accent glow`
+- `should filter classes by name using text search`
+- `should filter classes by role archetype, primary ability, and Has Spellcasting toggle`
+- `should show synergy indicators on classes matching race ability bonuses when race was previously selected`
+- `should render grid with 2 columns on mobile, 3 on tablet, 4-5 on desktop`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select a class card and see the detail panel open`
+- `should filter classes using search and role archetype filters and see correct results`
+
+### Test Dependencies
+- Mock SRD class data (all 12 classes with hit dice, primary abilities, proficiencies)
+- Mock wizard store with pre-selected race for synergy indicator testing
+- Mock Epic 16 shared components (SelectableCardGrid, SearchFilterBar)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for empty SRD class data or failed data loading
+- **Loading/Empty States**: No loading state while class data loads; no empty state for zero filter results
+- **Accessibility**: No ARIA labels specified for class cards, role tags, or filter controls
+- **Mobile/Responsive**: Responsive column counts specified but no minimum card dimensions or touch target sizes
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — this is Step 2), Epic 9 (race selection data for synergy indicators), Epic 16 Story 16.1 (SelectableCardGrid, SearchFilterBar), Phase 1 SRD class data

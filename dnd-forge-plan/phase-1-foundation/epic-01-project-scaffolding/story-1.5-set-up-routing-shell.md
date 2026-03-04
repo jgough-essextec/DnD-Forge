@@ -44,6 +44,52 @@ As a developer, I need the application routes defined with placeholder pages so 
 - A rendering error in any page triggers the error boundary and shows a recovery UI (not a white screen)
 - The error boundary provides a way to recover (e.g., "Go Home" button)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export all route path constants`
+- `should render ErrorBoundary fallback UI when child throws`
+- `should render ErrorBoundary "Go Home" button that navigates to /`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render MainLayout with top navigation bar containing logo and nav links`
+- `should render placeholder page for each defined route with correct "coming in Phase N" label`
+- `should render 404 page when navigating to undefined route`
+- `should render loading fallback during lazy component load`
+- `should display bottom tab bar with icons on mobile viewport (<=640px)`
+- `should display top navigation bar on desktop viewport (>640px)`
+- `should navigate between routes without full page reload`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate to / and display Character Gallery placeholder`
+- `should navigate to /character/new and display Creation Wizard placeholder`
+- `should navigate to /dice and display Dice Roller placeholder`
+- `should navigate to /settings and display Settings placeholder`
+- `should display 404 page for /nonexistent-route`
+- `should lazy-load page components on navigation (verify network tab)`
+- `should show bottom tab bar on mobile viewport and top nav on desktop`
+- `should recover from a rendering error via the error boundary`
+
+### Test Dependencies
+- React Testing Library with MemoryRouter for route testing
+- Mock lazy-loaded components for testing Suspense fallbacks
+- Viewport resizing utilities for responsive tests
+
+## Identified Gaps
+
+- **Error Handling**: No specification for nested error boundaries (per-route vs global only)
+- **Loading/Empty States**: No specification for the Suspense fallback loading UI design
+- **Accessibility**: No keyboard navigation specification for nav bar or mobile tab bar (tab order, focus management)
+- **Accessibility**: No ARIA labels specified for navigation elements
+- **Mobile/Responsive**: No specification for tablet viewport behavior (between 640px and 1024px)
+- **Performance**: No lazy-loading chunk size targets
+
 ## Dependencies
 - **Depends on:** Story 1.1 (project initialized), Story 1.2 (Tailwind/shadcn for styling), Story 1.3 (React Router installed)
 - **Blocks:** All page-level work in Phases 2-6 depends on the routing shell

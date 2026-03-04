@@ -28,6 +28,37 @@ As a player, I need my proficiency bonus prominently shown and accurately comput
 - Proficiency bonus is not directly editable in edit mode (computed from level)
 - Manual override toggle is available with a visible warning indicator
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute proficiency bonus as +2 for levels 1-4`
+- `should compute proficiency bonus as +3 for levels 5-8`
+- `should compute proficiency bonus as +4 for levels 9-12`
+- `should compute proficiency bonus as +5 for levels 13-16`
+- `should compute proficiency bonus as +6 for levels 17-20`
+- `should compute proficiency bonus using ceil(level/4)+1 formula`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render proficiency bonus as large "+N" in a circle badge`
+- `should position proficiency bonus between Inspiration toggle and saving throws list`
+- `should display tooltip explaining proficiency bonus and what it applies to`
+- `should not allow direct editing of proficiency bonus in edit mode`
+- `should show manual override toggle with warning indicator in edit mode`
+
+### Test Dependencies
+- Mock character data at various levels (1, 5, 9, 13, 17)
+- Mock calculation engine for proficiency bonus computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA label for the proficiency bonus badge, no screen reader text for the tooltip content
+- **Edge Cases**: No specification for level 0 or levels above 20 (boundary handling)
+
 ## Dependencies
 - Phase 1 calculation engine for proficiency bonus computation
 - Epic 20 view/edit mode toggle system

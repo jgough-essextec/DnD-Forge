@@ -111,6 +111,42 @@ Characters are linked to campaigns via `campaignId` on Character and `characterI
 - A persistent local `userId` is generated on first launch and stored in preferences
 - All types compile without errors and are importable by other Phase 5 stories
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export all TypeScript interfaces (Campaign, HouseRules, SessionNote, Encounter, Combatant, LootEntry, NPCEntry) from types/campaign.ts`
+- `should validate Campaign interface has all required fields (id, name, description, dmId, joinCode, houseRules, characterIds, sessions, isArchived, createdAt, updatedAt)`
+- `should validate HouseRules defaults to standard 5e values (allowFeats: true, allowMulticlass: true, startingLevel: 1)`
+- `should generate a valid UUID v4 for local userId on first launch`
+- `should not regenerate userId if one already exists in preferences`
+- `should enforce one-campaign-per-character constraint in store actions`
+- `should correctly bump Dexie schema version with migration preserving existing character data`
+- `should create campaign with auto-generated joinCode and dmId set to local userId`
+- `should resolve campaign characterIds to full Character objects in useCampaign hook`
+- `should return null/undefined from useCampaign when campaign ID does not exist`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should load campaigns from IndexedDB into Zustand store on initialization`
+- `should add a character to a campaign and update both campaign.characterIds and character.campaignId`
+- `should remove a character from a campaign without deleting the character`
+
+### Test Dependencies
+- Mock Dexie.js database with in-memory IndexedDB (fake-indexeddb)
+- Mock Zustand store for campaign state
+- Sample character fixtures from Phase 1-3 test data
+- UUID generation mock for deterministic testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling Dexie schema migration failures or IndexedDB quota exceeded scenarios
+- **Edge Cases**: Behavior undefined when characterIds references a deleted character; no validation for startingLevel range (1-20) at the type level
+- **Performance**: No specification for maximum number of campaigns or characters per campaign at the data layer
+- **Dependency Issues**: Preferences table for userId storage not explicitly defined in prior phases; may need to be created
+
 ## Dependencies
 
 - Phase 1-3 Dexie.js database setup (`db.ts`)

@@ -34,6 +34,35 @@ As a developer, I need a store for transient UI state.
 - The `isMobile` flag updates when the window is resized
 - The store does NOT persist across page reloads
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should initialize with no active modal, sidebar closed, view mode, mobile nav closed, dice roller closed, dark theme`
+- `should toggle sidebar state via toggleSidebar`
+- `should set activeModal to specific ID and null to close via setActiveModal`
+- `should toggle between view and edit modes via toggleEditMode`
+- `should toggle mobile nav open/close via toggleMobileNav`
+- `should toggle dice roller panel via toggleDiceRoller`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should detect mobile viewport (<=640px) via responsive breakpoint hook`
+- `should detect desktop viewport (>640px) via responsive breakpoint hook`
+- `should update isMobile flag when window is resized`
+
+### Test Dependencies
+- Mock window.matchMedia for responsive breakpoint testing
+- UIState type from Story 2.10
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for closeAllModals action when navigating between routes
+- **Edge Cases**: Theme synchronization between UI store and user preferences not specified as acceptance criteria
+- **Mobile/Responsive**: Tablet viewport behavior (640px-1024px) is not specified
+
 ## Dependencies
 - **Depends on:** Story 2.10 (UIState type), Story 5.4 (preferences for initial theme value)
 - **Blocks:** All Phase 2+ UI components that consume UI state (modals, navigation, edit mode, etc.)

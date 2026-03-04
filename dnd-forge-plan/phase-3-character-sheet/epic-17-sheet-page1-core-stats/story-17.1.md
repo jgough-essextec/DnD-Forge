@@ -32,6 +32,49 @@ As a player viewing my character, I need to see the top banner with my character
 - View mode shows clean text; edit mode shows editable inputs and dropdowns
 - Three tab panels are available: Core Stats, Backstory & Details, Spellcasting
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute class display string as "Level N [Subclass] [Class]" from character data`
+- `should compute XP progress percentage from current XP and level threshold`
+- `should format XP display as "current / threshold" string`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render CharacterSheet with three tab panels (Core Stats, Backstory & Details, Spellcasting)`
+- `should load character data from IndexedDB and display banner fields (name, class, level, race, background, alignment, XP, player name)`
+- `should render SheetBanner with character name on the left and identity grid on the right`
+- `should display class and level in the format "Level N [Subclass] [Class]"`
+- `should show XP with current/threshold and a progress bar`
+- `should display avatar thumbnail as circular 64px image in the banner`
+- `should render clean text in view mode with no form controls visible`
+- `should render editable inputs and dropdowns in edit mode`
+- `should switch between tab panels when tabs are clicked`
+- `should handle empty XP gracefully (XP = 0 at level 1)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate to character sheet, display banner, and switch between all three tabs`
+- `should toggle between view and edit mode and verify banner fields become editable`
+
+### Test Dependencies
+- Mock character data fixture with all identity fields populated
+- Mock character data fixture with minimal/empty fields (empty XP, no subclass)
+- Mock `useCharacter` hook returning character data from IndexedDB
+- Mock calculation engine for derived values
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if character data fails to load from IndexedDB (loading error state)
+- **Loading/Empty States**: No loading spinner or skeleton specified while character data is being fetched
+- **Accessibility**: No ARIA labels specified for tab panels, banner fields, or avatar image alt text
+- **Performance**: No render time targets for initial character sheet load
+
 ## Dependencies
 - Phase 1 calculation engine for computing derived values
 - Phase 2 character data stored in IndexedDB

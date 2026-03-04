@@ -40,6 +40,34 @@ As a developer, I need a Zustand store that manages the active character state a
 - All async actions properly set `loading` and `error` states
 - Tests verify initialization, loading, updates, and recalculation triggers
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should initialize with activeCharacter null, empty characters array, loading false, error null`
+- `should populate characters array from database via loadCharacters`
+- `should set activeCharacter from database and trigger recalculation via loadCharacter`
+- `should persist active character to database via saveCharacter`
+- `should create new character and set as activeCharacter via createNewCharacter`
+- `should remove character from database and update characters list via deleteCharacter`
+- `should create clone and add to characters list via duplicateCharacter`
+- `should update nested field on activeCharacter via updateField`
+- `should trigger auto-recalculation of derived stats when activeCharacter changes`
+- `should set loading=true during async operations and false after completion`
+- `should set error message on failed database operation`
+
+### Test Dependencies
+- Mock database layer (Story 5.2 functions)
+- Mock calculation engine (Epic 4 functions)
+- Character and CharacterSummary type fixtures
+
+## Identified Gaps
+
+- **Error Handling**: Error recovery mechanism not specified (how does user clear the error state?)
+- **Performance**: Auto-recalculation debouncing for rapid field updates (e.g., point buy) not specified as acceptance criteria
+- **Edge Cases**: updateField with invalid path does not have specified behavior
+
 ## Dependencies
 - **Depends on:** Story 5.2 (Character CRUD functions), Story 5.4 (auto-save hook), Story 2.8 (Character, CharacterSummary types), Epic 4 (calculation engine for derived stat computation)
 - **Blocks:** All Phase 2+ UI components that display or edit character data

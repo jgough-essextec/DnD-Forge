@@ -48,6 +48,49 @@ The widget must remain visible when the user switches between character sheet ta
 8. Widget persists across character sheet tab changes (Core Stats, Backstory, Spells)
 9. Widget is positioned above the dice roller FAB (no overlap)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute correct HP/max HP display values from character state`
+- `should determine widget visibility based on viewport width (<=640px shows widget)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render CompactHPWidget as a sticky floating element at the bottom of the mobile character sheet`
+- `should display current HP / max HP in large text`
+- `should show temp HP badge when temp HP is nonzero`
+- `should display AC badge`
+- `should open Take Damage modal tab when shield icon is tapped`
+- `should open Heal modal tab when heart icon is tapped`
+- `should collapse to minimal "HP: 25/35 | AC: 16" bar on swipe down`
+- `should expand back to full widget on swipe up`
+- `should persist across character sheet tab changes (Core Stats, Backstory, Spells)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display widget on mobile viewport, tap shield to take damage, verify HP updates on widget`
+- `should collapse widget, switch character sheet tabs, and verify widget remains visible`
+- `should verify widget is positioned above the dice roller FAB without overlap`
+
+### Test Dependencies
+- Mock character data with known HP, max HP, temp HP, AC
+- Viewport mocking for mobile display testing
+- Swipe gesture simulation utilities
+- Mock Story 27.1 damage/heal modal integration
+
+## Identified Gaps
+
+- **Error Handling**: No specification for widget behavior when character data is loading or unavailable
+- **Loading/Empty States**: No specification for widget appearance when character has no AC value
+- **Edge Cases**: Widget behavior on tablets (between mobile and desktop); behavior when HP bar needs to show both temp HP and 0 HP state simultaneously
+- **Accessibility**: No ARIA labels for shield/heart tap targets; no screen reader announcement for widget state (collapsed vs expanded); no keyboard equivalent for swipe gestures
+- **Mobile/Responsive**: Exact breakpoint for showing/hiding widget not aligned with Session View (640px in Story 32.1); widget height impact on scrollable content area
+- **Dependency Issues**: Widget should also hide on desktop per notes, but acceptance criteria don't mention desktop hiding behavior
+
 ## Dependencies
 
 - Story 27.1 (Damage & Healing Input) for the shared damage/heal modal and logic

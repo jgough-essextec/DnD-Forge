@@ -53,6 +53,47 @@ This story creates a skill proficiency matrix — a grid with characters as colu
 - Mobile layout pivots or provides "Who has X?" search mode
 - Clicking a cell triggers a skill check roll via the Phase 4 dice roller
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate correct skill modifiers based on ability scores and proficiency bonus`
+- `should identify the highest modifier per skill row for gold highlighting (including ties)`
+- `should group 18 skills correctly by ability score (STR, DEX, INT, WIS, CHA)`
+- `should distinguish between no proficiency, proficiency, and expertise indicators`
+- `should filter skill rows by search text input`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render 18 skill rows and N character columns in the matrix`
+- `should highlight highest modifier per skill with gold background, highlighting all ties`
+- `should display skill rows grouped by ability score with section headers`
+- `should filter skill rows when text is entered in search input`
+- `should toggle "Show only proficient" to hide non-proficient cells`
+- `should render column headers with rotated character names and class icons (desktop)`
+- `should trigger skill check roll via dice roller when a cell is clicked`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display the full skill matrix for a party and verify gold highlights on highest modifiers`
+- `should use "Who has X?" search mode on mobile to find characters with highest Perception`
+- `should click a skill cell and see a dice roll result from the Phase 4 dice roller`
+
+### Test Dependencies
+- Mock campaign with 3-5 characters with varied skill proficiencies and expertise
+- Mock Phase 4 dice roller for skill check integration
+- Character fixtures with known ability scores for deterministic modifier calculation
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA grid roles or keyboard navigation for the matrix; no screen reader support for proficiency indicators
+- **Mobile/Responsive**: Pivot layout vs "Who has X?" mode decision not finalized; breakpoint not defined
+- **Performance**: No render time target for 144+ cells (8 characters x 18 skills); lazy rendering recommendation not confirmed
+- **Edge Cases**: Behavior with 0 characters in campaign not specified for the matrix view
+
 ## Dependencies
 
 - Story 34.1 — Campaign dashboard layout (Party tab host)

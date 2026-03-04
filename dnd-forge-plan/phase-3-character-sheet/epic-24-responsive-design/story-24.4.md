@@ -37,6 +37,37 @@ As a player, I need to print my character sheet from the browser with a clean, r
 - No orphaned headers across page breaks
 - Works correctly in Chrome, Firefox, and Safari print
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should apply @media print styles that remove all UI chrome (nav, buttons, toggles)`
+- `should force white background with dark text in print mode`
+- `should force three-column Page 1 layout in print regardless of screen size`
+- `should start each sheet page on a new printed page`
+- `should render "Print" button in character sheet header`
+- `should show print options dialog with page selection (All, Page 1 Only, Pages 1 & 3, custom)`
+- `should hide parchment textures in print mode`
+- `should prevent orphaned headers across page breaks`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open print dialog, select pages, and verify print-friendly layout renders correctly`
+
+### Test Dependencies
+- Mock @media print stylesheet
+- Mock window.print() API
+- Mock character data with content on all three pages
+- Browser-specific print rendering validation (Chrome, Firefox, Safari noted)
+
+## Identified Gaps
+
+- **Accessibility**: No specification for print-specific alt text or image handling
+- **Edge Cases**: No specification for print behavior with very long content (equipment list with 50+ items, long backstory) causing extra page breaks
+- **Performance**: No specification for print rendering time (large character sheets)
+
 ## Dependencies
 - Epic 17-19 (Sheet components) — print targets
 - Story 24.1 (Desktop Layout) — print forces the desktop layout

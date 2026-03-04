@@ -129,3 +129,28 @@ Epic 33 (Campaign CRUD & Data Model) <- FOUNDATION - build first
 5. **Week 10, Day 2-3:** Epic 36 (DM Notes — character notes, session log, NPC tracker, loot tracker)
 6. **Week 10, Day 4:** Epic 37 (XP & Milestone management)
 7. **Week 10, Day 5:** Epic 38 Stories 38.2-38.4 (DM context, join flow, campaign export/import)
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 33 — Campaign CRUD & Data Model | 23 | 31 | 10 | 64 | 5 |
+| 34 — Campaign Dashboard & Party Overview | 21 | 32 | 12 | 65 | 5 |
+| 35 — Initiative & Combat Tracker | 31 | 49 | 19 | 99 | 6 |
+| 36 — DM Notes System | 17 | 33 | 12 | 62 | 5 |
+| 37 — XP & Milestone Management | 13 | 21 | 7 | 41 | 5 |
+| 38 — Campaign Routing & Navigation | 16 | 25 | 13 | 54 | 5 |
+| **Totals** | **121** | **191** | **73** | **385** | **31** |
+
+**Test Distribution:** Unit 31% / Functional 50% / E2E 19% — aligns with Phase 5 target of Functional (50%) + E2E (40% of integration coverage)
+
+### Testing Infrastructure Needed
+- **Mock Database**: fake-indexeddb for Dexie.js testing; in-memory IndexedDB for store and hook tests
+- **SRD Data Fixtures**: Monster index (subset: Goblin, Orc, Dragon), magic item data, CR-to-XP mapping table, XP threshold table, language reference (8 Common + 8 Exotic)
+- **Campaign Fixtures**: Empty campaign, campaign with 4 characters, campaign with 8+ characters, archived campaign, campaign with full data (sessions, encounters, NPCs, loot)
+- **Character Fixtures**: Characters at various levels and XP thresholds, casters and non-casters, characters with conditions/temp HP, characters near death, level 20 characters
+- **Encounter Fixtures**: Active encounter mid-combat, encounter with grouped monsters, encounter with lair actions, completed encounter with XP summary
+- **Mock Phase 4 Dependencies**: Dice roller (deterministic), HP tracker logic, conditions system, death save logic, spell slot tracker, rest automation, level-up flow
+- **Mock UI Utilities**: Debounce timer mocks, drag-and-drop testing utilities, framer-motion animation mocks, file input mocks for JSON import
+- **Context Providers**: DMContextProvider mock (isDMView flag), React Router mock with params, Zustand store mocks for campaign, encounter, and character stores
+- **Shared Test Utilities**: XP calculation helpers (shared between Epic 35 and 37), campaign export/import validation helpers, join code generation/validation helpers

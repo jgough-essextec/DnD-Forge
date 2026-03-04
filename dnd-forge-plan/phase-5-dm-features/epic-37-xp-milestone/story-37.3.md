@@ -59,6 +59,45 @@ This story adds level progress tracking to the party stats grid and character vi
 - XP thresholds table is accessible from the campaign dashboard as a collapsible reference
 - Progress bars accurately reflect current XP relative to the next level threshold
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate XP progress percentage toward next level threshold correctly`
+- `should return "MAX LEVEL" for level 20 characters`
+- `should display "Level [N] -- Milestone" for characters in milestone campaigns`
+- `should format tooltip as "[current XP] / [threshold XP] ([percent]%)"`
+- `should apply gold color when within 20% of next level threshold`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Level Progress" column in the party stats grid with mini progress bars`
+- `should display tooltip with XP progress details on hover`
+- `should show "MAX LEVEL" badge for level 20 characters instead of progress bar`
+- `should display XP progress on character gallery cards when in XP-tracking campaign`
+- `should show "Level [N] -- Milestone" on gallery cards and sheets in milestone campaigns`
+- `should render collapsible XP threshold reference card on campaign dashboard`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should display level progress bars for all characters in a campaign and verify accuracy`
+- `should switch to milestone mode and verify progress bars change to "Milestone" labels`
+
+### Test Dependencies
+- SRD XP threshold table data
+- Character fixtures at various XP levels (0%, 50%, 80%, 100%, max level)
+- Mock campaign in both XP Tracking and Milestone modes
+- Gallery card and character sheet component stubs
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA label for progress bar or tooltip; no screen reader alternative for visual progress indicator
+- **Mobile/Responsive**: No mobile-specific styling for the progress column or gallery card progress display
+- **Edge Cases**: Behavior when character XP exceeds the threshold but has not leveled up yet (should show "Level Up Available!" glow)
+
 ## Dependencies
 
 - Epic 34 Story 34.2 — Party stats grid (new column)

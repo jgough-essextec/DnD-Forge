@@ -49,6 +49,45 @@ As a player, I need to enter my character's name, physical appearance, and align
 - All description fields are optional — the step can be validated without them
 - Missing character name generates a warning (not an error) during validation
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate race-appropriate random names from name tables for each of the 9 races`
+- `should return race-typical physical ranges as placeholder text for each race`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Character Name field prominently with pre-populated value from Intro Step if available`
+- `should generate a race-appropriate name when Random Name button is clicked`
+- `should render alignment selector as a 3x3 clickable grid with tooltips for each alignment`
+- `should include Unaligned option below the alignment grid`
+- `should render physical appearance fields (Age, Height, Weight, Eye Color, Hair Color, Skin Color) with race-typical placeholders`
+- `should render Appearance Notes, Backstory, and Allies text areas as large freeform inputs`
+- `should include helper prompt in Backstory textarea`
+- `should treat all description fields as optional and pass step validation without them`
+- `should generate a warning (not error) for missing character name during validation`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should enter character name, select Chaotic Good alignment, fill physical appearance, write backstory, and advance`
+- `should generate random name for an Elf character and see an Elvish name`
+
+### Test Dependencies
+- Mock wizard store with pre-populated character name from Intro Step
+- Mock race data for name generation tables and physical range placeholders
+- Race-specific name table fixtures (20-30 names per race)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling empty name tables per race
+- **Edge Cases**: Random name generation with no race selected is not addressed
+- **Accessibility**: No ARIA labels for alignment grid cells, tooltip accessibility for alignment descriptions
+- **Performance**: Auto-saving textarea content on blur/change mentioned in notes but no debounce or frequency specified
+
 ## Dependencies
 
 - **Depends on:** Story 12.1 (Background Selection — this is part of the same step), Story 8.2 (character name from Intro Step), Epic 9 Story 9.5 (race data for name generation and appearance placeholders)

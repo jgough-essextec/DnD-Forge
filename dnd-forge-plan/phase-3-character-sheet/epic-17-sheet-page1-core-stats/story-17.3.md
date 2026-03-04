@@ -32,6 +32,45 @@ As a player, I need to see all 6 saving throws with proficiency indicators and c
 - In edit mode, proficiency dots are toggleable and modifier recalculates immediately
 - Custom bonus button is available in edit mode for special features
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute saving throw modifier as ability modifier + proficiency bonus when proficient`
+- `should compute saving throw modifier as ability modifier only when not proficient`
+- `should format saving throw modifier as signed number ("+5", "-1")`
+- `should generate tooltip breakdown string "DEX Save: DEX Mod (+3) + Proficiency (+2) = +5"`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render all 6 saving throws in a compact vertical list`
+- `should display filled proficiency dot for proficient saves and empty dot for non-proficient`
+- `should display correctly computed modifiers as signed numbers`
+- `should show computation breakdown tooltip on hover`
+- `should trigger dice roll (1d20 + modifier) and display result when clicking a save in view mode`
+- `should render proficiency dots as toggleable checkboxes in edit mode`
+- `should recalculate modifier immediately when toggling proficiency in edit mode`
+- `should show "+ Custom" button in edit mode for special save bonuses`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should click a saving throw in view mode, see dice roll animation, and display the result inline`
+
+### Test Dependencies
+- Mock character data with known proficiencies (e.g., Fighter: STR, CON proficient)
+- Mock dice engine for controlled roll results
+- Mock calculation engine for save modifier computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling custom bonus input validation (non-numeric, negative values)
+- **Accessibility**: No keyboard navigation for saving throw list, no ARIA labels for proficiency dots, no screen reader support for dice roll results
+- **Edge Cases**: No specification for how custom bonuses interact with proficiency (additive? displayed separately?)
+
 ## Dependencies
 - Story 17.2 (Ability Score Blocks) — saves depend on ability modifiers
 - Story 17.10 (Proficiency Bonus) — saves use proficiency bonus when proficient

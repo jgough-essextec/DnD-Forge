@@ -72,6 +72,47 @@ New IDs are generated for the campaign and characters on import to prevent confl
 - Imported campaigns are fully functional (all features work with imported data)
 - Export/import round-trips preserve data integrity
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export full campaign JSON with all data (metadata, characters, sessions, encounters, NPCs, loot)`
+- `should generate sanitized filename: [CampaignName]_Campaign_Export_[date].json`
+- `should exclude DM notes, NPC entries, and DM-only session notes in player-safe export`
+- `should validate imported JSON through all 5 validation stages (syntax, schema, type, reference, business)`
+- `should generate new IDs for campaign and characters on import to prevent conflicts`
+- `should detect duplicate characters by name + race + class for merge handling`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should trigger full export from campaign context menu`
+- `should trigger player-safe export from "Export Campaign (Players Only)" option`
+- `should validate and reject invalid JSON on import with error message`
+- `should offer "Merge (update existing)" and "Import as new copy" for duplicate characters`
+- `should create a fully functional campaign from imported data`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should export a campaign, import it, and verify all data round-trips correctly`
+- `should export player-safe version and verify DM notes and NPC entries are excluded`
+- `should import a campaign with existing characters and successfully merge`
+
+### Test Dependencies
+- Mock campaign with full data (characters, sessions, encounters, NPCs, loot, DM notes)
+- Campaign JSON fixtures (valid, invalid schema, missing fields, corrupted)
+- Character fixtures with matching name + race + class for merge testing
+- Phase 3 export/import utility mocks
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling export of very large campaigns (memory limits); no versioning for export schema compatibility
+- **Loading/Empty States**: No progress indicator for large campaign import/export
+- **Edge Cases**: Behavior when importing a campaign with characters that are in another campaign locally; merge handling with more than 2 matching characters; Date serialization/deserialization in JSON
+- **Dependency Issues**: Export version field recommended in notes but not specified as a required field in the data model
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model (all types exported)

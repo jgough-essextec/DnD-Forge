@@ -72,6 +72,48 @@ The XP threshold table is available inline or as a tooltip reference for the DM.
 - Level-up notification links to the Phase 4 level-up flow
 - XP threshold table is accessible as a reference for the DM
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate correct XP threshold for each level 1-20 from SRD table`
+- `should detect level threshold crossing when XP is added to a character`
+- `should distribute equal XP to all characters in "Award to All" mode`
+- `should allow different XP amounts per character in "Award Individually" mode`
+- `should calculate new total XP and level-up status for pre-award preview`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render XP Award component accessible from campaign dashboard and session log`
+- `should toggle between "Award to All" and "Award Individually" modes`
+- `should display numeric XP input and optional reason/source field`
+- `should show pre-award preview with current XP, XP to add, new total, and level-up status per character`
+- `should highlight characters crossing level threshold: "[Name] will advance to Level [N]!"`
+- `should persist XP to each character's experiencePoints on "Apply" click`
+- `should show "Level Up Available!" notification for characters that crossed threshold`
+- `should display XP threshold table as inline reference or tooltip`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should award XP to all characters, verify XP persists, and see level-up notification for threshold crossers`
+- `should award different XP amounts individually and verify per-character totals`
+
+### Test Dependencies
+- SRD XP threshold table data
+- Character fixtures at various XP levels (near threshold, far from threshold, at max level)
+- Mock Zustand campaign store with character XP fields
+- Mock Phase 4 level-up flow trigger
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling negative XP input or XP overflow past level 20
+- **Loading/Empty States**: No loading state during XP persistence to IndexedDB
+- **Accessibility**: No ARIA labels for the XP input or mode toggle; no screen reader announcement for level-up notifications
+- **Edge Cases**: Behavior when awarding XP to a level 20 character (should it still accumulate?); behavior when campaign uses milestone mode (button should be hidden per Story 37.2)
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model, character XP fields

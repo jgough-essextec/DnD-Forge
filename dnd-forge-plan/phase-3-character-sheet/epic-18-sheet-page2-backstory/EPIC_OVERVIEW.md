@@ -39,3 +39,21 @@ The second page of the character sheet displaying character appearance, backstor
 - Left narrow column (~35%): character appearance image/description, allies & organizations
 - Right wide column (~65%): character backstory, additional features & traits, treasure
 - Bottom: Equipment list with weight, currency section (CP, SP, EP, GP, PP)
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 18.1 — Appearance & Description | 1 | 10 | 1 | 12 |
+| 18.2 — Backstory & Additional Features | 3 | 10 | 0 | 13 |
+| 18.3 — Equipment & Inventory | 6 | 12 | 2 | 20 |
+| 18.4 — Currency Section | 3 | 8 | 0 | 11 |
+| 18.5 — Treasure Section | 0 | 6 | 0 | 6 |
+| **Totals** | **13** | **46** | **3** | **62** |
+
+### Key Gaps Found
+- **Accessibility**: Missing ARIA labels for equipment table, currency fields, appearance inputs, and all interactive elements
+- **Loading/Empty States**: Several sections start empty for new characters (treasure, allies, backstory) but empty state treatments not fully specified
+- **Error Handling**: Missing specification for IndexedDB failures during item operations and invalid input handling for currency
+- **Performance**: No specification for equipment list performance with many items (50+) or backstory rendering with 5,000+ characters
+- **Edge Cases**: Auto-convert behavior with Electrum (awkward 2:1 GP ratio) not specified

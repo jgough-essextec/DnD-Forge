@@ -26,6 +26,30 @@ As a player, I need a freeform section to track non-currency treasure — gems, 
 - Empty state displays gracefully (placeholder text or collapsed section)
 - Treasure data persists to IndexedDB
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render treasure block in the right column below additional features`
+- `should display rendered text content in view mode`
+- `should provide textarea with placeholder text in edit mode`
+- `should support adding structured treasure entries with name, GP value, and description`
+- `should display graceful empty state (placeholder or collapsed section) when treasure is empty`
+- `should persist treasure data to IndexedDB via auto-save`
+
+### Test Dependencies
+- Mock character data with freeform treasure text
+- Mock character data with structured treasure entries
+- Mock character data with no treasure (empty state)
+- Mock auto-save system from Epic 20
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for treasure textarea, no screen reader support for structured entries
+- **Edge Cases**: No specification for maximum treasure text length or entry count
+
 ## Dependencies
 - Epic 20 view/edit mode toggle system
 - Epic 20 auto-save system for persisting treasure changes

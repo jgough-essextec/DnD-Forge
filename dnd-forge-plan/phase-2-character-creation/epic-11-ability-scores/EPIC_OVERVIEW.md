@@ -28,6 +28,26 @@ Three distinct ability score generation methods -- Standard Array (drag-and-drop
 - Phase 1 calculation engine for modifier computation and derived stats
 - Point buy cost table: 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 11.1 — Method Selection | 0 | 9 | 2 | 11 |
+| 11.2 — Standard Array Assignment | 3 | 10 | 3 | 16 |
+| 11.3 — Point Buy Interface | 5 | 8 | 2 | 15 |
+| 11.4 — Dice Rolling Interface | 3 | 9 | 2 | 14 |
+| 11.5 — Ability Score Summary & Recommendations | 5 | 7 | 0 | 12 |
+| 11.6 — Ability Score Step Validation & State | 7 | 3 | 0 | 10 |
+
+### Key Gaps Found
+- No screen reader announcements for drag-and-drop outcomes in Standard Array
+- Minimum touch target sizes for mobile drag-and-drop not specified
+- Dice animation accessibility (reduced motion preferences) not addressed
+- No render performance criteria for live-updating summary during drag-and-drop or Point Buy
+- Point Buy warning vs. error distinction for unspent points not consistently enforced
+- Progress sidebar modifier display compactness on mobile not specified
+- Sound effects preference control location not specified
+
 ## Dependencies
 
 - **Depends on:** Epic 8 (Wizard Shell), Epic 9 (racial ability bonuses from race selection), Epic 10 (class primary ability for recommendations), Phase 1 dice engine, Phase 1 calculation engine

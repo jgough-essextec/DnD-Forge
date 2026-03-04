@@ -56,6 +56,45 @@ Example: Character has 30 HP, 10 temp HP, takes 15 damage:
 5. The two-segment HP bar clearly distinguishes temp HP (blue) from regular HP
 6. Temp HP interact correctly with the damage logic from Story 27.1
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should keep higher value when new temp HP is set and existing temp HP is present (non-stacking rule)`
+- `should replace temp HP when new value exceeds current temp HP`
+- `should calculate temp HP depletion from damage (e.g., 10 temp HP - 7 damage = 3 temp HP, 0 regular damage)`
+- `should pass remaining damage to current HP after temp HP is fully depleted`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render temp HP field as always editable even in view mode`
+- `should show tooltip "Temp HP don't stack. Keep the higher value." when setting new temp HP over existing`
+- `should display blue-tinted shield overlay on HP bar when temp HP is present`
+- `should render two-segment HP bar: blue (temp) stacked on normal HP gradient`
+- `should animate temp HP count-down when damage depletes temp HP before reducing current HP`
+- `should allow direct edit of temp HP value`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should set temp HP, apply damage that partially depletes temp HP, and verify animated depletion and HP bar update`
+- `should set new temp HP when existing is lower, verify higher value is kept with tooltip`
+- `should take damage exceeding temp HP and verify spillover to current HP`
+
+### Test Dependencies
+- Mock character data with known HP, max HP, and temp HP values
+- CSS animation testing utilities for depletion animation verification
+- Phase 3 HP bar component for visual enhancement testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for setting temp HP to negative or non-numeric values
+- **Edge Cases**: Behavior when temp HP is set to 0 explicitly vs being depleted to 0; visual state when temp HP equals 0 vs not having temp HP at all
+- **Accessibility**: No ARIA label for temp HP field; screen reader should announce temp HP depletion separately from regular HP loss
+- **Performance**: No specification for animation frame rate of temp HP depletion count-down
+
 ## Dependencies
 
 - Story 27.1 (Damage & Healing Input) for damage application that depletes temp HP

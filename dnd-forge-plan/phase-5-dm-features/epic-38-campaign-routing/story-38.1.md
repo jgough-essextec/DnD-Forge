@@ -64,6 +64,46 @@ This story defines and implements all new routes for DM features, integrating th
 - Page transitions match Phase 3 animation patterns
 - Direct URL navigation loads data from IndexedDB with error states for missing data
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate correct breadcrumb hierarchy for each route level`
+- `should resolve /campaign/:id route parameter to a valid campaign ID`
+- `should return error state when navigating to /campaign/:id with non-existent campaign`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should register all 5 new routes and render correct components`
+- `should render "Campaigns" section in top navigation alongside "Characters"`
+- `should highlight active navigation section`
+- `should display breadcrumbs: "Campaigns" -> "[Campaign Name]" -> "Encounter: [Name]"`
+- `should show "Campaign not found" error with "Go to Campaigns" button for invalid campaign ID`
+- `should render mobile hamburger menu with both "Characters" and "Campaigns" sections`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate between /campaigns and /campaign/:id routes with correct page transitions`
+- `should deep-link directly to /campaign/:id and load campaign data from IndexedDB`
+- `should navigate the full route hierarchy: campaigns list -> dashboard -> encounter -> session`
+- `should render mobile navigation with hamburger menu containing both sections`
+
+### Test Dependencies
+- Mock React Router setup with all 5 new routes
+- Mock campaign and encounter data for route resolution
+- Page transition animation mocks (framer-motion)
+- Navigation component stubs from Phase 3
+
+## Identified Gaps
+
+- **Error Handling**: No specification for route guard behavior when navigating to encounter route with no active encounter
+- **Accessibility**: No ARIA labels for breadcrumbs or navigation sections; no skip-to-content link
+- **Performance**: No specification for page transition animation duration or initial route load time
+- **Edge Cases**: Behavior when campaign is archived and user navigates to its dashboard; browser back/forward navigation between DM and player routes
+
 ## Dependencies
 
 - Phase 3 — Existing React Router setup, navigation components, page transition patterns

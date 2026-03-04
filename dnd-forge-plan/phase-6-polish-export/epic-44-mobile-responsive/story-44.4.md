@@ -37,6 +37,34 @@ As a player holding their phone sideways, I need the app to adapt to landscape o
 - Form inputs retain their values after orientation change
 - Dice roller retains its state (expression, history) after orientation change
 
+## Testing Requirements
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render landscape mobile (640x360) without layout breaks`
+- `should render session compact view in two-column layout (HP/actions left, stats/spells right) in landscape mobile`
+- `should render dice roller panel using landscape width efficiently (not a narrow strip)`
+- `should render landscape tablet (1024x768) with desktop layout and no clipped elements`
+- `should reflow UI without losing state when rotating device mid-interaction`
+- `should keep open modals visible and usable after orientation change`
+- `should retain form input values after orientation change`
+- `should retain dice roller state (expression, history) after orientation change`
+
+### Test Dependencies
+- Playwright viewport configuration for 640x360 (landscape mobile) and 1024x768 (landscape tablet)
+- Viewport resize simulation for orientation change testing
+- Open modal state verification during viewport changes
+- Form input value persistence verification
+- Dice roller state persistence verification
+
+## Identified Gaps
+
+- **Edge Cases**: Chrome DevTools rotation simulation doesn't perfectly replicate real behavior — actual device testing needed
+- **Error Handling**: No specification for behavior if modal becomes unusable after orientation change (e.g., taller than viewport)
+- **Performance**: No specification for reflow time after orientation change
+- **Edge Cases**: State loss in uncontrolled components during resize not fully mitigated
+
 ## Dependencies
 
 - Stories 44.1 and 44.2 (mobile and tablet layouts must be working in portrait first)

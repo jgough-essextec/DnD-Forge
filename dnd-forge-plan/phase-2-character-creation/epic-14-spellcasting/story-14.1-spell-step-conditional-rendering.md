@@ -45,6 +45,35 @@ As a developer, I need the Spell Step to only appear when the character's class 
 - Sorcerer (Draconic Bloodline) shows an ancestry-specific note if applicable
 - Changing class from a caster to a non-caster (or vice versa) correctly updates the step skip logic and progress bar
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should identify caster classes that get spells at level 1 (Bard, Cleric, Druid, Sorcerer, Warlock, Wizard)`
+- `should identify non-caster classes that skip spellcasting step (Barbarian, Fighter, Monk, Paladin, Ranger, Rogue)`
+- `should correctly handle Paladin and Ranger as having spellcasting feature but no spells at level 1`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should show the Spellcasting step for Bard, Cleric, Druid, Sorcerer, Warlock, and Wizard`
+- `should skip the Spellcasting step for Barbarian, Fighter, Monk, Paladin, Ranger, and Rogue`
+- `should advance directly from Equipment (Step 5) to Review (Step 7) when step is skipped`
+- `should show progress bar with "N/A -- No spells at level 1" for skipped step (dimmed, not clickable)`
+- `should display Sorcerer Draconic Bloodline ancestry-specific note when applicable`
+- `should dynamically update step skip logic when class changes from caster to non-caster or vice versa`
+
+### Test Dependencies
+- Mock SRD class data with spellcasting type and level for all 12 classes
+- Mock wizard store with class selection state
+- Test fixtures for caster and non-caster class configurations
+
+## Identified Gaps
+
+- **Edge Cases**: Changing class from caster to non-caster while on the Spellcasting step itself is not specified (should it auto-navigate away?)
+- **Accessibility**: No ARIA attributes for the "N/A" progress bar indicator to communicate skip reason to screen readers
+
 ## Dependencies
 
 - **Depends on:** Story 8.1 (Wizard Shell — conditional step skip logic is implemented here or in the step registry), Epic 10 Story 10.6 (class selection determines spellcasting status), Phase 1 SRD class data (spellcasting type and level)

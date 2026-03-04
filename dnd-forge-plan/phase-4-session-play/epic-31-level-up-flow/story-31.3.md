@@ -117,6 +117,51 @@ Proficiency bonus increases affect: all proficient skills, all proficient saving
 8. New proficiencies from features are added to the character's proficiency lists
 9. Features are pulled from the correct class/subclass data
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return all new features for a given class at a specific level`
+- `should identify features that require choices (e.g., Fighting Style, Metamagic)`
+- `should calculate updated scaling feature values (e.g., Sneak Attack: 1d6 -> 2d6 at Rogue Lv3)`
+- `should determine if proficiency bonus increases at this level (levels 5, 9, 13, 17)`
+- `should identify Extra Attack feature at level 5 for eligible classes`
+- `should return correct scaling values for Ki Points, Sorcery Points, Rage Damage at each level`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render NewFeaturesStep listing all new features with names and descriptions`
+- `should present inline selection interface for choice-based features (e.g., Fighting Style)`
+- `should prevent proceeding without making all required choices`
+- `should show before/after values for scaling features (e.g., "Sneak Attack: 1d6 -> 2d6")`
+- `should prominently display proficiency bonus increase at levels 5, 9, 13, 17`
+- `should show Extra Attack notification at level 5 for Fighter, Barbarian, Paladin, Ranger, Monk`
+- `should show Fighter 3-attack notification at level 11 and 4-attack at level 20`
+- `should add new proficiencies to character data when features grant them`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should level up Fighter to Level 1 and select a Fighting Style from inline selector`
+- `should level up Sorcerer to Level 3 and select 2 Metamagic options`
+- `should level up Rogue to Level 3 and see Sneak Attack scaling from 1d6 to 2d6`
+- `should level up any class to Level 5 and see proficiency bonus increase notification`
+
+### Test Dependencies
+- Mock Phase 1 class data with features for all 12 classes at multiple levels
+- Mock Phase 2 feature selection components for inline selectors
+- Mock character data at various levels for different classes
+- Feature choice option data (Fighting Styles, Metamagic options, Maneuvers, etc.)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for classes with no new features at a given level; behavior if feature data is incomplete for a class/level
+- **Edge Cases**: Subclass features that also require choices at higher levels (e.g., Battle Master adding maneuvers at Lv7, 10, 15); Warlock Eldritch Invocation choices at many levels; replacing previously chosen invocations
+- **Accessibility**: Inline selection interfaces need ARIA labels; required choice fields should have ARIA-required; screen reader should announce each new feature
+- **Mobile/Responsive**: Long feature lists with descriptions may need scrollable area on mobile; inline selectors sizing on small screens
+
 ## Dependencies
 
 - Story 31.1 (Level Up Entry & Overview) for the wizard container

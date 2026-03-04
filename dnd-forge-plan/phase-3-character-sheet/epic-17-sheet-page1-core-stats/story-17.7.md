@@ -35,6 +35,49 @@ As a player, I need to see my total hit dice, track used dice, and record death 
 - Natural 20 is handled as critical success, natural 1 marks two failure circles
 - Reset button clears all death save circles
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should determine correct hit die type from character class (e.g., Fighter d10, Wizard d6)`
+- `should evaluate death save roll: >= 10 is success, < 10 is failure`
+- `should evaluate natural 20 as critical success (restore 1 HP)`
+- `should evaluate natural 1 as critical failure (marks 2 failure circles)`
+- `should determine stabilized state when 3 successes reached`
+- `should determine dead state when 3 failures reached`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render hit dice display with correct die type for the character class`
+- `should display hit dice usage as "Used: N / Total: XdY"`
+- `should render +/- buttons for hit dice usage adjustment in edit mode`
+- `should render three success circles and three failure circles for death saves`
+- `should toggle circle fill state when clicking death save circles`
+- `should display green checkmark when 3 successes are marked`
+- `should display red X with skull when 3 failures are marked`
+- `should roll 1d20 and auto-fill correct circle when "Roll Death Save" button is clicked`
+- `should mark 2 failure circles on natural 1 roll`
+- `should clear all death save circles when reset button is clicked`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should roll death saves via the button, auto-fill circles, and reach stabilized or dead state`
+
+### Test Dependencies
+- Mock character data for various classes (Fighter d10, Wizard d6, Barbarian d12)
+- Mock multiclass character data with separate hit dice pools
+- Mock dice engine for controlled death save roll results (success, failure, nat 20, nat 1)
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for what happens after stabilization or death (can the player continue marking? auto-reset?)
+- **Accessibility**: No ARIA labels for death save circles, no screen reader announcement for roll results, no keyboard navigation for circle toggling
+- **Error Handling**: No specification for hitting dice used count below 0 or above total
+
 ## Dependencies
 - Phase 1 dice engine for death save rolls
 - Phase 1 Character type system (hit die type per class)

@@ -53,6 +53,44 @@ As a player, after choosing my class I need to pick my skill proficiencies from 
 - A helper tooltip explains the relationship between ability scores and skill effectiveness
 - Validation prevents advancing if the required number of skills is not selected
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return correct skill pool and choose count for each of the 12 classes`
+- `should identify race-granted skills that overlap with class skill pool`
+- `should not count race-granted skills against class choice count`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display only the skills in the selected class's skill pool (except Bard showing all 18)`
+- `should show governing ability in muted label next to each skill (e.g., "Stealth (DEX)")`
+- `should enforce exact choose count for the selected class (e.g., Rogue: 4, Bard: 3, Fighter: 2)`
+- `should pre-check and lock race-granted skills with From Race label, not counting against class choice`
+- `should group Bard skill list by ability score for easy scanning`
+- `should show helper tooltip about ability scores and skill effectiveness`
+- `should prevent advancing if required number of skills is not selected`
+- `should show current ability modifier next to skill name when ability scores have been assigned (back-navigation)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select 4 skills for Rogue from 11 options with race skills pre-locked`
+- `should select 3 skills from any for Bard with ability grouping displayed`
+
+### Test Dependencies
+- Mock SRD class data with skill pools and choose counts for all 12 classes
+- Mock wizard store with race skills pre-selected (e.g., Elf Perception)
+- Mock Epic 16 CountSelector component
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if race skills are not in the class pool (noted in notes but not in acceptance criteria)
+- **Edge Cases**: Race skill outside class pool display as "Other Proficiencies" section is mentioned in notes but not formalized
+- **Accessibility**: No keyboard navigation specified for skill checkboxes or ability grouping
+
 ## Dependencies
 
 - **Depends on:** Story 10.1 (class must be selected to determine skill pool and count), Epic 9 Story 9.5 (race skills needed for pre-locking), Epic 16 Story 16.1 (CountSelector component), Phase 1 SRD class data

@@ -63,6 +63,50 @@ Loot entries are stored as part of the campaign data in IndexedDB.
 - "Party Gold" tracker aggregates currency across all characters
 - Loot entries persist to campaign data in IndexedDB
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should calculate total party loot value in GP from all loot entries`
+- `should aggregate party gold/currency across all characters`
+- `should sort loot entries by item name, type, value, assigned character, and session number`
+- `should filter loot entries by type, assigned character, session, and "Unassigned"`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render loot tracker in the "Notes" tab as a sortable table`
+- `should display loot entries with name, type icon, value, assigned character, and session number`
+- `should show total party loot value summary at the bottom of the table`
+- `should open quick-add form on "Add Loot" button click`
+- `should search SRD magic items and auto-fill name and description`
+- `should assign loot to a character with confirmation dialog for inventory update`
+- `should filter by type, character, session, and "Unassigned"`
+- `should display "Party Gold" tracker with aggregated currency`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should add a magic item via SRD search, assign to a character, and verify it appears in the loot table`
+- `should assign loot to a character and verify it optionally updates their equipment in IndexedDB`
+- `should filter loot by "Unassigned" and verify only party loot is shown`
+
+### Test Dependencies
+- Mock campaign with 10+ loot entries of varied types
+- SRD magic item data (subset for testing)
+- Character fixtures with existing equipment/inventory
+- Mock IndexedDB for inventory sync verification
+- Session note fixtures for session linking
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling failed inventory sync when assigning loot to character
+- **Loading/Empty States**: No empty state for loot tracker when no loot exists
+- **Accessibility**: No ARIA labels for sortable table headers; no keyboard navigation for the loot table
+- **Mobile/Responsive**: No mobile-specific layout for the sortable loot table
+- **Edge Cases**: Behavior when assigned character is removed from campaign (orphaned loot assignment); currency conversion between GP/SP/CP not specified
+
 ## Dependencies
 
 - Epic 34 Story 34.1 — Campaign dashboard ("Notes" tab host)

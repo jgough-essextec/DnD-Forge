@@ -57,6 +57,52 @@ The Phase 1 dice engine handles the math/parsing; this story builds the interact
 7. Panel open/closed state persists in the UI store
 8. Mobile: opening the panel does not navigate away from the current page
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should parse standard dice notation expressions correctly (e.g., "2d6 + 1d4 + 3")`
+- `should validate dice expressions and reject malformed input (e.g., "2d", "abc")`
+- `should store and retrieve panel open/closed state from UI store`
+- `should maintain modifier value state and reset to 0 after each roll`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render the DiceRollerPanel with all three layout zones (tray, buttons, history)`
+- `should display all 7 die type quick-roll buttons (d4, d6, d8, d10, d12, d20, d100)`
+- `should toggle panel open/closed when FAB is clicked`
+- `should render as a right slide-out panel on desktop viewport`
+- `should render as a bottom sheet overlay on mobile viewport`
+- `should update modifier input with +/- adjustments`
+- `should trigger a roll when the "Roll" button is clicked`
+- `should accept custom dice expression in the text input field`
+- `should show validation error for invalid custom expressions`
+- `should display recently typed expressions as suggestions`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should open dice panel via FAB, select d20, set modifier to +5, and execute a roll`
+- `should type a custom expression "2d6 + 3", roll, and see result in dice tray`
+- `should persist panel open state across page navigation`
+- `should not navigate away from current page when opening panel on mobile`
+
+### Test Dependencies
+- Mock Zustand UI store for panel state
+- Mock Phase 1 dice engine for roll parsing/evaluation
+- Viewport mocking for mobile/desktop layout tests
+- Mock keyboard events for Enter shortcut
+
+## Identified Gaps
+
+- **Loading/Empty States**: No specification for what the dice tray shows before any roll is made
+- **Edge Cases**: Maximum modifier value not specified; behavior for extremely large custom expressions (e.g., "100d100") not defined
+- **Accessibility**: No ARIA labels specified for die buttons, FAB, or modifier controls; no keyboard navigation between die buttons
+- **Mobile/Responsive**: Exact breakpoint for desktop vs mobile layout not specified; bottom sheet height/drag behavior undefined
+- **Performance**: No render time target for panel open animation; no limit on expression suggestion history count
+
 ## Dependencies
 
 - Phase 1 dice engine (roll expression parsing and evaluation)

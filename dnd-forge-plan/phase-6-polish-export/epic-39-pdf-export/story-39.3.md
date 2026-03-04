@@ -40,6 +40,41 @@ As a player, I need Page 2 of my PDF to contain all the roleplay and backstory i
 - Equipment list shows all inventory items with names, quantities, and weights
 - Total weight and carrying capacity reference appear at the bottom of the equipment list
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should render character appearance fields (age, height, weight, eyes, skin, hair) at correct PDF coordinates`
+- `should embed avatar image as base64 in portrait area when avatar exists`
+- `should render placeholder silhouette when no avatar image exists`
+- `should auto-size backstory font to fit within text area with minimum 8pt`
+- `should overflow backstory text to additional pages when exceeding 10,000+ characters at 8pt minimum`
+- `should render currency summary (CP, SP, EP, GP, PP) with correct amounts`
+- `should render equipment list with item names, quantities, weights, and total weight`
+- `should calculate and display carrying capacity reference (15x Strength score)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should generate Page 2 PDF with backstory and equipment for a character with avatar`
+- `should generate Page 2 PDF with placeholder silhouette for a character without avatar`
+- `should handle very long backstory (10,000+ chars) by overflowing to additional pages`
+
+### Test Dependencies
+- Character fixture with full backstory, appearance fields, inventory, and treasure
+- Character fixture with avatar image (base64 JPEG)
+- Character fixture without avatar image
+- Character fixture with very long backstory (10,000+ characters)
+- Features overflow data from Page 1 layout
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for characters with empty backstory, no equipment, or no treasure
+- **Edge Cases**: Behavior when avatar image is corrupt or invalid base64 not specified
+- **Loading/Empty States**: No specification for how Page 2 looks when optional sections (allies, organizations) are empty
+- **Performance**: No target for how long avatar image embedding should take
+
 ## Dependencies
 
 - Story 39.1 (PDF generation architecture)

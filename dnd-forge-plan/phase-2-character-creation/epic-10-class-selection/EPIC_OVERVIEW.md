@@ -27,6 +27,25 @@ A visually engaging class selection experience that helps players understand eac
 - Role archetype tag definitions for all 12 classes
 - SRD class data (static JSON from Phase 1)
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 10.1 — Class Card Gallery | 2 | 7 | 2 | 11 |
+| 10.2 — Class Detail Panel | 0 | 9 | 3 | 12 |
+| 10.3 — Class Skill Proficiency Selection | 3 | 8 | 2 | 13 |
+| 10.4 — Level-1 Subclass Selection | 0 | 8 | 3 | 11 |
+| 10.5 — Fighting Style Selection | 2 | 6 | 2 | 10 |
+| 10.6 — Class Step Validation & State | 6 | 4 | 2 | 12 |
+
+### Key Gaps Found
+- Missing error handling for empty/missing SRD class data
+- No loading or empty states for class data or filter results
+- ARIA labels not specified across class cards, detail panel, skill checkboxes, subclass cards, and radio cards
+- Race skills outside class pool ("Other Proficiencies" section) mentioned in notes but not formalized
+- Cascade reset behavior when switching between two subclass classes (e.g., Cleric -> Warlock) not fully specified
+- Only SRD subclasses available; no homebrew extension specification
+
 ## Dependencies
 
 - **Depends on:** Epic 8 (Wizard Shell), Epic 9 (race selection provides skill pre-locks and synergy data), Epic 16 (shared SelectableCardGrid, DetailSlidePanel, SearchFilterBar, CountSelector, ChoiceGroup)

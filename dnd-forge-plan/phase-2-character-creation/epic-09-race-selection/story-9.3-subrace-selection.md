@@ -36,6 +36,38 @@ As a player choosing a race with subraces, I need to pick my subrace and see how
 - Selecting a Dragonborn ancestry sets the character's damage resistance and breath weapon type
 - Subrace selection is required for races that have subraces before the step can be validated
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should show subrace selector (tabs or mini-cards) for races with subraces (Dwarf, Elf, Gnome, Halfling)`
+- `should update detail panel to show combined base race + subrace traits with clear visual grouping when subrace is selected`
+- `should hide subrace selector for races without subraces (Human standard, Dragonborn, Half-Elf, Half-Orc, Tiefling)`
+- `should show Standard Human and Variant Human as distinct subrace-like options`
+- `should render inputs for +1 to two abilities, 1 skill proficiency, and 1 feat when Variant Human is selected`
+- `should display 10-row Dragonborn ancestry table with dragon type, damage type, and breath weapon shape`
+- `should set damage resistance and breath weapon type when Dragonborn ancestry is selected`
+- `should require subrace selection for applicable races before step validation passes`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should select Dwarf, choose Hill Dwarf subrace, and see combined traits displayed`
+- `should select Human, choose Variant Human, and complete all required sub-choices (abilities, skill, feat)`
+- `should select Dragonborn, choose Gold ancestry, and see Fire damage resistance applied`
+
+### Test Dependencies
+- Mock SRD race data with complete subrace data for all 9 races
+- Mock Variant Human sub-picker components (AbilityBonusChooser, SkillChooser, FeatPicker)
+- Test fixtures for each subrace combination
+
+## Identified Gaps
+
+- **Error Handling**: No specification for clearing Variant Human-specific choices when switching away from Variant Human
+- **Edge Cases**: Switching from Elf -> High Elf with filled choices to Dwarf should clear all Elf-specific choices, mentioned in Story 9.5 notes but not here
+- **Accessibility**: No keyboard navigation specified for subrace tabs/mini-cards or Dragonborn ancestry table
+
 ## Dependencies
 
 - **Depends on:** Story 9.2 (Race Detail Panel — subrace selector is rendered within the panel), Phase 1 SRD race data with subrace data

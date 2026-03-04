@@ -40,6 +40,46 @@ As a player choosing a race with additional decisions (Half-Elf skills, High Elf
 - DragonbornAncestryPicker shows 10 ancestries with dragon color, damage type, breath weapon shape, and saving throw type
 - All pickers enforce their required selections and provide clear feedback on what remains to be chosen
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should filter wizard cantrips correctly for High Elf CantripPicker (level 0, Wizard class list)`
+- `should exclude already-known languages from available language list`
+- `should validate feat prerequisites against character ability scores`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render AbilityBonusChooser with 6 ability buttons, lock fixed bonuses (Half-Elf CHA +2), and enforce correct selection count`
+- `should render SkillChooser with skills grouped by ability and enforce choose count (2 for Half-Elf, 1 for Variant Human)`
+- `should render FeatPicker with feat cards showing prerequisites and disable feats whose prerequisites are not met`
+- `should show nested sub-pickers when a feat with additional choices (ability score increase, proficiency) is selected`
+- `should render CantripPicker with wizard cantrips showing name, school, casting time, and description preview`
+- `should render LanguagePicker dropdown excluding already-known languages`
+- `should render DragonbornAncestryPicker with 10 ancestry options showing dragon color, damage type, breath weapon shape, and save type`
+- `should provide clear feedback on what remains to be chosen for each picker`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete Half-Elf race selection with ability bonus choices, skill choices, and language choices`
+- `should complete Variant Human selection with ability choices, skill choice, and feat selection including nested sub-choices`
+- `should complete High Elf selection with cantrip and language choices`
+
+### Test Dependencies
+- Mock SRD race data, spell data (cantrip list), feat data with prerequisites
+- Mock character state for prerequisite checking (ability scores)
+- Test fixtures for each race-specific choice scenario (Half-Elf, Variant Human, High Elf, Dragonborn)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for what happens if SRD feat data is missing or a feat has no description
+- **Edge Cases**: Feats with ability score increase sub-choices that could push a score above 20 are not addressed
+- **Accessibility**: No keyboard navigation specified for FeatPicker cards, CantripPicker cards, or DragonbornAncestryPicker table rows
+- **Performance**: No render time consideration for FeatPicker which could have many feat cards with complex prerequisite checking
+
 ## Dependencies
 
 - **Depends on:** Story 9.2 (Race Detail Panel — these pickers render within the panel), Story 9.3 (Subrace Selection triggers these pickers), Phase 1 SRD race data, Phase 1 SRD spell data (for cantrip list), Phase 1 SRD feat data

@@ -52,6 +52,56 @@ As a player, I need to import a character from a JSON file, with validation that
 - Version migration infrastructure is in place (migrations directory with versioned functions)
 - Drag-and-drop file upload works with visual feedback
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should parse valid JSON and return character data`
+- `should report syntax errors with line numbers for invalid JSON`
+- `should detect missing required fields (name, race, class, abilityScores) in schema validation`
+- `should detect type mismatches (e.g., level as string instead of number) in type validation`
+- `should produce warnings for unknown SRD references (raceId, classId, spell IDs) in reference validation`
+- `should validate ability score ranges (3-30) and level (1-20) in business rule validation`
+- `should detect HP consistency mismatches between stored and calculated values`
+- `should generate new ID on import (never reuse imported ID)`
+- `should parse batch JSON with characters array`
+- `should apply version migration transforms when formatVersion differs`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render import dialog with file upload (drag-and-drop + file picker) and paste JSON textarea`
+- `should display visual feedback on drag-and-drop (highlighted drop zone)`
+- `should run 5-stage validation pipeline and display results with color coding`
+- `should display errors in red that block import`
+- `should display warnings in yellow that allow import with acknowledgment`
+- `should display info messages in blue`
+- `should show character preview card on successful validation`
+- `should create character in IndexedDB with new ID on import confirmation`
+- `should show all character previews for batch import with selective and bulk import options`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should import a character from a JSON file via drag-and-drop, see validation results, and confirm import`
+- `should paste invalid JSON, see syntax error message, fix it, and successfully import`
+
+### Test Dependencies
+- Mock valid character JSON (matching export format)
+- Mock invalid JSON samples (syntax errors, missing fields, type mismatches, invalid references)
+- Mock SRD data for reference validation
+- Mock IndexedDB for creating imported characters
+- Mock File and drag-and-drop events
+- Mock version migration functions
+
+## Identified Gaps
+
+- **Error Handling**: No specification for file size limits on import (what if someone drops a 100MB file?)
+- **Loading/Empty States**: No loading indicator specified during the validation pipeline processing
+- **Accessibility**: No keyboard navigation for drag-and-drop alternative, no ARIA labels for validation result sections
+- **Edge Cases**: No specification for importing a character that already exists (duplicate name handling)
+
 ## Dependencies
 - Story 22.1 (JSON Export) — import must handle the export format
 - Phase 1 Character type system for validation

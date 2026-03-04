@@ -59,3 +59,18 @@ One-button rest actions that correctly recover the right resources -- HP via hit
 - `components/session/LongRestModal.tsx`
 - `utils/restRecovery.ts`
 - Extended Feature type in data model
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 30.1 — Short Rest Flow | 6 | 10 | 4 | 20 |
+| 30.2 — Long Rest Flow | 9 | 9 | 4 | 22 |
+| 30.3 — Class Feature Usage Tracking | 8 | 6 | 4 | 18 |
+| **Totals** | **23** | **25** | **12** | **60** |
+
+### Key Gaps Found
+- Accessibility gaps: no keyboard navigation for multi-step short rest modal; no ARIA labels for hit dice "Spend" buttons, condition clearing checklist, and usage counter circles; screen reader should announce recovery results
+- Edge cases: "Quick Short Rest" option mentioned in notes but not in tasks; behavior when character is already at full resources; Barbarian Rage "unlimited" at Level 20 display with circle pattern; features with "special" recovery type lack specific logic
+- Dependency issues: bidirectional dependency between Story 30.3 (feature tracking) and Epic 31 (Level Up) for scaling maxUses -- ordering needs clarification
+- Error handling: 0 available hit dice scenario; rest interruption; IndexedDB save failure during "Finish" operations; 24-hour long rest guard interaction model (blocking vs warning)

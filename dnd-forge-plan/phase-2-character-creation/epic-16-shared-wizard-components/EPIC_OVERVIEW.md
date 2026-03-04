@@ -29,6 +29,23 @@ Reusable components that multiple wizard steps share -- search/filter bars, card
 - **ModifierBadge.tsx** — Color-coded +N/-N modifier badge (green/neutral/red)
 - First-time hints system with pulsing borders and dismiss tracking via user preferences
 
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 16.1 — Shared Selection Components | 2 | 11 | 1 | 14 |
+| 16.2 — Tooltip & Help System | 3 | 9 | 1 | 13 |
+| 16.3 — Modifier & Stat Display Components | 3 | 6 | 1 | 10 |
+
+### Key Gaps Found
+- ARIA roles/patterns (role="listbox", role="radiogroup") not specified for shared components
+- DetailSlidePanel swipe-down-to-close on mobile in notes but not in acceptance criteria
+- No render performance criteria for large item lists in SelectableCardGrid or CountSelector
+- Tooltip keyboard dismissal (Escape key) not defined
+- Tooltip positioning on mobile (tap) not specified; potential overlap with other UI elements
+- DiceNotation click-to-roll popup positioning not defined
+- Game terms dictionary loading failure not addressed
+
 ## Dependencies
 
 - **Depends on:** Phase 1 foundation (type system for component prop types, dice engine for DiceNotation click-to-roll)

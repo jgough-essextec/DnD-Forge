@@ -39,6 +39,42 @@ As a player who clicks "Print" in the browser, I need a clean, ink-efficient pri
 - Ink-saving mode reduces border weights, removes decorative elements, and uses lighter grays
 - Condition badges show as text in print (not color-coded badges)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define print-optimized typography constants with pt-based sizes (10pt body, 14pt headings, 8pt labels)`
+- `should include ink-saving mode class that reduces border weights and uses lighter grays`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should hide all UI chrome (nav, sidebar, buttons, toggles, FAB, dice roller, session widgets) in print media`
+- `should override dark theme with white background and dark text in print media`
+- `should render condition badges as text (not color-coded badges) in print media`
+- `should apply ink-saving mode when "Low Ink" class is toggled`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should produce clean print output with no UI chrome visible using Chrome print preview emulation`
+- `should render each character sheet page starting on a new printed page with proper page-break-before`
+- `should not break table rows (attacks, equipment, spell lists) across page boundaries`
+- `should render Cinzel headings in print or fall back gracefully to serif system font`
+
+### Test Dependencies
+- Full character sheet rendered with all Phase 4-5 additions (dice roller, HP widget, conditions, combat tracker)
+- Print media query emulation in test environment
+- Ink-saving mode CSS class toggle
+
+## Identified Gaps
+
+- **Edge Cases**: Behavior when Cinzel font fails to load for print not precisely defined (serif fallback is mentioned but not tested)
+- **Error Handling**: No specification for what happens if @font-face print media query is not supported
+- **Mobile/Responsive**: Print behavior from mobile browsers not addressed here (deferred to Story 40.3)
+- **Accessibility**: Print color contrast requirements not specified (should meet WCAG for printed output?)
+
 ## Dependencies
 
 - Phase 3 print stylesheet foundation (`styles/character-sheet-print.css`)

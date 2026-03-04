@@ -87,6 +87,52 @@ The review screen shows all changes organized by category:
 14. Character gallery card updates immediately to show new level
 15. XP-based and milestone-based progression both supported
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should aggregate all level-up changes into a structured summary object`
+- `should correctly categorize conditional changes (ASI shown only if ASI level, spells shown only if caster)`
+- `should create a named pre-level-up snapshot for undo safety`
+- `should calculate full derived stat recalculation after all changes are committed`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display level change prominently: "Level 4 -> Level 5"`
+- `should show HP Max change with method note: "HP Max: 28 -> 35 (rolled d10: 5 + CON +2 = 7)"`
+- `should display proficiency bonus change only at levels 5, 9, 13, 17`
+- `should show ASI changes with specific ability scores`
+- `should show feat name and effects if a feat was selected`
+- `should list new features by name`
+- `should show spell slot before/after table for casters`
+- `should display "Welcome to Level [N]!" celebration message on apply`
+- `should show confirmation dialog "Discard all level-up choices?" on cancel`
+- `should update gallery card to show new level after applying`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should complete full level-up wizard, review all changes on summary screen, apply, and see celebration message`
+- `should cancel level-up at review screen, confirm discard, and verify no changes were applied`
+- `should apply level-up and verify character gallery card shows updated level`
+- `should verify XP-based progression displays correctly after level-up`
+
+### Test Dependencies
+- Mock level-up state with changes from all previous steps (HP, features, ASI, subclass, spells)
+- Mock Phase 1 calculation engine for full recalculation
+- Mock Phase 3 auto-save system (IndexedDB persistence)
+- Mock Phase 3 undo/snapshot system
+- Mock Phase 3 character gallery for card update verification
+
+## Identified Gaps
+
+- **Error Handling**: No specification for IndexedDB save failure during apply; no rollback mechanism if recalculation fails; no specification for what happens if the snapshot creation fails
+- **Edge Cases**: Milestone vs XP-based progression display difference not fully specified in tasks; celebration message/animation details not specified (confetti mentioned in notes but not tasks)
+- **Accessibility**: Celebration message should be ARIA-announced; cancel confirmation dialog needs focus trapping; summary screen should be navigable by keyboard
+- **Performance**: Full recalculation time after level-up apply not specified; gallery card update should be near-instant
+
 ## Dependencies
 
 - Stories 31.1-31.6 (all previous level-up wizard steps provide the data to summarize)

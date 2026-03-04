@@ -52,6 +52,31 @@ As a developer, I need types covering all equipment categories, weapon propertie
 - `Encumbrance` provides all thresholds needed for the variant encumbrance rule
 - `StartingEquipmentChoice` can express multi-option choice groups (e.g., "choose a martial weapon OR two simple weapons")
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should define WeaponProperty union with all 10 weapon properties`
+- `should define Weapon interface with category, damage, properties, and optional range`
+- `should define Armor interface with baseAC, dexCap (null for uncapped), stealthDisadvantage, and strengthRequirement`
+- `should define Armor.dexCap as null for light armor, +2 for medium, 0 for heavy`
+- `should define Currency interface with all 5 denominations (cp, sp, ep, gp, pp)`
+- `should define CURRENCY_CONVERSION_RATES with correct CP base values (pp=1000, gp=100, ep=50, sp=10, cp=1)`
+- `should define Encumbrance interface with currentWeight, carryCapacity, and threshold booleans`
+- `should define StartingEquipmentChoice with choose-from-options pattern`
+- `should define EquipmentItem with quantity, isEquipped, and optional isAttuned fields`
+- `should define DamageDice with optional versatileDie for versatile weapons`
+
+### Test Dependencies
+- No mock data needed — these are type compilation and constant verification tests
+- Depends on DamageType from Story 2.2, WeaponCategory/ArmorCategory from Story 2.3
+
+## Identified Gaps
+
+- **Edge Cases**: EquipmentItem uses `Record<string, any>` for properties which bypasses type safety; consider a discriminated union for known item types
+- **Dependency Issues**: DieType is referenced but its definition location is ambiguous (Story 2.10 or shared)
+
 ## Dependencies
 - **Depends on:** Story 2.1 (uses AbilityName for STR requirements), Story 2.2 (uses DamageType), Story 2.3 (uses WeaponCategory, ArmorCategory, DieType references)
 - **Blocks:** Story 2.8 (Character master type includes equipment and currency), Story 3.4 (Equipment data files), Story 4.3 (Combat calculations use Armor/Weapon), Story 4.6 (Currency calculations)

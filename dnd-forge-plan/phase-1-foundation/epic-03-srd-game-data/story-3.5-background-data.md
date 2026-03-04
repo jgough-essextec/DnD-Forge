@@ -40,6 +40,29 @@ As a developer, I need all SRD backgrounds with their proficiencies, equipment, 
 - The skill overlap replacement rule is documented in the data or as a comment
 - Language and tool choices are properly represented (fixed values vs player choice)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export backgrounds array with at least 13 SRD backgrounds`
+- `should have Acolyte with skills Insight and Religion, and 2 language choices`
+- `should have each background with 8 personality traits, 6 ideals, 6 bonds, 6 flaws`
+- `should have ideals tagged with alignment (Good, Evil, Lawful, Chaotic, Neutral, Any)`
+- `should have every background pass TypeScript type checking against Background interface`
+- `should have Criminal/Spy modeled as single background with variant note`
+- `should have backgrounds with correct tool proficiency choices (choose pattern)`
+- `should document skill overlap replacement rule`
+
+### Test Dependencies
+- Background, PersonalityTrait type interfaces from Story 2.6
+- Import via `@/data/backgrounds` path alias
+
+## Identified Gaps
+
+- **Edge Cases**: Skill overlap replacement rule is documented but not enforced in data; wizard UI must handle this at runtime
+- **Dependency Issues**: Background equipment lists should reference item IDs from Story 3.4 but cross-referencing mechanism not specified
+
 ## Dependencies
 - **Depends on:** Story 2.6 (Background, PersonalityTrait, BackgroundSelection types), Story 2.1 (SkillName), Story 2.3 (Feature)
 - **Blocks:** Story 4.2 (Skill calculations consider background proficiencies), Story 4.8 (Character validation checks for duplicate skills), Epic 6 Story 6.2 (Wizard store background selection)

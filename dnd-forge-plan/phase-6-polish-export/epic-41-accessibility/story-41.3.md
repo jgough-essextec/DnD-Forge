@@ -51,6 +51,46 @@ As a player with low vision or color blindness, I need the app to have sufficien
 - High contrast mode increases border weights, text contrast, and reduces transparency effects
 - High contrast preference persists across sessions (stored in IndexedDB)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should verify text-primary (#eee8d5) on bg-primary (#1a1a2e) meets 4.5:1 contrast ratio`
+- `should verify text-muted color is lightened to ~#7d9199 achieving 4.5:1 ratio on bg-primary`
+- `should verify accent-gold (#e8b430) meets contrast requirements for both normal and large text`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render proficiency indicators with shape distinctions (filled/empty/double-ring) not just color`
+- `should render spell slot circles with shape distinctions (not just color) for filled/empty states`
+- `should render condition badges with text labels alongside color coding`
+- `should display numeric HP value as text overlay on HP bar (not just color gradient)`
+- `should display "CRITICAL!" text label for nat 20 alongside gold highlight`
+- `should display "FUMBLE!" text label for nat 1 alongside red highlight`
+- `should toggle high contrast mode via settings preference and apply CSS class to root element`
+- `should persist high contrast preference across sessions via IndexedDB`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should pass WCAG 2.1 AA contrast requirements on all condition badge colors against their backgrounds`
+- `should toggle high contrast mode and verify increased border weights and reduced transparency`
+- `should display character sheet correctly in high contrast mode`
+
+### Test Dependencies
+- Color contrast calculation utility for automated checks
+- All condition badge color definitions
+- High contrast mode CSS class definitions
+- IndexedDB preferences mock for high contrast persistence testing
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for how high contrast mode interacts with the print stylesheet
+- **Edge Cases**: Specific contrast ratios for all condition badge colors not provided (only audit is mentioned)
+- **Accessibility**: No specification for forced-colors (Windows High Contrast Mode) media query support
+
 ## Dependencies
 
 - All Phase 1-5 features complete (contrast audit spans entire app)

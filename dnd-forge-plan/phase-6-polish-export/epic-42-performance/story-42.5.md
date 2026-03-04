@@ -45,6 +45,40 @@ As a developer, I need to verify the app handles edge cases at scale. This story
 - Characters with 100+ inventory items render their equipment list without lag
 - No IndexedDB storage quota errors under stress conditions
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should generate 100+ realistic characters with varied classes, races, levels, and equipment via test script`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should render gallery with 100+ characters in <2 seconds initial load`
+- `should scroll gallery with 100+ characters at 60fps`
+- `should filter gallery search within 200ms on 100+ characters`
+- `should load campaign dashboard with 8 characters, 20 sessions, 50 NPCs, 100 loot items in <3 seconds`
+- `should advance combat turns in <100ms with 28 combatants (8 party + 20 monsters)`
+- `should detect no memory leaks after creating 10 characters, opening/closing 10 modals, running 100 dice rolls`
+- `should save and load characters with 10,000+ character backstories without errors`
+- `should render equipment list for characters with 100+ inventory items without lag`
+- `should not encounter IndexedDB storage quota errors under stress conditions`
+
+### Test Dependencies
+- Character generation script producing 100+ realistic characters
+- Large campaign fixture (8 characters, 20 sessions, 50 NPCs, 100 loot items)
+- Combat encounter fixture (8 party + 20 monsters)
+- Chrome DevTools Memory API integration for heap snapshot comparison
+- Performance timing utilities for render time and interaction responsiveness
+
+## Identified Gaps
+
+- **Error Handling**: No recovery strategy specified if stress tests reveal actual failures (just "document and create fix tasks")
+- **Performance**: No specification for memory usage ceiling (how many MB is acceptable for 100+ characters?)
+- **Edge Cases**: Safari's IndexedDB storage limits (~500MB-1GB) not specifically tested or accounted for
+- **Edge Cases**: Auto-save performance under stress (debounced 500ms with 100+ characters editing) not specified
+
 ## Dependencies
 
 - Stories 42.1-42.3 (optimizations should be in place before stress testing)

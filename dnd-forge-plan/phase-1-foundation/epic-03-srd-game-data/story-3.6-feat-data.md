@@ -31,6 +31,32 @@ As a developer, I need all SRD feats with prerequisites and mechanical effects.
 - Every feat entry passes TypeScript type checking
 - Feats with no prerequisites are available to all characters
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should export feats array with all SRD feats`
+- `should have Heavy Armor Master with prerequisite STR 13`
+- `should have feats with +1 ability score increase flagged correctly`
+- `should have Alert feat with no prerequisites`
+- `should return all feats for a character meeting all prerequisites via getAvailableFeats`
+- `should filter out Heavy Armor Master for character with STR 12 via getAvailableFeats`
+- `should return feats with no prerequisites for any character via getAvailableFeats`
+- `should have every feat pass TypeScript type checking`
+- `should flag repeatable feats (e.g., Elemental Adept)`
+
+### Test Dependencies
+- Feature, MechanicalEffect types from Story 2.3
+- Character type from Story 2.8 for getAvailableFeats testing
+- Mock character data with varying ability scores for prerequisite filtering
+
+## Identified Gaps
+
+- **Edge Cases**: Some feats can be taken multiple times but repeatability is not explicitly modeled in the type
+- **Edge Cases**: Feats granting spells (Magic Initiate, Ritual Caster) interact with the spellcasting system but this interaction is not specified
+- **Dependency Issues**: Full PHB feat list exceeds SRD coverage; unclear which feats to include
+
 ## Dependencies
 - **Depends on:** Story 2.3 (Feature type, MechanicalEffect), Story 2.8 (Character type for the availability filter)
 - **Blocks:** Story 4.1 (Ability score calculations account for feat bonuses), Story 4.3 (Combat calculations use feat effects like Alert +5 initiative), Story 3.1 (Variant Human race selection needs feats)

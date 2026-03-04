@@ -170,3 +170,32 @@ Epic 16 (Shared Components) — built alongside or just ahead of the steps
 3. **Dice Animation Fidelity:** CSS 3D transforms for Phase 2, upgrade to Three.js in Phase 4.
 4. **Spell Description Length:** Truncate to 2-3 lines in list view, show full text in detail panel.
 5. **Random Name Generator Quality:** Static list of 20-30 names per race for Phase 2, improve later.
+
+## Testing Strategy Summary
+
+| Epic | Unit | Functional | E2E | Total | Gaps Found |
+|------|------|-----------|-----|-------|------------|
+| 8 — Wizard Framework & Navigation | 4 | 30 | 10 | 44 | 6 |
+| 9 — Race Selection Step | 11 | 39 | 11 | 61 | 5 |
+| 10 — Class Selection Step | 13 | 42 | 14 | 69 | 6 |
+| 11 — Ability Score Step | 23 | 46 | 9 | 78 | 7 |
+| 12 — Background & Personality Step | 10 | 30 | 6 | 46 | 7 |
+| 13 — Equipment Selection Step | 17 | 22 | 4 | 43 | 6 |
+| 14 — Spellcasting Step (Conditional) | 22 | 31 | 7 | 60 | 7 |
+| 15 — Review & Finalize Step | 16 | 27 | 11 | 54 | 8 |
+| 16 — Shared Wizard Components & Utilities | 8 | 26 | 3 | 37 | 7 |
+| **Totals** | **124** | **293** | **75** | **492** | **59** |
+
+### Testing Infrastructure Needed
+- **Mock Zustand wizard store** with sessionStorage persist middleware for all step state persistence/restore testing
+- **Mock Phase 1 calculation engine** for derived stat computation (modifiers, AC, HP, initiative, spell save DC, attack bonuses)
+- **Mock Phase 1 dice engine** with deterministic results for all rolling interfaces (ability scores, personality, gold)
+- **Mock Phase 1 Dexie.js database layer** (`createCharacter()`) for save testing with success and failure scenarios
+- **Mock SRD game data fixtures**: races (9), classes (12), spells (100+), equipment (weapons, armor, gear, packs), backgrounds, feats -- all as static JSON test fixtures
+- **Mock @dnd-kit** (drag-and-drop library) for Standard Array and Rolling assignment testing
+- **Mock framer-motion** for step transition and panel animation assertions
+- **Mock react-window or @tanstack/react-virtual** for spell list virtualization testing
+- **Mock user preferences store** for First-Time Hints, player name pre-population, and sound preferences
+- **Complete character state fixtures**: Pre-built wizard state snapshots for caster (High Elf Wizard), non-caster (Human Fighter), and edge case (Variant Human Rogue) characters covering all wizard steps
+- **Viewport testing utilities**: Responsive breakpoint testing for mobile (640px), tablet (1024px), and desktop (1440px)
+- **Accessibility testing utilities**: ARIA assertion helpers, keyboard navigation test helpers, screen reader compatibility checks

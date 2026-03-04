@@ -39,6 +39,39 @@ As a developer, I need spell selections validated and persisted. This story impl
 - All spell data is persisted to the wizard store (cantrips, spells, prepared, racial cantrips)
 - Progress sidebar shows "N cantrips, M spells selected"
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should return valid:false when cantrip count does not match class requirement`
+- `should return valid:false when known spell count (Bard/Sorcerer/Warlock) does not match requirement`
+- `should return valid:false when Wizard spellbook does not have exactly 6 spells`
+- `should return valid:false when prepared spell count exceeds the limit`
+- `should return valid:false for duplicate spell selections`
+- `should return valid:false when any selected spell is not on the class spell list`
+- `should return valid:true when all selections are valid`
+- `should exclude racial cantrips from class cantrip count validation`
+- `should exclude Cleric domain spells from prepared spell limit validation`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should persist all spell data to wizard store (cantrips, spells, prepared, racial cantrips)`
+- `should display "N cantrips, M spells selected" in progress sidebar`
+- `should restore all previously selected cantrips and spells on back-navigation`
+
+### Test Dependencies
+- Mock Zustand wizard store for state persistence testing
+- Mock class spell list data for validation against
+- Test fixtures for complete/incomplete spell selections per spellcasting system
+- Mock racial cantrip and Cleric domain spell data
+
+## Identified Gaps
+
+- **Edge Cases**: Class change resetting spell selections when returning to this step is mentioned in notes but not formally tested
+- **Dependency Issues**: Warlock known spell count vs. Pact Magic slot count distinction needs clear separation in validation
+
 ## Dependencies
 
 - **Depends on:** Stories 14.1-14.4 (spell selection UI must be built), Story 8.1 (wizard shell consumes the validate function), Epic 10 Story 10.6 (class for spell list validation), Epic 11 Story 11.6 (spellcasting ability modifier for prepared count), Phase 1 Zustand wizard store, Phase 1 SRD spell data

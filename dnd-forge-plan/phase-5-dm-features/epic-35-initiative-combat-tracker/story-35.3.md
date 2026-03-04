@@ -76,6 +76,53 @@ interface Encounter {
 - Removing a combatant removes from order with optional XP logging
 - Encounter state persists to IndexedDB (survives page refresh)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should advance currentTurnIndex to next combatant on "Next Turn"`
+- `should increment roundNumber when currentTurnIndex wraps past the last combatant`
+- `should decrement currentTurnIndex on "Previous Turn" without going below 0`
+- `should move a delayed combatant to just before the next combatant in initiative order`
+- `should remove a combatant from the initiative order and adjust currentTurnIndex`
+- `should log XP when removing a combatant with "Remove & Log XP" option`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render vertical combatant list sorted by initiative (highest first)`
+- `should highlight current turn combatant with gold border and "CURRENT TURN" indicator`
+- `should dim previous turns and display upcoming turns with normal styling`
+- `should show each combatant row with initiative number, name, type icon, AC, HP bar, conditions, and notes`
+- `should advance turn and show updated round number on "Next Turn" click`
+- `should go back one turn on "Previous Turn" click`
+- `should display round tracker showing "Round [N]" prominently`
+- `should apply strikethrough styling on skipped combatants`
+- `should mark readied combatants with a visual "Ready" badge`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should run through a full combat round cycling through all combatants and advancing to Round 2`
+- `should skip a combatant, remove a defeated monster, and verify turn order updates correctly`
+- `should persist encounter state to IndexedDB and survive a page refresh`
+- `should navigate to combat tracker at /campaign/:id/encounter/:encounterId`
+
+### Test Dependencies
+- Mock encounter with 5+ combatants sorted by initiative
+- Mock Zustand encounter store with persistence to IndexedDB
+- Combatant fixtures with varied types (player, monster, NPC)
+- Mock React Router for route parameter testing
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling corrupted encounter state on page refresh; no undo for accidental combatant removal
+- **Accessibility**: No keyboard shortcuts for Next/Previous Turn; no screen reader announcements for turn changes
+- **Mobile/Responsive**: Full-screen overlay vs dedicated page decision not finalized for mobile
+- **Performance**: No specification for maximum combatant count or render performance requirements for the tracker
+- **Edge Cases**: Behavior when all combatants are removed mid-combat; behavior when "Previous Turn" is pressed at Round 1, Turn 1
+
 ## Dependencies
 
 - Story 35.1 — Encounter setup (creates the encounter)

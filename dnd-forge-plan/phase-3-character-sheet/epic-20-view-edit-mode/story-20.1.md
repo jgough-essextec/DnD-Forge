@@ -37,6 +37,47 @@ As a player, I need a clear way to switch between reading my character sheet and
 - Escape key exits edit mode with a save prompt if unsaved changes exist
 - First-time help banner appears when entering edit mode (dismissable, shown only once)
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should detect platform for correct modifier key (Ctrl vs Cmd)`
+- `should determine if unsaved changes exist from dirty state flag`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render mode toggle button in top-right corner with eye icon (view) or pencil icon (edit)`
+- `should toggle between view and edit mode when button is clicked`
+- `should render clean text with no form borders in view mode`
+- `should render field borders, hover states, and edit icons in edit mode`
+- `should display "Unsaved changes" indicator in header when changes exist in edit mode`
+- `should preserve scroll position during mode transition`
+- `should apply 200ms cross-fade animation during mode transition`
+- `should toggle mode on Ctrl+E / Cmd+E keyboard shortcut`
+- `should exit edit mode on Escape key press with save prompt if unsaved changes`
+- `should show dismissable first-time help banner when entering edit mode`
+- `should only show first-time help banner once (not on subsequent mode entries)`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should toggle between view and edit mode using the button and keyboard shortcut, verifying visual differences`
+- `should show save prompt when pressing Escape with unsaved changes in edit mode`
+
+### Test Dependencies
+- Mock Zustand store for mode state management
+- Mock character data in IndexedDB
+- Mock localStorage for first-time help banner dismissal state
+- Mock keyboard event handlers
+
+## Identified Gaps
+
+- **Accessibility**: No ARIA labels for mode toggle button, no screen reader announcement of mode changes, no focus management after mode switch
+- **Error Handling**: No specification for what happens if mode switch fails (e.g., IndexedDB unavailable during save prompt)
+- **Mobile/Responsive**: No specification for how keyboard shortcuts behave on mobile (no physical keyboard)
+
 ## Dependencies
 - Phase 1 state management (Zustand) for mode state
 - Phase 2 character data in IndexedDB

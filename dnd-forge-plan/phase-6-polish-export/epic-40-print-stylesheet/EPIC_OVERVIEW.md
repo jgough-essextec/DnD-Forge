@@ -33,3 +33,19 @@ Perfect the `@media print` CSS so that printing directly from the browser produc
 - Print-specific layouts for all three character sheet pages
 - Gallery and campaign dashboard print layouts
 - Cross-browser print compatibility
+
+## Testing Summary
+
+| Story | Unit | Functional | E2E | Total |
+|-------|------|-----------|-----|-------|
+| 40.1 — Print Layout Refinement | 2 | 4 | 4 | 10 |
+| 40.2 — Print-Specific Layouts | 0 | 5 | 3 | 8 |
+| 40.3 — Cross-Browser Print Testing | 0 | 0 | 7 | 7 |
+| **Totals** | **2** | **9** | **14** | **25** |
+
+### Key Gaps Found
+- iOS Safari print testing via share sheet difficult to automate with Playwright
+- Print color contrast requirements (WCAG for printed output) not specified
+- Minimum margin values to avoid clipping across browsers not defined
+- Partial page gallery print layout (fewer than 3 characters) not addressed
+- Samsung Internet not included in print testing scope

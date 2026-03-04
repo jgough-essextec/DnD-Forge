@@ -32,6 +32,38 @@ As a Cleric, Druid, or other subclass with bonus spells, I need to see my always
 - Domain/subclass spells cannot be unprepared in edit mode (toggle is disabled)
 - The correct domain/subclass spells display based on the character's subclass choice
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should retrieve correct domain/subclass spells for Cleric Life Domain at level 1 (Bless, Cure Wounds)`
+- `should identify domain/subclass spells as always-prepared and non-countable against prepared limit`
+- `should filter domain spells by character level threshold (levels 1, 3, 5, 7, 9)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should display domain/subclass spells with "Always Prepared" badge`
+- `should display domain/subclass spells with different background tint`
+- `should not count domain/subclass spells against prepared spell limit`
+- `should group domain/subclass spells at top of their respective level section`
+- `should display "Domain Spells" or "Subclass Spells" sub-header`
+- `should prevent unpreparing domain spells in edit mode (toggle disabled)`
+- `should display correct domain spells based on character's subclass choice`
+
+### Test Dependencies
+- Mock character data for Cleric Life Domain with domain spells
+- Mock character data for class without domain spells (Wizard)
+- Mock SRD data for subclass spell lists
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Edge Cases**: No specification for subclasses not in the SRD (homebrew domain spells)
+- **Accessibility**: No ARIA labels for "Always Prepared" badge, no screen reader distinction between domain and regular spells
+- **Dependency Issues**: SRD only contains Life Domain for Cleric; other domains need homebrew/custom support as noted
+
 ## Dependencies
 - Story 19.3 (Spell Slots & Spell Lists) — domain spells appear within spell level sections
 - Phase 1 SRD data for subclass spell lists

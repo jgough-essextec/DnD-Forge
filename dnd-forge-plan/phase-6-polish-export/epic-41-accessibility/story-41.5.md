@@ -40,6 +40,41 @@ As a player filling out forms (creation wizard, edit mode, campaign creation), I
 - Proficiency circles, spell slot circles, death save circles, and condition badge X buttons meet the 44x44px minimum (via padding or invisible touch-target expansion)
 - Skill matrix cells meet the minimum touch target size
 
+## Testing Requirements
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should associate form validation errors with their input via aria-describedby`
+- `should display visible error text (not just a red border) for all validation errors`
+- `should announce form errors via aria-live="polite" on the error container`
+- `should mark required fields with both a visual asterisk and aria-required="true"`
+- `should group related required fields with <fieldset> and <legend>`
+- `should announce creation wizard step as "Step N of 7: [Step Name]" via aria-current="step"`
+- `should implement role="combobox" with proper aria-expanded, aria-activedescendant, and aria-controls on search inputs`
+- `should render all interactive elements with minimum 44x44px touch target area`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should navigate creation wizard with correct step progress announced at each step`
+- `should display specific actionable error messages on form validation failure in creation wizard`
+- `should provide combobox search with keyboard navigation for spell browser search`
+- `should have proficiency circles, spell slot circles, and condition badge X buttons meeting 44x44px minimum`
+
+### Test Dependencies
+- Creation wizard form with validation rules
+- All search/autocomplete inputs (skill matrix, SRD monster, spell browser, NPC)
+- Touch target measurement utilities (computed style checks)
+- Form error message association verification
+
+## Identified Gaps
+
+- **Edge Cases**: Specific error messages for each form field not defined (just pattern, not content)
+- **Accessibility**: No specification for error summary (showing all errors at top of form for screen reader users)
+- **Mobile/Responsive**: Whether touch target expansion affects visual layout on desktop not addressed
+- **Dependency Issues**: Combobox library choice (downshift vs. Radix UI) not resolved
+
 ## Dependencies
 
 - All Phase 1-5 features complete (form audit spans entire app)

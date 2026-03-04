@@ -54,6 +54,46 @@ interface HouseRules {
 - Characters at level 20 cannot be leveled further
 - Level-up changes persist to IndexedDB
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should prevent leveling a character beyond level 20`
+- `should toggle campaign progression mode between "XP Tracking" and "Milestone"`
+- `should generate batch level-up summary with HP changes and new features per character`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render "Milestone Level Up" button on campaign dashboard`
+- `should show "Level Up All" and "Level Up Selected" options`
+- `should display confirmation dialog "Level up all [N] characters to their next level?" for Level Up All`
+- `should render checkboxes next to each character for "Level Up Selected" mode`
+- `should display batch summary: "[Name]: Level 4 -> 5 (HP +8, new feat: Extra Attack)" per character`
+- `should replace "Award XP" with "Milestone Level Up" when campaign is in Milestone mode`
+- `should show "Milestone" instead of XP numbers on character sheets in Milestone mode`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should level up all characters via milestone and verify level changes persist`
+- `should select specific characters for level-up and verify only selected are leveled`
+- `should toggle campaign to Milestone mode and verify UI changes across dashboard`
+
+### Test Dependencies
+- Mock campaign with 4 characters at various levels
+- Mock Phase 4 level-up flow (batched)
+- Mock Zustand campaign store with house rules
+- Character fixtures including one at level 20 (for cap testing)
+
+## Identified Gaps
+
+- **Error Handling**: No specification for handling level-up flow failure mid-batch (partial level-ups)
+- **Loading/Empty States**: No loading indicator during batch level-up processing
+- **Accessibility**: No keyboard navigation for character selection checkboxes; no screen reader support for batch summary
+- **Edge Cases**: Behavior when switching from Milestone to XP mid-campaign (should XP fields populate?); behavior with multiclass level-up choice not addressed in batch flow
+
 ## Dependencies
 
 - Epic 33 Story 33.1 — Campaign data model and store

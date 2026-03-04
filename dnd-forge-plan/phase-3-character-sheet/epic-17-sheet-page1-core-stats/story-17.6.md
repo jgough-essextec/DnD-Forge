@@ -37,6 +37,51 @@ As a player, I need to see and track my HP max, current HP, and temporary HP, wi
 - Mini-history shows last 5 HP changes
 - Edit mode allows manual override of Max HP
 
+## Testing Requirements
+
+### Unit Tests (Vitest)
+_For pure functions, calculations, data transforms, utilities, type guards, validators_
+
+- `should compute Max HP as hit die max + CON modifier at level 1`
+- `should compute health percentage as (currentHP / maxHP) * 100`
+- `should determine color tier: green (75-100%), yellow (25-74%), red (1-24%), black (0)`
+- `should apply damage to temp HP first, then current HP per 5e rules`
+- `should cap healing so current HP does not exceed max HP`
+- `should enforce temp HP non-stacking rule (only higher value applies)`
+
+### Functional Tests (React Testing Library)
+_For component rendering, user interactions, state changes, prop variations_
+
+- `should render Max HP, Current HP, and Temp HP fields in the HP block`
+- `should display Max HP tooltip with computation breakdown`
+- `should always allow Current HP editing even in view mode`
+- `should change Current HP color based on health percentage (green/yellow/red/black)`
+- `should display skull icon at 0 HP`
+- `should render HP bar showing current HP as percentage of max with matching color`
+- `should display Temp HP in a blue-tinted box`
+- `should show +/- quick-adjust buttons for Current HP`
+- `should open damage/heal modal when clicking +/- buttons`
+- `should apply damage correctly through temp HP then current HP in the modal`
+- `should display mini-history of last 5 HP changes`
+
+### E2E Tests (Playwright)
+_For critical user journeys, multi-step flows, full-page interactions_
+
+- `should take damage via quick-adjust modal, see temp HP reduce first, then current HP, with color change and history update`
+
+### Test Dependencies
+- Mock character data with various HP states (full, partial, low, zero)
+- Mock character data with temp HP active
+- Mock calculation engine for Max HP computation
+- Mock view/edit mode context
+
+## Identified Gaps
+
+- **Error Handling**: No specification for negative HP input or HP values exceeding max in the damage/heal modal
+- **Loading/Empty States**: Initial state (Current HP = Max HP, Temp HP = 0) is mentioned but no visual treatment for "full health" distinguished from "empty/unset"
+- **Accessibility**: No ARIA labels for HP fields, no screen reader announcement for HP color changes, no keyboard shortcuts for quick-adjust buttons
+- **Performance**: Mini-history is session-only but no specification for history persistence across tab refreshes
+
 ## Dependencies
 - Story 17.2 (Ability Score Blocks) — HP max depends on CON modifier
 - Phase 1 calculation engine for Max HP computation
