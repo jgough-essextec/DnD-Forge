@@ -20,7 +20,7 @@ export function HitDiceDeathSaves() {
 
   // Get hit die type for first class
   const primaryClass = displayCharacter.classes[0]
-  const hitDieType = getHitDieForClass(primaryClass?.class ?? 'Fighter')
+  const hitDieType = getHitDieForClass(primaryClass?.classId ?? 'fighter')
   const hitDiceTotal = displayCharacter.hitDiceTotal[0] ?? 1
   const hitDiceUsed = displayCharacter.hitDiceUsed[0] ?? 0
 
@@ -211,20 +211,20 @@ export function HitDiceDeathSaves() {
 }
 
 // Helper function to get hit die type for a class
-function getHitDieForClass(className: string): number {
+function getHitDieForClass(classId: string): number {
   const hitDiceMap: Record<string, number> = {
-    Barbarian: 12,
-    Fighter: 10,
-    Paladin: 10,
-    Ranger: 10,
-    Bard: 8,
-    Cleric: 8,
-    Druid: 8,
-    Monk: 8,
-    Rogue: 8,
-    Warlock: 8,
-    Sorcerer: 6,
-    Wizard: 6,
+    barbarian: 12,
+    fighter: 10,
+    paladin: 10,
+    ranger: 10,
+    bard: 8,
+    cleric: 8,
+    druid: 8,
+    monk: 8,
+    rogue: 8,
+    warlock: 8,
+    sorcerer: 6,
+    wizard: 6,
   }
-  return hitDiceMap[className] ?? 8
+  return hitDiceMap[classId] ?? 8
 }

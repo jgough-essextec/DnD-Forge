@@ -10,7 +10,6 @@
 import { useState } from 'react'
 import { useCharacterSheet } from '@/components/character/CharacterSheetProvider'
 import { getSpellById } from '@/data/spells'
-import { getClassById } from '@/data/classes'
 import { cn } from '@/lib/utils'
 import type { Spell, SpellLevel, SpellSchool } from '@/types/spell'
 
@@ -39,7 +38,7 @@ const SPELL_LEVEL_NAMES: Record<number, string> = {
 }
 
 export function SpellSlotsAndLists() {
-  const { character, editableCharacter, derivedStats, updateField, editMode } = useCharacterSheet()
+  const { character, editableCharacter, derivedStats, updateField } = useCharacterSheet()
   const [expandedSpellId, setExpandedSpellId] = useState<string | null>(null)
 
   const activeCharacter = character
@@ -220,7 +219,7 @@ function SpellLevelSection({
       {/* Spell list */}
       {spells.length > 0 ? (
         <div className="space-y-2">
-          {spells.map(spell => (
+          {spells.map((spell: Spell) => (
             <SpellRow
               key={spell.id}
               spell={spell}
@@ -312,7 +311,6 @@ function SpellRow({
   onToggleExpand,
   onTogglePrepared,
 }: SpellRowProps) {
-  const { editMode } = useCharacterSheet()
   const schoolConfig = SCHOOL_CONFIG[spell.school]
   const castingTimeText = formatCastingTime(spell.castingTime)
 

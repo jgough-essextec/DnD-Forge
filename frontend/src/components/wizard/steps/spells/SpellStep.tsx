@@ -5,7 +5,7 @@
 // Orchestrates cantrip selection, spell selection, and validation.
 // =============================================================================
 
-import { useMemo, useCallback, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import type { WizardStepProps, StepValidation } from '@/components/wizard/types'
 import { useWizardStore } from '@/stores/wizardStore'
 import { CLASSES } from '@/data/classes'

@@ -4,7 +4,7 @@
 // bonuses, summary, validation, and store integration.
 // =============================================================================
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, within, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useWizardStore } from '@/stores/wizardStore'

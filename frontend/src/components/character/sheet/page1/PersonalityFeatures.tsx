@@ -8,7 +8,6 @@
 import { useCharacterSheet } from '@/components/character/CharacterSheetProvider'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
 
 export function PersonalityFeatures() {
   const { character, editableCharacter, updateField, editMode } =
@@ -38,12 +37,11 @@ export function PersonalityFeatures() {
   }
 
   // Group features by source
-  const racialTraits = displayCharacter.race.traits || []
-  const classFeatures = displayCharacter.classes.flatMap((cls) => cls.features || [])
-  const backgroundFeature = displayCharacter.background.feature
-    ? [displayCharacter.background.feature]
-    : []
-  const feats = displayCharacter.feats.map((feat) => feat.name)
+  // Note: traits, features, and feat names should be looked up from data
+  const racialTraits: string[] = [] // TODO: look up from race data
+  const classFeatures = displayCharacter.features // Character.features contains feature IDs
+  const backgroundFeature: string[] = [] // TODO: look up from background data
+  const feats = displayCharacter.feats.map((feat) => feat.featId) // featId, need to look up name
 
   return (
     <div className="space-y-4" data-testid="personality-features">
@@ -154,7 +152,7 @@ export function PersonalityFeatures() {
             </button>
             {expandedGroups.racial && (
               <div className="mt-2 ml-6 space-y-2">
-                {racialTraits.map((trait, index) => (
+                {racialTraits.map((trait: string, index: number) => (
                   <div key={index} className="text-sm">
                     <div className="font-semibold text-parchment">{trait}</div>
                   </div>

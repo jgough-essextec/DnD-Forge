@@ -24,7 +24,6 @@ import {
   Wand2,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
 import { useWizardStore } from '@/stores/wizardStore'
 
 type SectionStatus = 'empty' | 'warning' | 'complete'

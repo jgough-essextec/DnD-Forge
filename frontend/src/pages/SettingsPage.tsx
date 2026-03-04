@@ -2,16 +2,12 @@ import { useState, useCallback, useEffect } from 'react'
 import {
   Sun,
   Moon,
-  Gauge,
   Dice5,
   Save,
   UserCircle,
   Trash2,
   Download,
   Info,
-  Eye,
-  Accessibility,
-  SortAsc,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePreferences, useUpdatePreferences } from '@/hooks/usePreferences'

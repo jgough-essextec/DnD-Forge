@@ -25,10 +25,8 @@ import {
 } from '@/utils/calculations';
 
 import { CLASSES } from '@/data/classes';
-import { races } from '@/data/races';
-import type { AbilityScores, SkillProficiency, SkillName, AbilityName } from '@/types/core';
+import type { AbilityScores, SkillProficiency, AbilityName } from '@/types/core';
 import type { Character } from '@/types/character';
-import type { ArmorClassParams, MaxHitPointsParams } from '@/utils/calculations';
 
 // ---------------------------------------------------------------------------
 // Test Fixtures
@@ -272,7 +270,7 @@ describe('Spellcasting Stat Calculations', () => {
 
 describe('Proficiency Bonus', () => {
   it('is +2 at level 1 for all classes', () => {
-    for (const cls of CLASSES) {
+    for (const _cls of CLASSES) {
       // Every class at level 1 has proficiency bonus +2
       expect(getProficiencyBonus(1)).toBe(2);
     }

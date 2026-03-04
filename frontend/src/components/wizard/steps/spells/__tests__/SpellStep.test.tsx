@@ -9,10 +9,10 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SpellStep, validateSpellStep, type SpellStepState } from '../SpellStep'
 import { SpellDetailCard, formatSpellLevel, formatCastingTime, formatRange, formatDuration, formatComponents } from '../SpellDetailCard'
-import { SpellFilterBar, DEFAULT_SPELL_FILTERS, type SpellFilters } from '../SpellFilterBar'
+import { SpellFilterBar, DEFAULT_SPELL_FILTERS } from '../SpellFilterBar'
 import { CantripSelector } from '../CantripSelector'
 import { SpellSelector } from '../SpellSelector'
-import { SPELLS, getSpellsByClass } from '@/data/spells'
+import { SPELLS } from '@/data/spells'
 import { CLASSES } from '@/data/classes'
 import { getCantripsKnown, getSpellsKnownOrPrepared } from '@/utils/calculations/spellcasting'
 import type { Spell } from '@/types/spell'
@@ -46,22 +46,9 @@ beforeEach(() => {
 
 // -- Test Data ----------------------------------------------------------------
 
-const wizardClass = CLASSES.find((c) => c.id === 'wizard')!
-const clericClass = CLASSES.find((c) => c.id === 'cleric')!
-const bardClass = CLASSES.find((c) => c.id === 'bard')!
-const sorcererClass = CLASSES.find((c) => c.id === 'sorcerer')!
-const warlockClass = CLASSES.find((c) => c.id === 'warlock')!
-const druidClass = CLASSES.find((c) => c.id === 'druid')!
-
 const wizardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('wizard'))
-const clericCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('cleric'))
-const bardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('bard'))
-const sorcererCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('sorcerer'))
-const warlockCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('warlock'))
 
 const wizardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('wizard'))
-const clericSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('cleric'))
-const bardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))
 
 // Sample spell for detail card testing
 const sampleSpell: Spell = SPELLS.find((s) => s.id === 'magic-missile') ?? SPELLS.find((s) => s.level === 1)!
@@ -388,7 +375,7 @@ describe('CantripSelector', () => {
   })
 
   it('shows cantrips only from the correct class spell list', () => {
-    const clericCantripSet = new Set(clericCantrips.map((s) => s.id))
+    const clericCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('cleric'))
     const wizardCantripSet = new Set(wizardCantrips.map((s) => s.id))
 
     // Verify these are different lists
@@ -439,7 +426,7 @@ describe('SpellSelector', () => {
         classId="bard"
         castingSystem="known"
         maxSpells={4}
-        selectedSpellIds={[bardSpells[0].id]}
+        selectedSpellIds={[SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))[0].id]}
         onSpellSelectionChange={vi.fn()}
         abilityName="charisma"
         abilityModifier={3}
@@ -593,9 +580,11 @@ describe('SpellSelector', () => {
 
 describe('validateSpellStep', () => {
   it('returns valid:true when all selections are correct for known caster (Bard)', () => {
+    const bardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('bard'))
+    const bardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))
     const state: SpellStepState = {
-      selectedCantripIds: bardCantrips.slice(0, 2).map((s) => s.id),
-      selectedSpellIds: bardSpells.slice(0, 4).map((s) => s.id),
+      selectedCantripIds: bardCantrips.slice(0, 2).map((s: { id: string }) => s.id),
+      selectedSpellIds: bardSpells.slice(0, 4).map((s: { id: string }) => s.id),
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'bard', 3)
@@ -604,9 +593,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:false when cantrip count is wrong', () => {
+    const bardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('bard'))
+    const bardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))
     const state: SpellStepState = {
-      selectedCantripIds: bardCantrips.slice(0, 1).map((s) => s.id),
-      selectedSpellIds: bardSpells.slice(0, 4).map((s) => s.id),
+      selectedCantripIds: bardCantrips.slice(0, 1).map((s: { id: string }) => s.id),
+      selectedSpellIds: bardSpells.slice(0, 4).map((s: { id: string }) => s.id),
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'bard', 3)
@@ -615,10 +606,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:false when known spell count is wrong for Sorcerer', () => {
+    const sorcererCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('sorcerer'))
     const sorcererSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('sorcerer'))
     const state: SpellStepState = {
-      selectedCantripIds: sorcererCantrips.slice(0, 4).map((s) => s.id),
-      selectedSpellIds: sorcererSpells.slice(0, 1).map((s) => s.id), // only 1, needs 2
+      selectedCantripIds: sorcererCantrips.slice(0, 4).map((s: { id: string }) => s.id),
+      selectedSpellIds: sorcererSpells.slice(0, 1).map((s: { id: string }) => s.id), // only 1, needs 2
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'sorcerer', 3)
@@ -627,10 +619,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:false when wizard spellbook does not have 6 spells', () => {
+    const wizardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('wizard'))
     const state: SpellStepState = {
       selectedCantripIds: wizardCantrips.slice(0, 3).map((s) => s.id),
-      selectedSpellIds: wizardSpells.slice(0, 4).map((s) => s.id), // only 4, needs 6
-      preparedSpellIds: wizardSpells.slice(0, 2).map((s) => s.id),
+      selectedSpellIds: wizardSpells.slice(0, 4).map((s: { id: string }) => s.id), // only 4, needs 6
+      preparedSpellIds: wizardSpells.slice(0, 2).map((s: { id: string }) => s.id),
     }
     const result = validateSpellStep(state, 'wizard', 3)
     expect(result.valid).toBe(false)
@@ -638,9 +631,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:false when prepared spell count exceeds limit', () => {
+    const clericCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('cleric'))
+    const clericSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('cleric'))
     const state: SpellStepState = {
-      selectedCantripIds: clericCantrips.slice(0, 3).map((s) => s.id),
-      selectedSpellIds: clericSpells.slice(0, 10).map((s) => s.id), // way too many
+      selectedCantripIds: clericCantrips.slice(0, 3).map((s: { id: string }) => s.id),
+      selectedSpellIds: clericSpells.slice(0, 10).map((s: { id: string }) => s.id), // way too many
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'cleric', 3) // max = 3+1=4
@@ -649,9 +644,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:false for duplicate cantrip selections', () => {
+    const bardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('bard'))
+    const bardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))
     const state: SpellStepState = {
       selectedCantripIds: [bardCantrips[0].id, bardCantrips[0].id],
-      selectedSpellIds: bardSpells.slice(0, 4).map((s) => s.id),
+      selectedSpellIds: bardSpells.slice(0, 4).map((s: { id: string }) => s.id),
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'bard', 3)
@@ -661,12 +658,14 @@ describe('validateSpellStep', () => {
 
   it('returns valid:false when spell is not on class spell list', () => {
     // Find a spell that is on wizard list but not bard list
+    const bardCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('bard'))
+    const bardSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('bard'))
     const wizardOnly = wizardSpells.find((s) => !s.classes.includes('bard'))
     if (!wizardOnly) return
 
     const state: SpellStepState = {
-      selectedCantripIds: bardCantrips.slice(0, 2).map((s) => s.id),
-      selectedSpellIds: [wizardOnly.id, ...bardSpells.slice(0, 3).map((s) => s.id)],
+      selectedCantripIds: bardCantrips.slice(0, 2).map((s: { id: string }) => s.id),
+      selectedSpellIds: [wizardOnly.id, ...bardSpells.slice(0, 3).map((s: { id: string }) => s.id)],
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'bard', 3)
@@ -726,10 +725,11 @@ describe('validateSpellStep', () => {
   })
 
   it('returns valid:true for complete Warlock selections', () => {
+    const warlockCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('warlock'))
     const warlockSpells = SPELLS.filter((s) => s.level === 1 && s.classes.includes('warlock'))
     const state: SpellStepState = {
-      selectedCantripIds: warlockCantrips.slice(0, 2).map((s) => s.id),
-      selectedSpellIds: warlockSpells.slice(0, 2).map((s) => s.id),
+      selectedCantripIds: warlockCantrips.slice(0, 2).map((s: { id: string }) => s.id),
+      selectedSpellIds: warlockSpells.slice(0, 2).map((s: { id: string }) => s.id),
       preparedSpellIds: [],
     }
     const result = validateSpellStep(state, 'warlock', 3)
@@ -738,8 +738,9 @@ describe('validateSpellStep', () => {
 
   it('enforces minimum 1 prepared spell for prepared casters with low ability modifier', () => {
     // With modifier -1, max prepared = max(1, -1 + 1) = 1
+    const clericCantrips = SPELLS.filter((s) => s.level === 0 && s.classes.includes('cleric'))
     const state: SpellStepState = {
-      selectedCantripIds: clericCantrips.slice(0, 3).map((s) => s.id),
+      selectedCantripIds: clericCantrips.slice(0, 3).map((s: { id: string }) => s.id),
       selectedSpellIds: [],
       preparedSpellIds: [],
     }

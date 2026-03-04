@@ -8,7 +8,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react'
-import { Coins, Plus, Minus, Trash2, Search, ShoppingCart, Sparkles, Package, X } from 'lucide-react'
+import { Coins, Plus, Minus, Trash2, Search, ShoppingCart, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   WEAPONS,

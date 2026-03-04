@@ -101,9 +101,11 @@ export function AppearanceSection({ className }: AppearanceSectionProps) {
       <div className="flex flex-col items-center gap-3">
         <div className="relative group">
           <CharacterAvatar
-            name={currentName}
+            characterName={currentName}
             avatarUrl={currentAvatarUrl}
-            size={200}
+            raceId={character?.race.raceId}
+            classId={character?.classes[0]?.classId}
+            size="xl"
             className="ring-2 ring-accent-gold/30"
           />
           {editMode.isEditing && (

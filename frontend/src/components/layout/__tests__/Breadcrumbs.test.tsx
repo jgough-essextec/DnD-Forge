@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from '@/test/utils/renderWithProviders'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Route, Routes } from 'react-router-dom'

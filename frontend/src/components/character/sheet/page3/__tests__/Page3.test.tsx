@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Page3Layout } from '../Page3Layout'
 import { SpellcastingHeader } from '../SpellcastingHeader'
@@ -151,7 +151,7 @@ vi.mock('@/data/classes', () => ({
 
 // Mock game terms
 vi.mock('@/data/game-terms', () => ({
-  getGameTerm: (id: string) => ({
+  getGameTerm: () => ({
     term: 'Spellcasting Ability',
     definition: 'The ability score used for spellcasting.',
   }),
@@ -172,9 +172,8 @@ describe('Page3Layout', () => {
         {
           classId: 'fighter',
           level: 1,
-          hitDie: 10,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: null,
@@ -202,9 +201,8 @@ describe('Page3Layout', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -223,14 +221,28 @@ describe('Page3Layout', () => {
       character: caster,
       editableCharacter: {},
       derivedStats: {
+        effectiveAbilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 16, wisdom: 10, charisma: 10 },
+        abilityModifiers: { strength: 0, dexterity: 0, constitution: 0, intelligence: 3, wisdom: 0, charisma: 0 },
         proficiencyBonus: 2,
-        abilityModifiers: { intelligence: 3 },
+        armorClass: 10,
+        initiative: 0,
+        hpMax: 6,
+        skillModifiers: {} as any,
+        savingThrows: { strength: 0, dexterity: 0, constitution: 0, intelligence: 5, wisdom: 2, charisma: 0 },
+        passivePerception: 10,
+        passiveInvestigation: 13,
+        passiveInsight: 10,
         spellSaveDC: 13,
         spellAttackBonus: 5,
         spellSlots: { 1: 2 },
         cantripsKnown: 3,
         spellsPrepared: 4,
-      } as Partial<DerivedStats>,
+        meleeAttackBonus: 2,
+        rangedAttackBonus: 2,
+        inventoryWeight: 0,
+        carryingCapacity: 150,
+        isEncumbered: false,
+      },
       editMode: { isEditing: false },
       updateField: mockUpdateField,
     })
@@ -258,9 +270,8 @@ describe('SpellcastingHeader', () => {
         {
           classId: 'wizard',
           level: 3,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -303,9 +314,8 @@ describe('SpellcastingHeader', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -354,9 +364,8 @@ describe('CantripsSection', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -394,9 +403,8 @@ describe('CantripsSection', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -440,9 +448,8 @@ describe('CantripsSection', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -486,9 +493,8 @@ describe('SpellSlotsAndLists', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -529,9 +535,8 @@ describe('SpellSlotsAndLists', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -570,9 +575,8 @@ describe('SpellSlotsAndLists', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -614,9 +618,8 @@ describe('SpellSlotsAndLists', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -666,9 +669,8 @@ describe('DomainSpells', () => {
           classId: 'cleric',
           level: 1,
           subclassId: 'life-domain',
-          hitDie: 8,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -707,9 +709,8 @@ describe('DomainSpells', () => {
           classId: 'cleric',
           level: 1,
           subclassId: 'life-domain',
-          hitDie: 8,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {
@@ -745,9 +746,8 @@ describe('DomainSpells', () => {
         {
           classId: 'wizard',
           level: 1,
-          hitDie: 6,
-          skillProficiencies: [],
-          features: [],
+          chosenSkills: [],
+          hpRolls: [],
         },
       ],
       spellcasting: {

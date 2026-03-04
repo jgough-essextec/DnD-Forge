@@ -17,7 +17,6 @@
 
 import { cn } from '@/lib/utils'
 import { useCharacterSheet } from '@/components/character/CharacterSheetProvider'
-import type { InventoryItem } from '@/types/equipment'
 
 export interface EquipmentSectionProps {
   className?: string

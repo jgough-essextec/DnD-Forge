@@ -183,7 +183,9 @@ export function computeDerivedStats(character: Character): DerivedStats {
 
   // 9. HP max
   const primaryClass = character.classes?.[0]
-  const hitDie = primaryClass?.hitDie ?? 8
+  // Hit die needs to be looked up from class data
+  const classData = primaryClass ? getClassById(primaryClass.classId) : null
+  const hitDie = classData?.hitDie ?? 8
   const hpMax = getMaxHitPoints({
     hitDie,
     level,

@@ -5,11 +5,10 @@
 // =============================================================================
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import type { AbilityScores, AbilityName } from '@/types/core'
+import type { AbilityScores } from '@/types/core'
 import type { AbilityScoreMethod } from '@/types/character'
 import { ABILITY_NAMES } from '@/types/core'
 import { useWizardStore } from '@/stores/wizardStore'
-import { getModifier } from '@/utils/calculations/ability'
 import { races } from '@/data/races'
 import { ChoiceGroup } from '@/components/shared/ChoiceGroup'
 import { StepHelp } from '@/components/shared/StepHelp'

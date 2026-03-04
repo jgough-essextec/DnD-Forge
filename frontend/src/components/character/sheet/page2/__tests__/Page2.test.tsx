@@ -32,16 +32,16 @@ const createMockCharacter = (overrides?: Partial<Character>): Character => ({
   version: 1,
   race: {
     raceId: 'human',
-    subraceId: null,
-    chosenAbilityScoreIncreases: { strength: 1, charisma: 1 },
+    subraceId: undefined,
+    chosenAbilityBonuses: [{ abilityName: 'strength', bonus: 1 }, { abilityName: 'charisma', bonus: 1 }],
   },
   classes: [
     {
       classId: 'fighter',
       level: 1,
-      hitDie: 10,
-      subclassId: null,
-      chosenSkillProficiencies: ['athletics', 'intimidation'],
+      subclassId: undefined,
+      chosenSkills: ['athletics', 'intimidation'],
+      hpRolls: [],
     },
   ],
   background: {
@@ -74,14 +74,15 @@ const createMockCharacter = (overrides?: Partial<Character>): Character => ({
   tempHp: 0,
   hitDiceTotal: [10],
   hitDiceUsed: [0],
-  speed: { walk: 30, fly: 0, swim: 0, climb: 0, burrow: 0 },
-  deathSaves: { successes: 0, failures: 0 },
+  speed: { walk: 30 },
+  deathSaves: { successes: 0, failures: 0, stable: false },
   combatStats: {
-    armorClass: 14,
+    armorClass: { base: 14, dexModifier: 2, shieldBonus: 0, otherBonuses: [], formula: '10 + 2 (armor) + 2 (DEX)' },
     initiative: 2,
-    speed: 30,
-    proficiencyBonus: 2,
-    passivePerception: 11,
+    speed: { walk: 30 },
+    hitPoints: { maximum: 13, current: 13, temporary: 0, hitDice: { total: [], used: [] } },
+    attacks: [],
+    savingThrows: { strength: 5, constitution: 5 },
   },
   proficiencies: {
     armor: ['light', 'medium', 'heavy', 'shields'],
@@ -181,6 +182,9 @@ function renderWithMockContext(
       isEditing: false,
       isDirty: false,
       setDirty: vi.fn(),
+      toggleMode: vi.fn(),
+      enterEditMode: vi.fn(),
+      exitEditMode: vi.fn(),
     },
     saveStatus: 'idle',
     lastSavedAt: null,
@@ -193,7 +197,9 @@ function renderWithMockContext(
       undo: vi.fn(),
       redo: vi.fn(),
       pushSnapshot: vi.fn(),
-      clear: vi.fn(),
+      undoCount: 0,
+      redoCount: 0,
+      clearHistory: vi.fn(),
     },
     derivedStats: {
       effectiveAbilityScores: { strength: 14, dexterity: 12, constitution: 13, intelligence: 10, wisdom: 11, charisma: 8 },
@@ -202,7 +208,26 @@ function renderWithMockContext(
       armorClass: 14,
       initiative: 1,
       hpMax: 10,
-      skillModifiers: {},
+      skillModifiers: {
+        acrobatics: 1,
+        'animal-handling': 0,
+        arcana: 0,
+        athletics: 4,
+        deception: -1,
+        history: 0,
+        insight: 0,
+        intimidation: 1,
+        investigation: 0,
+        medicine: 0,
+        nature: 0,
+        perception: 0,
+        performance: -1,
+        persuasion: -1,
+        religion: 0,
+        'sleight-of-hand': 1,
+        stealth: 1,
+        survival: 0,
+      },
       savingThrows: { strength: 2, dexterity: 1, constitution: 1, intelligence: 0, wisdom: 0, charisma: -1 },
       passivePerception: 10,
       passiveInvestigation: 10,
@@ -291,7 +316,7 @@ describe('AppearanceSection', () => {
 
   it('should render edit inputs in edit mode', () => {
     renderWithMockContext(<AppearanceSection />, {
-      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn() },
+      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn(), toggleMode: vi.fn(), enterEditMode: vi.fn(), exitEditMode: vi.fn() },
     })
     expect(screen.getByTestId('appearance-name-input')).toBeInTheDocument()
     expect(screen.getByTestId('appearance-age-input')).toBeInTheDocument()
@@ -326,14 +351,14 @@ describe('BackstorySection', () => {
 
   it('should render edit textarea in edit mode', () => {
     renderWithMockContext(<BackstorySection />, {
-      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn() },
+      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn(), toggleMode: vi.fn(), enterEditMode: vi.fn(), exitEditMode: vi.fn() },
     })
     expect(screen.getByTestId('backstory-input')).toBeInTheDocument()
   })
 
   it('should show character count in edit mode', () => {
     renderWithMockContext(<BackstorySection />, {
-      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn() },
+      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn(), toggleMode: vi.fn(), enterEditMode: vi.fn(), exitEditMode: vi.fn() },
     })
     expect(screen.getByTestId('backstory-character-count')).toBeInTheDocument()
   })
@@ -345,7 +370,7 @@ describe('BackstorySection', () => {
     })
     renderWithMockContext(<BackstorySection />, {
       character: longCharacter,
-      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn() },
+      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn(), toggleMode: vi.fn(), enterEditMode: vi.fn(), exitEditMode: vi.fn() },
     })
     expect(screen.getByText(/over 5,000/i)).toBeInTheDocument()
   })
@@ -449,7 +474,7 @@ describe('TreasureSection', () => {
 
   it('should render edit textarea in edit mode', () => {
     renderWithMockContext(<TreasureSection />, {
-      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn() },
+      editMode: { isEditing: true, isDirty: false, setDirty: vi.fn(), toggleMode: vi.fn(), enterEditMode: vi.fn(), exitEditMode: vi.fn() },
     })
     expect(screen.getByTestId('treasure-input')).toBeInTheDocument()
   })

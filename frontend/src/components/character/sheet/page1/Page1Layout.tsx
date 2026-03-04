@@ -15,7 +15,7 @@ interface Page1LayoutProps {
 }
 
 export function Page1Layout({ children }: Page1LayoutProps) {
-  const { character, editableCharacter, updateField, editMode, derivedStats } =
+  const { character, editableCharacter, updateField, editMode } =
     useCharacterSheet()
 
   const displayCharacter = character ? { ...character, ...editableCharacter } : null
@@ -38,8 +38,10 @@ export function Page1Layout({ children }: Page1LayoutProps) {
   // Format class display: "Level N [Subclass] [Class]"
   const classDisplay = displayCharacter.classes
     .map((cls) => {
-      const subclassText = cls.subclass ? `${cls.subclass} ` : ''
-      return `Level ${cls.level} ${subclassText}${cls.class}`
+      // Capitalize classId for display
+      const className = cls.classId.charAt(0).toUpperCase() + cls.classId.slice(1)
+      const subclassText = cls.subclassId ? `${cls.subclassId} ` : ''
+      return `Level ${cls.level} ${subclassText}${className}`
     })
     .join(' / ')
 
@@ -51,11 +53,12 @@ export function Page1Layout({ children }: Page1LayoutProps) {
           {/* Avatar */}
           <div className="flex-shrink-0">
             <CharacterAvatar
-              name={displayCharacter.name}
+              characterName={displayCharacter.name}
               avatarUrl={displayCharacter.avatarUrl}
+              raceId={displayCharacter.race.raceId}
+              classId={displayCharacter.classes[0]?.classId}
               size="lg"
               editable={editMode.isEditing}
-              data-testid="character-avatar"
             />
           </div>
 
@@ -108,14 +111,14 @@ export function Page1Layout({ children }: Page1LayoutProps) {
                 {editMode.isEditing ? (
                   <input
                     type="text"
-                    value={displayCharacter.background.name}
+                    value={displayCharacter.background.backgroundId}
                     className="w-full bg-bg-primary border border-parchment/30 rounded px-2 py-1 text-parchment text-sm focus:outline-none focus:border-accent-gold"
                     aria-label="Background"
                     readOnly
                   />
                 ) : (
-                  <div className="text-parchment font-medium">
-                    {displayCharacter.background.name}
+                  <div className="text-parchment font-medium capitalize">
+                    {displayCharacter.background.backgroundId.replace(/-/g, ' ')}
                   </div>
                 )}
               </div>
@@ -145,10 +148,10 @@ export function Page1Layout({ children }: Page1LayoutProps) {
                 <div className="text-parchment/60 text-xs uppercase tracking-wider mb-1">
                   Race
                 </div>
-                <div className="text-parchment font-medium">
-                  {displayCharacter.race.subrace
-                    ? `${displayCharacter.race.subrace} ${displayCharacter.race.race}`
-                    : displayCharacter.race.race}
+                <div className="text-parchment font-medium capitalize">
+                  {displayCharacter.race.subraceId
+                    ? `${displayCharacter.race.subraceId.replace(/-/g, ' ')} ${displayCharacter.race.raceId.replace(/-/g, ' ')}`
+                    : displayCharacter.race.raceId.replace(/-/g, ' ')}
                 </div>
               </div>
 

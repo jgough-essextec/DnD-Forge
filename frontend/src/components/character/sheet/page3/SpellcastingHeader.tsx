@@ -15,7 +15,7 @@ import { getClassById } from '@/data/classes'
 import { cn } from '@/lib/utils'
 
 export function SpellcastingHeader() {
-  const { character, editableCharacter, derivedStats, editMode } = useCharacterSheet()
+  const { character, editableCharacter, derivedStats } = useCharacterSheet()
 
   const activeCharacter = character
     ? { ...character, ...editableCharacter }

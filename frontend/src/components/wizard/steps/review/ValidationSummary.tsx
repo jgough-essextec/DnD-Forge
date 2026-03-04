@@ -23,20 +23,6 @@ interface ValidationSummaryProps {
   onNavigateToStep?: (stepId: number) => void
 }
 
-/**
- * Map a validation field to the wizard step that can fix it.
- */
-function fieldToStepId(field: string): number | null {
-  if (field.startsWith('name')) return 4
-  if (field.startsWith('race') || field === 'race') return 1
-  if (field.startsWith('class') || field === 'classes') return 2
-  if (field.includes('abilityScore') || field.includes('AbilityScore')) return 3
-  if (field.startsWith('background') || field.includes('personality')) return 4
-  if (field.includes('equipment') || field.includes('inventory')) return 5
-  if (field.includes('spell')) return 6
-  if (field.includes('proficien')) return 2
-  return null
-}
 
 const SEVERITY_STYLES = {
   error: {
@@ -306,7 +292,6 @@ function ValidationMessageRow({
  * Useful for gating the save button.
  */
 export function useValidationState() {
-  const characterName = useWizardStore((s) => s.characterName)
   const raceSelection = useWizardStore((s) => s.raceSelection)
   const classSelection = useWizardStore((s) => s.classSelection)
   const abilityScores = useWizardStore((s) => s.abilityScores)

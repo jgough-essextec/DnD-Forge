@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useWizardStore } from '@/stores/wizardStore'
 import type { ClassSelection } from '@/types/class'
@@ -22,7 +22,6 @@ import type { InventoryItem } from '@/types/equipment'
 // -- Component imports --------------------------------------------------------
 
 import { EquipmentStep, validateEquipmentStep } from '../EquipmentStep'
-import type { EquipmentMode } from '../EquipmentStep'
 import { StartingEquipmentSelector, resolveStartingEquipment } from '../StartingEquipmentSelector'
 import type { ChoiceSelections } from '../StartingEquipmentSelector'
 import { GoldBuyMode, getCartTotal, getCartWeight, cartToInventoryItems } from '../GoldBuyMode'
@@ -48,13 +47,6 @@ const wizardClassSelection: ClassSelection = {
   classId: 'wizard',
   level: 1,
   chosenSkills: ['arcana', 'history'],
-  hpRolls: [],
-}
-
-const rogueClassSelection: ClassSelection = {
-  classId: 'rogue',
-  level: 1,
-  chosenSkills: ['stealth', 'acrobatics', 'deception', 'perception'],
   hpRolls: [],
 }
 
@@ -153,7 +145,7 @@ function setupWizardStore(overrides?: {
     store.setClass(overrides.classSelection)
   }
   if (overrides?.abilityScores) {
-    store.setAbilityScores(overrides.abilityScores, 'standard-array')
+    store.setAbilityScores(overrides.abilityScores, 'standard')
   }
 }
 

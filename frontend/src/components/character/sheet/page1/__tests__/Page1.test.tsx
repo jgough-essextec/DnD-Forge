@@ -6,7 +6,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import type { Character } from '@/types/character'
 import type { DerivedStats } from '@/hooks/useCharacterCalculations'
 
@@ -68,21 +67,29 @@ const createMockCharacter = (): Character => ({
   updatedAt: '2024-01-01T00:00:00Z',
   version: 1,
   race: {
-    race: 'Dwarf',
-    subrace: 'Mountain Dwarf',
-    traits: ['Darkvision', 'Dwarven Resilience'],
+    raceId: 'dwarf',
+    subraceId: 'mountain-dwarf',
   },
   classes: [
     {
-      class: 'Fighter',
+      classId: 'fighter',
       level: 1,
-      subclass: null,
-      features: ['Second Wind', 'Fighting Style'],
+      subclassId: undefined,
+      chosenSkills: ['athletics', 'perception'],
+      hpRolls: [],
     },
   ],
   background: {
-    name: 'Soldier',
-    feature: 'Military Rank',
+    backgroundId: 'soldier',
+    characterIdentity: {
+      name: 'Thorin Ironforge',
+    },
+    characterPersonality: {
+      personalityTraits: ['I face problems head-on.', 'I always have a plan.'],
+      ideal: 'Responsibility. I do what I must and obey just authority.',
+      bond: 'I would still lay down my life for the people I served with.',
+      flaw: 'I have little respect for anyone who is not a proven warrior.',
+    },
   },
   alignment: 'lawful-good',
   baseAbilityScores: {
@@ -112,14 +119,18 @@ const createMockCharacter = (): Character => ({
   speed: { walk: 25 },
   deathSaves: { successes: 0, failures: 0, stable: false },
   combatStats: {
-    armorClass: 16,
+    armorClass: { base: 16, dexModifier: 1, shieldBonus: 0, otherBonuses: [], formula: '10 + 5 (armor) + 1 (DEX)' },
     initiative: 1,
+    speed: { walk: 25 },
+    hitPoints: { maximum: 13, current: 13, temporary: 0, hitDice: { total: [], used: [] } },
+    attacks: [],
+    savingThrows: { strength: 5, constitution: 5 },
   },
   proficiencies: {
     armor: ['Light armor', 'Medium armor', 'Heavy armor', 'Shields'],
     weapons: ['Simple weapons', 'Martial weapons'],
     tools: [],
-    languages: ['Common', 'Dwarvish'],
+    languages: ['common', 'dwarvish'],
     skills: [
       { skill: 'athletics', proficient: true, expertise: false },
       { skill: 'perception', proficient: true, expertise: false },
@@ -129,14 +140,14 @@ const createMockCharacter = (): Character => ({
   inventory: [
     {
       id: 'item-1',
+      equipmentId: 'longsword',
       name: 'Longsword',
-      itemType: 'weapon',
+      category: 'weapon',
       quantity: 1,
       weight: 3,
-      equipped: true,
-      damage: '1d8',
-      damageType: 'slashing',
-      properties: ['melee', 'versatile'],
+      isEquipped: true,
+      isAttuned: false,
+      requiresAttunement: false,
     },
   ],
   currency: { cp: 0, sp: 0, gp: 50, pp: 0, ep: 0 },
@@ -145,12 +156,17 @@ const createMockCharacter = (): Character => ({
   features: ['second-wind', 'fighting-style-defense'],
   feats: [],
   description: {
-    age: 45,
+    name: 'Thorin Ironforge',
+    age: '45',
     height: "4'6\"",
-    weight: 180,
+    weight: '180',
     eyes: 'Brown',
     skin: 'Tan',
     hair: 'Black',
+    appearance: '',
+    backstory: '',
+    alliesAndOrgs: '',
+    treasure: '',
   },
   personality: {
     personalityTraits: ['I face problems head-on.', 'I always have a plan.'],
@@ -260,9 +276,9 @@ describe('Page1 Components', () => {
 
     it('shows identity grid with all fields', () => {
       render(<Page1Layout />)
-      expect(screen.getByText('Soldier')).toBeInTheDocument() // background
+      expect(screen.getByText('soldier')).toBeInTheDocument() // background (lowercase, CSS capitalize for display)
       expect(screen.getByText('Test Player')).toBeInTheDocument() // player name
-      expect(screen.getByText('Mountain Dwarf Dwarf')).toBeInTheDocument() // race
+      expect(screen.getByText('mountain dwarf dwarf')).toBeInTheDocument() // race (lowercase, CSS capitalize)
     })
   })
 
@@ -452,16 +468,12 @@ describe('Page1 Components', () => {
       expect(screen.getByText(/little respect/)).toBeInTheDocument()
     })
 
-    it('displays collapsible feature groups', () => {
+    it('displays class features group', () => {
       render(<PersonalityFeatures />)
-      expect(screen.getByText(/Racial Traits/)).toBeInTheDocument()
+      // Mock character has features: ['second-wind', 'fighting-style-defense']
       expect(screen.getByText(/Class Features/)).toBeInTheDocument()
-    })
-
-    it('shows racial traits', () => {
-      render(<PersonalityFeatures />)
-      expect(screen.getByText('Darkvision')).toBeInTheDocument()
-      expect(screen.getByText('Dwarven Resilience')).toBeInTheDocument()
+      expect(screen.getByText('second-wind')).toBeInTheDocument()
+      expect(screen.getByText('fighting-style-defense')).toBeInTheDocument()
     })
   })
 })

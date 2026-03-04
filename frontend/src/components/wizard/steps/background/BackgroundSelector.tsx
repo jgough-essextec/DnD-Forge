@@ -77,9 +77,9 @@ export function BackgroundSelector({
 
   // Filter backgrounds by search query
   const filteredBackgrounds = useMemo(() => {
-    if (!searchQuery.trim()) return BACKGROUNDS as Background[]
+    if (!searchQuery.trim()) return [...BACKGROUNDS] as Background[]
     const query = searchQuery.toLowerCase()
-    return (BACKGROUNDS as Background[]).filter(
+    return ([...BACKGROUNDS] as Background[]).filter(
       (bg) =>
         bg.name.toLowerCase().includes(query) ||
         bg.description.toLowerCase().includes(query) ||

@@ -186,7 +186,6 @@ describe('ClassDetailPanel', () => {
     const fighter = getClassByIdOrFail('fighter')
     render(<ClassDetailPanel characterClass={fighter} />)
 
-    const spellcastingSections = screen.queryAllByText('Spellcasting')
     // "Spellcasting" may appear as a feature name but not as a section header
     // The section should not have "Full Caster", "Half Caster", etc.
     expect(screen.queryByText('Full Caster')).not.toBeInTheDocument()

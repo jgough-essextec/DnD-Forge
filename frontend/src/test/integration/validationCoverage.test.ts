@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 
 import { validateCharacter } from '@/utils/calculations/validation';
 import type { Character, CharacterValidationEntry } from '@/types/character';
-import type { AbilityScores, AbilityName, SkillProficiency } from '@/types/core';
+import type { AbilityScores } from '@/types/core';
 
 // ---------------------------------------------------------------------------
 // Shared Fixtures
@@ -286,10 +286,6 @@ function buildValidHighElfWizard(): Character {
 
 function getErrors(entries: CharacterValidationEntry[]): CharacterValidationEntry[] {
   return entries.filter((e) => e.severity === 'error');
-}
-
-function getWarnings(entries: CharacterValidationEntry[]): CharacterValidationEntry[] {
-  return entries.filter((e) => e.severity === 'warning');
 }
 
 function hasErrorForField(entries: CharacterValidationEntry[], field: string): boolean {

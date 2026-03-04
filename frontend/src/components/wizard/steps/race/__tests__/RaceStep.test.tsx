@@ -29,7 +29,7 @@ import type { Race, AbilityBonus } from '@/types/race'
 // =============================================================================
 
 const mockSetRace = vi.fn()
-let mockRaceSelection: ReturnType<typeof import('@/stores/wizardStore').useWizardStore> extends { raceSelection: infer R } ? R : never = null
+let mockRaceSelection: null | Parameters<typeof mockSetRace>[0] = null
 
 vi.mock('@/stores/wizardStore', () => ({
   useWizardStore: (selector: (state: Record<string, unknown>) => unknown) =>
@@ -262,12 +262,12 @@ describe('HalfElfBonusPicker', () => {
 // =============================================================================
 
 describe('VariantHumanPicker', () => {
-  const defaultProps = {
+  const defaultProps: React.ComponentProps<typeof VariantHumanPicker> = {
     selectedBonuses: [] as AbilityBonus[],
     onBonusChange: vi.fn(),
-    selectedSkill: null as string | null,
+    selectedSkill: null,
     onSkillChange: vi.fn(),
-    selectedFeat: null as string | null,
+    selectedFeat: null,
     onFeatChange: vi.fn(),
   }
 

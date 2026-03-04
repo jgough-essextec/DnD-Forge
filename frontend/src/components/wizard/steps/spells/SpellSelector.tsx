@@ -158,7 +158,7 @@ export function SpellSelector({
         getKey={(spell) => spell.id}
         multiSelect
         columns={{ sm: 1, md: 2, lg: 3 }}
-        renderCard={(spell, isSelected) => (
+        renderCard={(spell, _isSelected) => (
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-parchment">
@@ -253,7 +253,7 @@ function SystemHeader({
   maxSpells,
   maxPrepared,
   selectedCount,
-  preparedCount,
+  preparedCount: _preparedCount,
   isComplete,
   abilityName,
   abilityModifier,

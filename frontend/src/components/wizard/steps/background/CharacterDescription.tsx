@@ -8,7 +8,6 @@
 import { useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import type { Alignment } from '@/types/core'
-import { ALIGNMENTS } from '@/types/core'
 import type { CharacterIdentity } from '@/types/background'
 
 // ---------------------------------------------------------------------------

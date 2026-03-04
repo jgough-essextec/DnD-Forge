@@ -34,9 +34,6 @@ export function SaveActions({ data, onGoBack }: SaveActionsProps) {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [createAnotherAfterSave, setCreateAnotherAfterSave] = useState(false)
 
-  // Get the current wizard state for transform
-  const wizardState = useWizardStore.getState()
-
   const handleSave = useCallback(
     async (createAnother = false) => {
       setSaveError(null)

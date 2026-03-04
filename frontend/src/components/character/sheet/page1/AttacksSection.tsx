@@ -30,7 +30,7 @@ export function AttacksSection() {
 
   // Generate attacks from equipped weapons
   const equippedWeapons = displayCharacter.inventory.filter(
-    (item) => item.equipped && item.itemType === 'weapon'
+    (item) => item.isEquipped && item.category === 'weapon'
   )
 
   const handleAttackRoll = (weaponName: string, attackBonus: number, damageDice: string) => {
@@ -67,37 +67,25 @@ export function AttacksSection() {
   }
 
   // For now, create basic attacks from weapons
+  // Note: weapon properties and damage should be looked up from weapon data
   const attacks = equippedWeapons.map((weapon) => {
-    const isMelee = weapon.properties?.includes('melee') ?? true
-    const isFinesse = weapon.properties?.includes('finesse') ?? false
-    const isRanged = weapon.properties?.includes('ranged') ?? false
-
+    // For MVP, assume melee weapons use STR
     let attackBonus = derivedStats.proficiencyBonus
     let damageBonus = 0
 
-    if (isFinesse) {
-      const strMod = derivedStats.abilityModifiers.strength
-      const dexMod = derivedStats.abilityModifiers.dexterity
-      const betterMod = Math.max(strMod, dexMod)
-      attackBonus += betterMod
-      damageBonus = betterMod
-    } else if (isRanged) {
-      attackBonus += derivedStats.abilityModifiers.dexterity
-      damageBonus = derivedStats.abilityModifiers.dexterity
-    } else {
-      attackBonus += derivedStats.abilityModifiers.strength
-      damageBonus = derivedStats.abilityModifiers.strength
-    }
+    attackBonus += derivedStats.abilityModifiers.strength
+    damageBonus = derivedStats.abilityModifiers.strength
 
-    const damageDice = weapon.damage || '1d8'
-    const damageType = weapon.damageType || 'slashing'
+    // Default damage for MVP display
+    const damageDice = '1d8'
+    const damageType = 'slashing'
     const damageDisplay = `${damageDice}${damageBonus >= 0 ? '+' : ''}${damageBonus} ${damageType}`
 
     return {
       name: weapon.name,
       attackBonus,
       damage: damageDisplay,
-      properties: weapon.properties || [],
+      properties: [] as string[],
     }
   })
 

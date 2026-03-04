@@ -7,8 +7,8 @@
  * and integration with the wizard store.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, within, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BackgroundStep } from '../BackgroundStep'
 import { BackgroundSelector, detectSkillOverlaps, getReplacementSkills } from '../BackgroundSelector'
@@ -45,10 +45,8 @@ vi.mock('@/stores/wizardStore', () => ({
 // Test Helpers
 // ---------------------------------------------------------------------------
 
-const allBackgrounds = BACKGROUNDS as Background[]
+const allBackgrounds = [...BACKGROUNDS] as Background[]
 const acolyteBackground = allBackgrounds.find((bg) => bg.id === 'acolyte')!
-const criminalBackground = allBackgrounds.find((bg) => bg.id === 'criminal')!
-const sageBackground = allBackgrounds.find((bg) => bg.id === 'sage')!
 
 function getDefaultPersonality(): PersonalityState {
   return {
@@ -214,6 +212,7 @@ describe('BackgroundSelector', () => {
   })
 
   it('should show skill overlap warning when background overlaps with class skills', () => {
+    const criminalBackground = allBackgrounds.find((bg) => bg.id === 'criminal')!
     render(
       <BackgroundSelector
         {...defaultProps}
@@ -225,6 +224,7 @@ describe('BackgroundSelector', () => {
   })
 
   it('should show replacement skill picker for each overlap', () => {
+    const criminalBackground = allBackgrounds.find((bg) => bg.id === 'criminal')!
     render(
       <BackgroundSelector
         {...defaultProps}
@@ -706,6 +706,7 @@ describe('BackgroundStep', () => {
 
     // Should not show Acolyte traits anymore in selected state
     // (the criminal traits should now be showing)
+    const criminalBackground = allBackgrounds.find((bg) => bg.id === 'criminal')!
     expect(
       screen.getByText(criminalBackground.personalityTraits[0].text),
     ).toBeInTheDocument()

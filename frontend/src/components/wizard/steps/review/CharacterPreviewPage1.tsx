@@ -5,8 +5,6 @@
  * AC, HP, initiative, speed, hit dice, attacks, spellcasting summary,
  * personality traits, and features list.
  */
-
-import { cn } from '@/lib/utils'
 import { ABILITY_NAMES, SKILL_NAMES, SKILL_ABILITY_MAP } from '@/types/core'
 import type { AbilityName, SkillName } from '@/types/core'
 import { AbilityScoreDisplay } from '@/components/shared/AbilityScoreDisplay'

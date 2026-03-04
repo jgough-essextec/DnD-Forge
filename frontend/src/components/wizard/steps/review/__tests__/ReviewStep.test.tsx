@@ -8,13 +8,13 @@
  * - 15.4: Quick Edit from Review
  */
 
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { ReviewStep } from '../ReviewStep'
-import { ValidationSummary, useValidationState } from '../ValidationSummary'
+import { ValidationSummary } from '../ValidationSummary'
 import { SaveCelebration } from '../SaveCelebration'
 import { InlineNameEdit } from '../InlineNameEdit'
 import { EditableSection } from '../EditableSection'

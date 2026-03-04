@@ -66,8 +66,8 @@ describe('WizardProgress', () => {
     useWizardStore.getState().setClass({
       classId: 'fighter',
       level: 1,
-      hitDie: 10,
-      skillProficiencies: [],
+      chosenSkills: [],
+      hpRolls: [],
     } as ClassSelection)
 
     renderWithProviders(<WizardProgress />)
@@ -79,8 +79,8 @@ describe('WizardProgress', () => {
     useWizardStore.getState().setClass({
       classId: 'wizard',
       level: 1,
-      hitDie: 6,
-      skillProficiencies: [],
+      chosenSkills: [],
+      hpRolls: [],
     } as ClassSelection)
 
     renderWithProviders(<WizardProgress />)

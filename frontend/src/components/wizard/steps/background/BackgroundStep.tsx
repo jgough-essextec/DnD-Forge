@@ -11,7 +11,6 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { cn } from '@/lib/utils'
 import { BACKGROUNDS } from '@/data/backgrounds'
 import { useWizardStore } from '@/stores/wizardStore'
 import { StepHelp } from '@/components/shared/StepHelp'
@@ -41,7 +40,7 @@ export function BackgroundStep({ onValidationChange }: WizardStepProps) {
   const [selectedBackground, setSelectedBackground] = useState<Background | null>(() => {
     if (backgroundSelection?.backgroundId) {
       return (
-        (BACKGROUNDS as Background[]).find(
+        ([...BACKGROUNDS] as Background[]).find(
           (bg) => bg.id === backgroundSelection.backgroundId,
         ) ?? null
       )

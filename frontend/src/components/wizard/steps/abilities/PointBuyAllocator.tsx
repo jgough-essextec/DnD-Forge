@@ -41,12 +41,6 @@ function getMarginalCost(score: number): number {
   return POINT_BUY_COSTS[score + 1] - POINT_BUY_COSTS[score]
 }
 
-/** Get marginal refund of decrementing from current score to current - 1. */
-function getMarginalRefund(score: number): number {
-  if (score <= POINT_BUY_MIN) return 0
-  return POINT_BUY_COSTS[score] - POINT_BUY_COSTS[score - 1]
-}
-
 // -- Quick Presets --
 
 interface Preset {
