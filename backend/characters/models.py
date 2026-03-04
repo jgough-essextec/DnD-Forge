@@ -1,7 +1,9 @@
 import uuid
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Character(models.Model):
@@ -51,3 +53,32 @@ class Character(models.Model):
 
     def __str__(self):
         return f"{self.name} (Lv{self.level} {self.class_name})"
+
+
+class CharacterShareToken(models.Model):
+    """
+    A time-limited share token that grants public read access to a character.
+    """
+
+    token = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    character = models.ForeignKey(
+        Character,
+        on_delete=models.CASCADE,
+        related_name="share_tokens",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(days=7)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+
+    def __str__(self):
+        return f"Share token for {self.character.name} (expires {self.expires_at})"

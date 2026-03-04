@@ -20,6 +20,7 @@ const EncounterPage = lazy(() => import('@/pages/EncounterPage'))
 const JoinCampaignPage = lazy(() => import('@/pages/JoinCampaignPage'))
 const DiceRollerPage = lazy(() => import('@/pages/DiceRollerPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
+const SharedCharacterPage = lazy(() => import('@/pages/SharedCharacterPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 export default function App() {
@@ -135,6 +136,11 @@ export default function App() {
                     <SettingsPage />
                   </ProtectedRoute>
                 }
+              />
+              {/* Public route: shared character (no auth required) */}
+              <Route
+                path="/shared/:token"
+                element={<SharedCharacterPage />}
               />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

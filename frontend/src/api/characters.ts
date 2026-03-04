@@ -39,3 +39,87 @@ export async function updateCharacter(id: string, data: Partial<Character>): Pro
 export async function deleteCharacter(id: string): Promise<void> {
   await api.delete(`/characters/${id}/`)
 }
+
+/**
+ * Export a character as a downloadable JSON file.
+ * Triggers a browser download of the JSON file.
+ */
+export async function exportCharacter(id: string): Promise<void> {
+  const response = await api.get(`/characters/${id}/export/`, {
+    responseType: 'blob',
+  })
+
+  // Extract filename from Content-Disposition header if available
+  const disposition = response.headers['content-disposition'] as string | undefined
+  let filename = 'character.json'
+  if (disposition) {
+    const match = disposition.match(/filename="?([^";\n]+)"?/)
+    if (match) {
+      filename = match[1]
+    }
+  }
+
+  // Create a blob URL and trigger browser download
+  const blob = new Blob([response.data as BlobPart], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+/** Response shape for the import endpoint. */
+export interface ImportCharacterResponse {
+  character: Character
+  warnings: string[]
+}
+
+/**
+ * Import a character from a JSON file.
+ * Sends as multipart/form-data with the file field.
+ */
+export async function importCharacter(file: File): Promise<ImportCharacterResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await api.post<ImportCharacterResponse>('/characters/import/', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
+}
+
+/** Response shape for the share endpoint. */
+export interface ShareCharacterResponse {
+  token: string
+  url: string
+  expires_at: string
+}
+
+/**
+ * Generate or retrieve a share token for a character.
+ */
+export async function shareCharacter(id: string): Promise<ShareCharacterResponse> {
+  const response = await api.get<ShareCharacterResponse>(`/characters/${id}/share/`)
+  return response.data
+}
+
+/** The shape of shared character data returned by the public endpoint. */
+export interface SharedCharacterData {
+  formatVersion: string
+  appVersion: string
+  exportedAt: string
+  character: Record<string, unknown>
+}
+
+/**
+ * Fetch a shared character by its share token. Public endpoint, no auth required.
+ */
+export async function getSharedCharacter(token: string): Promise<SharedCharacterData> {
+  const response = await api.get<SharedCharacterData>(`/shared/${token}/`)
+  return response.data
+}

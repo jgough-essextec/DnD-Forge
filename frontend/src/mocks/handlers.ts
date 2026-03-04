@@ -344,6 +344,185 @@ export const handlers = [
   }),
 
   // -------------------------------------------------------------------------
+  // Character export endpoint
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/characters/:id/export/`, ({ params }) => {
+    const { id } = params
+    if (id !== 'char-001') {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    const exportData = {
+      formatVersion: '1.0',
+      appVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      character: {
+        name: 'Thorn Ironforge',
+        race: 'Dwarf',
+        class_name: 'Fighter',
+        level: 5,
+        ability_scores: {
+          strength: 16,
+          dexterity: 12,
+          constitution: 16,
+          intelligence: 10,
+          wisdom: 14,
+          charisma: 8,
+        },
+        skills: [],
+        equipment: [],
+        spells: [],
+        background: 'Soldier',
+        hp: 52,
+        character_data: {},
+        is_archived: false,
+      },
+    }
+    return new HttpResponse(JSON.stringify(exportData, null, 2), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Disposition': 'attachment; filename="character-Thorn-Ironforge.json"',
+      },
+    })
+  }),
+
+  // -------------------------------------------------------------------------
+  // Character import endpoint
+  // -------------------------------------------------------------------------
+
+  http.post(`${BASE_URL}/characters/import/`, async ({ request }) => {
+    if (!currentUser) {
+      return HttpResponse.json(
+        { detail: 'Authentication credentials were not provided.' },
+        { status: 403 }
+      )
+    }
+    // Try to parse the form data or body
+    let characterData: Record<string, unknown> = {}
+    try {
+      const contentType = request.headers.get('content-type') || ''
+      if (contentType.includes('multipart/form-data')) {
+        const formData = await request.formData()
+        const file = formData.get('file')
+        if (file && file instanceof File) {
+          const text = await file.text()
+          const parsed = JSON.parse(text)
+          characterData = parsed.character || parsed
+        }
+      } else {
+        const body = await request.json()
+        characterData = (body as Record<string, unknown>).character as Record<string, unknown> || body as Record<string, unknown>
+      }
+    } catch {
+      return HttpResponse.json(
+        { file: 'Invalid JSON' },
+        { status: 400 }
+      )
+    }
+
+    // Basic validation
+    if (!characterData.name || !characterData.race || !characterData.class_name) {
+      return HttpResponse.json(
+        { file: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const importedCharacter = {
+      id: 'char-imported-001',
+      name: characterData.name,
+      race: characterData.race,
+      class_name: characterData.class_name,
+      level: characterData.level || 1,
+      ability_scores: characterData.ability_scores || {},
+      skills: characterData.skills || [],
+      equipment: characterData.equipment || [],
+      spells: characterData.spells || [],
+      background: characterData.background || '',
+      hp: characterData.hp || 0,
+      character_data: characterData.character_data || {},
+      campaign: null,
+      owner: currentUser.id,
+      is_archived: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
+    return HttpResponse.json(
+      { character: importedCharacter, warnings: [] },
+      { status: 201 }
+    )
+  }),
+
+  // -------------------------------------------------------------------------
+  // Character share endpoint
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/characters/:id/share/`, ({ params }) => {
+    const { id } = params
+    if (!currentUser) {
+      return HttpResponse.json(
+        { detail: 'Authentication credentials were not provided.' },
+        { status: 403 }
+      )
+    }
+    if (id !== 'char-001') {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 7)
+    return HttpResponse.json({
+      token: 'share-token-abc-123',
+      url: '/shared/share-token-abc-123',
+      expires_at: expiresAt.toISOString(),
+    })
+  }),
+
+  // -------------------------------------------------------------------------
+  // Shared character public endpoint
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/shared/:token/`, ({ params }) => {
+    const { token } = params
+    if (token === 'expired-token') {
+      return HttpResponse.json(
+        { detail: 'This share link has expired.' },
+        { status: 410 }
+      )
+    }
+    if (token !== 'share-token-abc-123') {
+      return HttpResponse.json({ detail: 'Share link not found.' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      formatVersion: '1.0',
+      appVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      character: {
+        name: 'Thorn Ironforge',
+        race: 'Dwarf',
+        class_name: 'Fighter',
+        level: 5,
+        ability_scores: {
+          strength: 16,
+          dexterity: 12,
+          constitution: 16,
+          intelligence: 10,
+          wisdom: 14,
+          charisma: 8,
+        },
+        skills: [],
+        equipment: [],
+        spells: [],
+        background: 'Soldier',
+        hp: 52,
+        character_data: {},
+        is_archived: false,
+      },
+    })
+  }),
+
+  // -------------------------------------------------------------------------
   // Campaign endpoints
   // -------------------------------------------------------------------------
 
