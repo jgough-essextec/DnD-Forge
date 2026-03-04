@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 8
+## Current Round: 9
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -162,3 +162,28 @@
   - payloadTransform.test.ts (27 tests): Fighter/Wizard payloads, required fields, spell/equipment inclusion, empty state defaults
 - Checkpoint: PASSED (2010 frontend + 80 backend = 2090 tests)
 - PHASE 2 GATE: All wizard steps built and integrated, 3-page character preview, validation with fix links, save with celebration, quick-edit modals, all 12 classes verified via integration tests, TypeScript compiles, build succeeds, all tests pass
+
+### Round 9: Sheet Infrastructure
+- [x] Agent A (frontend-dev): Epic 25 stories 25.1-25.3 (routing, navigation, settings) — COMPLETE (71 tests)
+  - CharacterSheetPage: useParams ID extraction, useCharacter fetch, loading/error/404 states, view/edit mode URL detection
+  - PageTransition: framer-motion AnimatePresence wrapper with direction-based slide animations
+  - Breadcrumbs: dynamic breadcrumb trail for all routes, character name fetch, clickable links, ARIA attributes
+  - MainLayout updated: breadcrumbs bar integrated between nav and content
+  - SettingsPage: full implementation with Display (theme/reduced motion), Dice (animation speed/inline results), Auto-Save (enabled/interval), Defaults (player name/ability method/gallery sort), Data Management (export JSON/clear with DELETE confirmation), About (version/OGL/SRD)
+- [x] Agent B (frontend-dev): Epic 20 stories 20.1-20.4 (view/edit mode, auto-save, undo, cascade recalc) — COMPLETE (76 tests)
+  - useEditMode hook (isEditing, toggle, Ctrl+E/Cmd+E keyboard shortcut, URL sync, dirty state tracking)
+  - ModeToggle component (Eye/Pencil icons, gold highlight, unsaved indicator, first-time help banner)
+  - EditModeContext provider for character sheet children
+  - useCharacterAutoSave hook (500ms debounce configurable, save status, beforeunload, sessionStorage emergency backup, retry with exponential backoff)
+  - SaveStatusIndicator (Saved/Saving/Unsaved/Error states with ARIA)
+  - useUndoRedo hook (50 snapshots max, Ctrl+Z/Cmd+Z, Ctrl+Shift+Z/Cmd+Shift+Z, stack management)
+  - UndoRedoButtons (disabled states, count badges, edit-mode only)
+  - useCharacterCalculations hook (300ms debounced recalc, full DerivedStats: AC/HP/initiative/all skills/saves/spell DC/attack bonus/carrying capacity)
+  - CharacterSheetProvider (composite context: character data + edit mode + auto-save + undo/redo + calculations)
+- [x] Agent C (frontend-dev): Epic 23 stories 23.1-23.2 (avatar upload, display) — COMPLETE (65 tests)
+  - avatarUtils: validateImageFile (JPEG/PNG, 2MB max), processImage (400x400 resize, JPEG 80%), cropImage (square region), generateDefaultAvatar (SVG with race silhouette + class color)
+  - AvatarUploader: modal dialog, file input, validation errors, opens cropper for valid files, remove avatar button
+  - AvatarCropper: square region selector with drag/resize, live circular preview, confirm/cancel
+  - CharacterAvatar: reusable display (sm/md/lg/xl sizes 32-128px), custom or default avatar, editable overlay, circular mask, parchment border ring, corrupted data URL fallback, keyboard accessible
+  - Class colors for all 12 classes, race silhouettes for all 9 races
+- Checkpoint: PASSED (2222 frontend + 80 backend = 2302 tests)
