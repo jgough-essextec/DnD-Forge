@@ -212,7 +212,7 @@ export function SpellSlotTracker({
             level={level}
             total={maxSlots[level] ?? 0}
             used={usedSlots[level] ?? 0}
-            onToggle={(slotIndex) => handleToggleSlot(level, slotIndex)}
+            onToggle={(slotIndex: number) => handleToggleSlot(level, slotIndex)}
             label={`${formatSpellLevel(level)}`}
           />
         ))}

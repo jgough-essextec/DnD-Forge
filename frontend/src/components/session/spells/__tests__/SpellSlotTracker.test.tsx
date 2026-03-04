@@ -396,7 +396,7 @@ describe('PactMagicTracker', () => {
         onShortRestRecover={vi.fn()}
       />,
     )
-    expect(screen.getByText('Short Rest Recovery')).toBeDefined()
+    expect(screen.getAllByText('Short Rest Recovery').length).toBeGreaterThan(0)
   })
 
   it('should show slot format as "N x Level M Slots"', () => {

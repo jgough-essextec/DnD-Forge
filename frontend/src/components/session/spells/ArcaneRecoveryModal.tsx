@@ -1,30 +1,34 @@
 /**
  * ArcaneRecoveryModal Component (Story 28.3)
  *
- * Modal for Wizard Arcane Recovery during short rest.
- * Shows available slot levels (1-5 only), a budget display,
- * and allows selecting which slots to recover.
+ * Wizard Arcane Recovery modal for selecting spell slots to recover.
+ * - Budget: ceil(wizardLevel / 2) total spell slot levels
+ * - No 6th-level or higher slots can be recovered
+ * - Only expended slots can be selected
+ * - Once per day usage tracking
+ * - Visual budget countdown
  */
 
 import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
   getArcaneRecoveryBudget,
+  validateArcaneRecovery,
   formatSpellLevel,
 } from '@/utils/spell-slots'
 
 export interface ArcaneRecoveryModalProps {
-  /** Wizard class level */
+  /** The Wizard's class level */
   wizardLevel: number
   /** Maximum slots by level */
   maxSlots: Record<number, number>
   /** Used slots by level */
   usedSlots: Record<number, number>
-  /** Whether Arcane Recovery has already been used today */
+  /** Whether Arcane Recovery has been used today */
   usedToday: boolean
-  /** Called with flat array of selected levels (e.g., [1, 2]) to recover */
+  /** Called when the player confirms their slot selection */
   onConfirm: (selectedSlots: number[]) => void
-  /** Called when modal is cancelled */
+  /** Called when the player cancels */
   onCancel: () => void
 }
 
@@ -37,188 +41,222 @@ export function ArcaneRecoveryModal({
   onCancel,
 }: ArcaneRecoveryModalProps) {
   const budget = getArcaneRecoveryBudget(wizardLevel)
-  const [selections, setSelections] = useState<number[]>([])
+  const [selectedSlots, setSelectedSlots] = useState<number[]>([])
 
-  const spent = selections.reduce((sum, level) => sum + level, 0)
-  const remaining = budget - spent
+  const totalSelected = selectedSlots.reduce((sum, level) => sum + level, 0)
+  const budgetRemaining = budget - totalSelected
 
-  // Recoverable levels: 1-5 only, and must have expended slots
+  // Get levels that have expended slots (only 1-5, not 6+)
   const recoverableLevels = Object.keys(maxSlots)
     .map(Number)
     .filter(level => {
-      if (level < 1 || level > 5) return false
-      const total = maxSlots[level] ?? 0
-      if (total === 0) return false
+      if (level >= 6) return false
+      if (level < 1) return false
+      const max = maxSlots[level] ?? 0
       const used = usedSlots[level] ?? 0
-      return used > 0
+      return used > 0 && max > 0
     })
     .sort((a, b) => a - b)
 
-  // Count how many of each level have been selected
-  const selectionCounts: Record<number, number> = {}
-  for (const level of selections) {
-    selectionCounts[level] = (selectionCounts[level] ?? 0) + 1
-  }
+  const getExpendedCount = useCallback(
+    (level: number) => usedSlots[level] ?? 0,
+    [usedSlots],
+  )
 
-  const handleAdd = useCallback((level: number) => {
-    setSelections(prev => [...prev, level])
-  }, [])
+  const getSelectedCount = useCallback(
+    (level: number) => selectedSlots.filter(l => l === level).length,
+    [selectedSlots],
+  )
 
-  const handleRemove = useCallback((level: number) => {
-    setSelections(prev => {
-      const idx = prev.indexOf(level)
-      if (idx === -1) return prev
-      return [...prev.slice(0, idx), ...prev.slice(idx + 1)]
-    })
-  }, [])
+  const canSelectMore = useCallback(
+    (level: number) => {
+      if (level > budgetRemaining) return false
+      const expended = getExpendedCount(level)
+      const alreadySelected = getSelectedCount(level)
+      return alreadySelected < expended
+    },
+    [budgetRemaining, getExpendedCount, getSelectedCount],
+  )
+
+  const addSlot = useCallback(
+    (level: number) => {
+      if (!canSelectMore(level)) return
+      const newSelected = [...selectedSlots, level]
+      if (validateArcaneRecovery(newSelected, budget)) {
+        setSelectedSlots(newSelected)
+      }
+    },
+    [selectedSlots, budget, canSelectMore],
+  )
+
+  const removeSlot = useCallback(
+    (level: number) => {
+      const index = selectedSlots.lastIndexOf(level)
+      if (index === -1) return
+      const newSelected = [...selectedSlots]
+      newSelected.splice(index, 1)
+      setSelectedSlots(newSelected)
+    },
+    [selectedSlots],
+  )
 
   const handleConfirm = useCallback(() => {
-    onConfirm(selections)
-  }, [selections, onConfirm])
-
-  // Check if there are no expended slots at all in recoverable range
-  const hasNoExpendedSlots = recoverableLevels.length === 0
+    if (selectedSlots.length > 0 && validateArcaneRecovery(selectedSlots, budget)) {
+      onConfirm(selectedSlots)
+    }
+  }, [selectedSlots, budget, onConfirm])
 
   return (
     <div
-      className="rounded-lg border-2 border-emerald-500/40 bg-bg-secondary p-4 space-y-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       data-testid="arcane-recovery-modal"
       role="dialog"
       aria-label="Arcane Recovery"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-serif font-semibold text-emerald-300">
+      <div className="bg-bg-secondary border border-parchment/30 rounded-xl p-5 max-w-md w-full mx-4 shadow-xl">
+        <h3 className="text-lg font-serif text-accent-gold mb-1">
           Arcane Recovery
         </h3>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-xs text-parchment/50 hover:text-parchment/80 transition-colors cursor-pointer"
-          data-testid="recovery-cancel"
-          aria-label="Cancel Arcane Recovery"
-        >
-          Cancel
-        </button>
-      </div>
-
-      {/* Already used today message */}
-      {usedToday && (
-        <p
-          className="text-xs text-yellow-400"
-          data-testid="already-used-message"
-        >
-          Arcane Recovery has already been used today. It resets on a long rest.
+        <p className="text-xs text-parchment/50 mb-3">
+          1/day, during Short Rest
         </p>
-      )}
 
-      {/* Budget display */}
-      <div className="flex items-center gap-2 text-xs">
-        <span className="text-parchment/60">Recovery Budget:</span>
-        <span
-          className={cn(
-            'font-semibold tabular-nums',
-            remaining > 0 ? 'text-emerald-300' : 'text-yellow-400',
-          )}
-          data-testid="recovery-budget"
-        >
-          {remaining} / {budget} levels remaining
-        </span>
-      </div>
+        {usedToday ? (
+          <div className="mb-4 p-3 rounded-lg bg-parchment/5 border border-parchment/20">
+            <p className="text-sm text-parchment/50" data-testid="already-used-message">
+              Arcane Recovery has already been used today. It resets on a long rest.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Budget display */}
+            <div
+              className="mb-4 p-3 rounded-lg bg-blue-950/20 border border-blue-500/30"
+              data-testid="recovery-budget"
+            >
+              <p className="text-sm text-blue-200">
+                Recovery budget:{' '}
+                <span className="font-semibold text-blue-300">
+                  {budgetRemaining}
+                </span>{' '}
+                / {budget} levels remaining
+              </p>
+              <p className="text-xs text-blue-300/50 mt-1">
+                No slots of 6th level or higher can be recovered
+              </p>
+            </div>
 
-      {/* No expended slots message */}
-      {hasNoExpendedSlots && !usedToday && (
-        <p
-          className="text-xs text-parchment/50 italic"
-          data-testid="no-expended-message"
-        >
-          No expended spell slots (1st-5th level) to recover.
-        </p>
-      )}
+            {/* Slot selection */}
+            {recoverableLevels.length > 0 ? (
+              <div className="space-y-2 mb-4">
+                {recoverableLevels.map(level => {
+                  const expended = getExpendedCount(level)
+                  const selected = getSelectedCount(level)
+                  const canAdd = canSelectMore(level)
 
-      {/* Recoverable slot levels */}
-      {!usedToday && recoverableLevels.length > 0 && (
-        <div className="space-y-2">
-          {recoverableLevels.map(level => {
-            const total = maxSlots[level] ?? 0
-            const used = usedSlots[level] ?? 0
-            const selectedCount = selectionCounts[level] ?? 0
-            const canAddMore = selectedCount < used && level <= remaining
-
-            return (
-              <div
-                key={level}
-                className="flex items-center gap-3"
-                data-testid={`recovery-level-${level}`}
-              >
-                <span className="text-xs text-parchment/70 w-8 text-right font-medium">
-                  {formatSpellLevel(level)}
-                </span>
-                <span className="text-xs text-parchment/50 tabular-nums">
-                  {used}/{total} expended
-                </span>
-                <div className="flex items-center gap-1.5 ml-auto">
-                  {selectedCount > 0 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(level)}
-                        className="w-5 h-5 rounded border border-red-500/40 text-red-400 text-xs flex items-center justify-center hover:bg-red-950/30 transition-all cursor-pointer"
-                        data-testid={`recovery-remove-${level}`}
-                        aria-label={`Remove one ${formatSpellLevel(level)} level recovery`}
-                      >
-                        -
-                      </button>
-                      <span className="text-xs text-emerald-300 font-medium tabular-nums w-4 text-center">
-                        {selectedCount}
-                      </span>
-                    </>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleAdd(level)}
-                    disabled={!canAddMore}
-                    className={cn(
-                      'w-5 h-5 rounded border text-xs flex items-center justify-center transition-all',
-                      canAddMore
-                        ? 'border-emerald-500/40 text-emerald-400 hover:bg-emerald-950/30 cursor-pointer'
-                        : 'border-parchment/20 text-parchment/30 cursor-not-allowed',
-                    )}
-                    data-testid={`recovery-add-${level}`}
-                    aria-label={`Add one ${formatSpellLevel(level)} level recovery`}
-                  >
-                    +
-                  </button>
-                </div>
+                  return (
+                    <div
+                      key={level}
+                      className="flex items-center justify-between p-2 rounded-lg bg-parchment/5 border border-parchment/15"
+                      data-testid={`recovery-level-${level}`}
+                    >
+                      <div className="text-sm text-parchment/80">
+                        <span className="font-medium">
+                          {formatSpellLevel(level)} Level
+                        </span>
+                        <span className="text-xs text-parchment/50 ml-2">
+                          ({expended} expended)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => removeSlot(level)}
+                          disabled={selected === 0}
+                          className={cn(
+                            'w-6 h-6 rounded flex items-center justify-center text-sm font-bold transition-all',
+                            selected > 0
+                              ? 'bg-red-900/40 text-red-300 hover:bg-red-900/60 cursor-pointer'
+                              : 'bg-parchment/10 text-parchment/30 cursor-not-allowed',
+                          )}
+                          aria-label={`Remove one ${formatSpellLevel(level)} level slot from recovery`}
+                          data-testid={`recovery-remove-${level}`}
+                        >
+                          -
+                        </button>
+                        <span
+                          className="w-6 text-center text-sm font-semibold text-accent-gold"
+                          data-testid={`recovery-count-${level}`}
+                        >
+                          {selected}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => addSlot(level)}
+                          disabled={!canAdd}
+                          className={cn(
+                            'w-6 h-6 rounded flex items-center justify-center text-sm font-bold transition-all',
+                            canAdd
+                              ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60 cursor-pointer'
+                              : 'bg-parchment/10 text-parchment/30 cursor-not-allowed',
+                          )}
+                          aria-label={`Add one ${formatSpellLevel(level)} level slot to recovery`}
+                          data-testid={`recovery-add-${level}`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            )
-          })}
-        </div>
-      )}
+            ) : (
+              <div className="mb-4 p-3 rounded-lg bg-parchment/5 border border-parchment/15">
+                <p className="text-sm text-parchment/50" data-testid="no-expended-message">
+                  No expended spell slots of 5th level or lower to recover.
+                </p>
+              </div>
+            )}
 
-      {/* Confirm button */}
-      {!usedToday && (
-        <button
-          type="button"
-          onClick={handleConfirm}
-          disabled={selections.length === 0}
-          className={cn(
-            'w-full px-3 py-1.5 rounded-lg border text-xs font-medium transition-all',
-            selections.length > 0
-              ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300 hover:bg-emerald-950/40 cursor-pointer'
-              : 'bg-parchment/5 border-parchment/20 text-parchment/30 cursor-not-allowed',
-          )}
-          data-testid="recovery-confirm"
-          aria-label="Confirm Arcane Recovery"
-        >
-          Recover Selected Slots
-          {selections.length > 0 && (
-            <span className="ml-1 text-parchment/40">
-              ({spent} level{spent !== 1 ? 's' : ''})
-            </span>
-          )}
-        </button>
-      )}
+            {/* Confirm / Cancel */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleConfirm}
+                disabled={selectedSlots.length === 0}
+                className={cn(
+                  'flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-all',
+                  selectedSlots.length > 0
+                    ? 'bg-accent-gold/20 border-accent-gold text-accent-gold hover:bg-accent-gold/30 cursor-pointer'
+                    : 'bg-parchment/5 border-parchment/20 text-parchment/30 cursor-not-allowed',
+                )}
+                data-testid="recovery-confirm"
+              >
+                Recover {selectedSlots.length} slot{selectedSlots.length !== 1 ? 's' : ''}
+              </button>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="flex-1 px-3 py-2 rounded-lg border border-parchment/20 text-sm text-parchment/60 hover:text-parchment/80 hover:border-parchment/40 transition-all cursor-pointer"
+                data-testid="recovery-cancel"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
+
+        {usedToday && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full mt-3 px-3 py-2 rounded-lg border border-parchment/20 text-sm text-parchment/60 hover:text-parchment/80 hover:border-parchment/40 transition-all cursor-pointer"
+            data-testid="recovery-close"
+          >
+            Close
+          </button>
+        )}
+      </div>
     </div>
   )
 }
