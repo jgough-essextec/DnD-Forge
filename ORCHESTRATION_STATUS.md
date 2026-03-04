@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 17
+## Current Round: 18
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -483,3 +483,35 @@
   - PageTransition: reduced motion bypass (instant rendering)
   - SettingsPage: Accessibility section with High Contrast + Reduce Motion toggles
 - Checkpoint: PASSED (4207 frontend + 163 backend = 4370 tests)
+
+### Round 18: Performance Optimization + Deployment Infrastructure
+- [x] Agent D (frontend-dev): Epic 42 stories 42.1-42.5 (Performance Optimization) — COMPLETE (161 tests)
+  - Bundle optimization: main chunk 472KB→229KB gzipped (51% reduction) via manual chunk splitting
+  - Vite manualChunks: vendor-react (40KB), vendor-data (85KB), vendor-animation (122KB), 7 SRD data chunks
+  - All 15 routes verified using React.lazy() + Suspense, tree-shaking confirmed (lucide-react, lodash-es)
+  - rollup-plugin-visualizer added (ANALYZE=true env var), npm analyze script
+  - dataLoader.ts: 4-tier SRD lazy loading with dynamic import(), in-memory cache, request deduplication
+    - preloadModules() via requestIdleCallback, preloadWizardData/preloadSpellData/preloadAllData
+  - calculationCache.ts: LRU cache with TTL expiration, keyed on characterId-updatedAt
+  - useDebounce hook: value debouncing + useDebouncedCallback with cancel support (150ms default)
+  - useVirtualList hook: virtual scrolling activating at 50+ items, overscan buffer, visible range calculation
+  - CharacterCard + CharacterListRow: wrapped in React.memo() for gallery performance
+  - performance.ts: measurePerformance, measureSync, rateMetric (Web Vitals), PerformanceMonitor (p50/p95/p99)
+  - useDocumentMeta hook: per-page title, meta description, Open Graph tags
+  - index.html: meta description, theme-color, Open Graph tags
+  - Stress tests: characterGenerator (100+ chars, combat encounters, campaign fixtures)
+  - Gallery stress: 100+ character generation <500ms, sort/filter performance
+  - Combat stress: 28 combatants, 10 rounds turn cycling <100ms/turn
+- [x] Agent E (backend-dev): Epic 43 stories 43.1-43.3 (Deployment & Infrastructure) — COMPLETE (19 tests)
+  - docker-compose.yml: 4 services (postgres, django, react, nginx) with health checks
+  - docker-compose.override.yml: dev overrides with volume mounts, auto-migration
+  - docker-compose.prod.yml: production with Gunicorn, built React, no exposed DB port
+  - Dockerfiles: backend (Python 3.12 + WeasyPrint deps), frontend dev (Node 20 + Vite HMR), backend prod (multi-stage, non-root user), frontend prod (multi-stage, Nginx)
+  - Nginx: dev config (reverse proxy + HMR WebSocket), prod config (gzip, security headers, SPA fallback, 1yr immutable cache for hashed assets)
+  - Health check: GET /api/health/ with DB status (200 healthy / 503 unhealthy)
+  - Production Django security: HSTS (1yr), secure cookies, SSL redirect, X-Frame-Options DENY, content type nosniff
+  - .env.example: production environment template
+  - CI/CD: .github/workflows/ci.yml — parallel jobs (backend-tests with PostgreSQL, frontend-tests with tsc+vitest, docker-build)
+  - Migration check: makemigrations --check --dry-run in CI
+  - requirements.txt: added gunicorn
+- Checkpoint: PASSED (4368 frontend + 182 backend = 4550 tests)
