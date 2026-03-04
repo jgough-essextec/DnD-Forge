@@ -48,11 +48,12 @@ type TabId = (typeof TABS)[number]['id']
 export interface CharacterSheetProps {
   characterId: string
   initialTab?: TabId
+  readOnly?: boolean
 }
 
-export function CharacterSheet({ characterId, initialTab }: CharacterSheetProps) {
+export function CharacterSheet({ characterId, initialTab, readOnly }: CharacterSheetProps) {
   return (
-    <CharacterSheetProvider characterId={characterId}>
+    <CharacterSheetProvider characterId={characterId} readOnly={readOnly}>
       <CharacterSheetInner initialTab={initialTab} />
     </CharacterSheetProvider>
   )
@@ -68,7 +69,7 @@ interface CharacterSheetInnerProps {
 
 function CharacterSheetInner({ initialTab }: CharacterSheetInnerProps) {
   const [activeTab, setActiveTab] = useState<TabId>(initialTab ?? 'core')
-  const { character, isLoading, error } = useCharacterSheet()
+  const { character, isLoading, error, readOnly } = useCharacterSheet()
 
   if (isLoading) {
     return (
@@ -152,8 +153,8 @@ function CharacterSheetInner({ initialTab }: CharacterSheetInnerProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Floating action bar for mobile */}
-      <FloatingActionBar />
+      {/* Floating action bar for mobile (hidden in read-only mode) */}
+      {!readOnly && <FloatingActionBar />}
     </div>
   )
 }

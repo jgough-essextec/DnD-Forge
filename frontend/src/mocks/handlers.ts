@@ -208,6 +208,62 @@ const mockCampaigns: MockCampaign[] = [
     createdAt: '2024-05-01T10:00:00Z',
     updatedAt: '2024-06-15T10:00:00Z',
   },
+  {
+    id: 'camp-002',
+    name: 'Curse of Strahd',
+    description: 'A gothic horror adventure in Barovia.',
+    dmId: 'user-001',
+    playerIds: ['550e8400-e29b-41d4-a716-446655440000'],
+    characterIds: ['char-003'],
+    joinCode: 'DEF456',
+    settings: {
+      xpTracking: 'xp',
+      houseRules: {
+        allowedSources: ['PHB'],
+        abilityScoreMethod: 'any',
+        startingLevel: 3,
+        allowMulticlass: true,
+        allowFeats: true,
+        encumbranceVariant: false,
+      },
+    },
+    sessions: [],
+    npcs: [],
+    isArchived: false,
+    characterCount: 1,
+    createdAt: '2024-06-01T10:00:00Z',
+    updatedAt: '2024-07-01T10:00:00Z',
+  },
+]
+
+// Mock party members for campaign party endpoint
+const mockPartyMembers = [
+  {
+    id: 'char-001',
+    name: 'Thorn Ironforge',
+    race: 'Dwarf',
+    class: 'Fighter',
+    level: 5,
+    hp: { current: 44, max: 52 },
+    ac: 18,
+    updatedAt: '2024-06-15T08:30:00Z',
+    createdAt: '2024-06-01T12:00:00Z',
+    isArchived: false,
+    campaignId: 'camp-001',
+  },
+  {
+    id: 'char-002',
+    name: 'Elara Nightwhisper',
+    race: 'Elf',
+    class: 'Wizard',
+    level: 3,
+    hp: { current: 18, max: 18 },
+    ac: 12,
+    updatedAt: '2024-06-10T09:00:00Z',
+    createdAt: '2024-05-20T10:00:00Z',
+    isArchived: false,
+    campaignId: 'camp-001',
+  },
 ]
 
 // ---------------------------------------------------------------------------
@@ -534,6 +590,33 @@ export const handlers = [
     return HttpResponse.json(mockCampaigns)
   }),
 
+  // Joined campaigns - MUST be before /campaigns/:id/ to avoid matching as id="joined"
+  http.get(`${BASE_URL}/campaigns/joined/`, () => {
+    if (currentUser) {
+      const joined = mockCampaigns.filter(
+        (c) => c.playerIds.includes(currentUser!.id as string)
+      )
+      return HttpResponse.json(joined)
+    }
+    // When no user is set, return camp-002 as a default joined campaign
+    return HttpResponse.json(
+      mockCampaigns.filter((c) => c.id === 'camp-002')
+    )
+  }),
+
+  // Campaign lookup by join code - MUST be before /campaigns/:id/
+  http.get(`${BASE_URL}/campaigns/lookup/:code/`, ({ params }) => {
+    const { code } = params
+    const campaign = mockCampaigns.find((c) => c.joinCode === code)
+    if (campaign) {
+      return HttpResponse.json(campaign)
+    }
+    return HttpResponse.json(
+      { detail: 'Campaign not found. Please check the code and try again.' },
+      { status: 404 }
+    )
+  }),
+
   http.get(`${BASE_URL}/campaigns/:id/`, ({ params }) => {
     const { id } = params
     const campaign = mockCampaigns.find((c) => c.id === id)
@@ -651,17 +734,27 @@ export const handlers = [
     }
   ),
 
-  // Campaign lookup by join code
-  http.get(`${BASE_URL}/campaigns/join/:code/`, ({ params }) => {
-    const { code } = params
-    const campaign = mockCampaigns.find((c) => c.joinCode === code)
-    if (campaign) {
-      return HttpResponse.json(campaign)
+  // Campaign party members
+  http.get(`${BASE_URL}/campaigns/:id/party/`, ({ params }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
     }
-    return HttpResponse.json(
-      { detail: 'Campaign not found. Please check the code and try again.' },
-      { status: 404 }
-    )
+    if (id === 'camp-001') {
+      return HttpResponse.json(mockPartyMembers)
+    }
+    return HttpResponse.json([])
+  }),
+
+  // Leave campaign
+  http.post(`${BASE_URL}/campaigns/:id/leave/`, ({ params }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    return HttpResponse.json({ detail: 'Successfully left the campaign.' })
   }),
 
   http.post(`${BASE_URL}/campaigns/:id/join/`, async ({ params, request }) => {

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { Campaign, CreateCampaignData } from '@/types/campaign'
+import type { Campaign, CreateCampaignData, PartyMember } from '@/types/campaign'
 
 /** DRF paginated response shape. */
 interface PaginatedResponse<T> {
@@ -90,9 +90,32 @@ export async function removeCharacterFromCampaign(
 
 /**
  * Look up a campaign by join code.
- * Returns the campaign if the code matches, or throws a 404 error.
+ * Returns minimal campaign info for join preview.
  */
 export async function lookupCampaignByCode(code: string): Promise<Campaign> {
-  const response = await api.get<Campaign>(`/campaigns/join/${code}/`)
+  const response = await api.get<Campaign>(`/campaigns/lookup/${code}/`)
   return response.data
+}
+
+/**
+ * Fetch campaigns the current user has joined (has character in, but doesn't own).
+ */
+export async function getJoinedCampaigns(): Promise<Campaign[]> {
+  const response = await api.get<Campaign[]>('/campaigns/joined/')
+  return response.data
+}
+
+/**
+ * Fetch all characters (party members) in a campaign.
+ */
+export async function getCampaignParty(id: string): Promise<PartyMember[]> {
+  const response = await api.get<PartyMember[]>(`/campaigns/${id}/party/`)
+  return response.data
+}
+
+/**
+ * Leave a campaign (remove all of user's characters from it).
+ */
+export async function leaveCampaign(id: string): Promise<void> {
+  await api.post(`/campaigns/${id}/leave/`)
 }

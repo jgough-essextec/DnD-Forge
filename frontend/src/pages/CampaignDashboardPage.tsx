@@ -27,8 +27,10 @@ import {
 import { useCampaign, useJoinCampaign } from '@/hooks/useCampaigns'
 import { useCharacters } from '@/hooks/useCharacters'
 import { useCampaignCharacters } from '@/hooks/useCampaignCharacters'
+import { useCurrentUser } from '@/hooks/useAuth'
 import { EditCampaignModal } from '@/components/dm/EditCampaignModal'
 import { CharacterPicker } from '@/components/dm/CharacterPicker'
+import { PlayerCampaignView } from '@/components/campaigns/PlayerCampaignView'
 import { useUIStore } from '@/stores/uiStore'
 import { formatCampaignDate, CHARACTER_SOFT_CAP } from '@/utils/campaign'
 import { DashboardTabs } from '@/components/dm/dashboard/DashboardTabs'
@@ -50,6 +52,7 @@ export default function CampaignDashboardPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { data: campaign, isLoading, error } = useCampaign(id ?? null)
+  const { data: currentUser } = useCurrentUser()
   const { data: allCharacters } = useCharacters()
   const joinCampaign = useJoinCampaign()
   const addToast = useUIStore((s) => s.addToast)
@@ -202,6 +205,37 @@ export default function CampaignDashboardPage() {
 
   const charCount = characterIds.length
   const isAtCap = charCount >= CHARACTER_SOFT_CAP
+  const isDM = currentUser && String(campaign.dmId) === String(currentUser.id)
+
+  // Player view: show simplified campaign dashboard
+  if (!isDM) {
+    return (
+      <div className="p-4 md:p-8 max-w-7xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate('/campaigns')}
+            className="p-1 rounded hover:bg-parchment/10 transition-colors"
+            aria-label="Back to campaigns"
+          >
+            <ArrowLeft className="w-5 h-5 text-parchment/60" />
+          </button>
+          <h1 className="font-heading text-2xl md:text-3xl text-accent-gold flex-1 truncate">
+            {campaign.name}
+          </h1>
+        </div>
+
+        {campaign.description && (
+          <p className="text-parchment/70 mb-6 ml-9 text-sm">
+            {campaign.description}
+          </p>
+        )}
+
+        <div className="ml-0 md:ml-9">
+          <PlayerCampaignView campaign={campaign} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">

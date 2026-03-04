@@ -78,7 +78,7 @@ describe('JoinCampaignPage', () => {
   it('should display campaign name and description when code matches a campaign via API', async () => {
     // The default MSW handler returns camp-001 for join code ABC123
     server.use(
-      http.get(`${BASE_URL}/campaigns/join/:code/`, ({ params }) => {
+      http.get(`${BASE_URL}/campaigns/lookup/:code/`, ({ params }) => {
         const { code } = params
         if (code === 'ABC123') {
           return HttpResponse.json({
@@ -124,7 +124,7 @@ describe('JoinCampaignPage', () => {
 
   it('should show "Campaign not found" error message when code does not match', async () => {
     server.use(
-      http.get(`${BASE_URL}/campaigns/join/:code/`, () => {
+      http.get(`${BASE_URL}/campaigns/lookup/:code/`, () => {
         return HttpResponse.json(
           { detail: 'Campaign not found.' },
           { status: 404 }
@@ -151,7 +151,7 @@ describe('JoinCampaignPage', () => {
 
   it('should display character selection after clicking Continue to Join', async () => {
     server.use(
-      http.get(`${BASE_URL}/campaigns/join/:code/`, () => {
+      http.get(`${BASE_URL}/campaigns/lookup/:code/`, () => {
         return HttpResponse.json({
           id: 'camp-001',
           name: 'Test Campaign',
@@ -196,7 +196,7 @@ describe('JoinCampaignPage', () => {
 
   it('should show success state after joining a campaign', async () => {
     server.use(
-      http.get(`${BASE_URL}/campaigns/join/:code/`, () => {
+      http.get(`${BASE_URL}/campaigns/lookup/:code/`, () => {
         return HttpResponse.json({
           id: 'camp-001',
           name: 'Dragon Hoard',

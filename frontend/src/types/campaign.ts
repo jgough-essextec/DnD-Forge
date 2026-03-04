@@ -234,3 +234,21 @@ export interface CampaignCharacterSummary {
   level: number;
   owner: string;
 }
+
+/**
+ * A party member as returned by the /party/ endpoint.
+ * Matches the CharacterListSerializer (gallery card) shape.
+ */
+export interface PartyMember {
+  id: string
+  name: string
+  race: string
+  class: string
+  level: number
+  hp: { current: number; max: number }
+  ac: number
+  updatedAt: string | null
+  createdAt: string | null
+  isArchived: boolean
+  campaignId: string | null
+}

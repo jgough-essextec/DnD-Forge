@@ -97,7 +97,7 @@ describe('Campaign: View Dashboard', () => {
 
 describe('Campaign: Join via Code', () => {
   it('looks up campaign by join code', async () => {
-    const response = await fetch(`${BASE_URL}/campaigns/join/ABC123/`)
+    const response = await fetch(`${BASE_URL}/campaigns/lookup/ABC123/`)
     expect(response.ok).toBe(true)
 
     const campaign = await response.json()
@@ -105,7 +105,7 @@ describe('Campaign: Join via Code', () => {
   })
 
   it('returns 404 for invalid join code', async () => {
-    const response = await fetch(`${BASE_URL}/campaigns/join/INVALID/`)
+    const response = await fetch(`${BASE_URL}/campaigns/lookup/INVALID/`)
     expect(response.status).toBe(404)
   })
 
@@ -257,6 +257,76 @@ describe('Campaign: Sorting Utilities', () => {
     expect(results[0].name).toBe('Zephyr Campaign')
   })
 })
+
+// ---------------------------------------------------------------------------
+// Joined Campaigns
+// ---------------------------------------------------------------------------
+
+describe('Campaign: Joined Campaigns', () => {
+  it('fetches joined campaigns list', async () => {
+    const response = await fetch(`${BASE_URL}/campaigns/joined/`)
+    expect(response.ok).toBe(true)
+
+    const campaigns = await response.json()
+    expect(Array.isArray(campaigns)).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Party Members
+// ---------------------------------------------------------------------------
+
+describe('Campaign: Party Members', () => {
+  it('fetches party members for a campaign', async () => {
+    const response = await fetch(`${BASE_URL}/campaigns/camp-001/party/`)
+    expect(response.ok).toBe(true)
+
+    const members = await response.json()
+    expect(Array.isArray(members)).toBe(true)
+    expect(members.length).toBeGreaterThan(0)
+
+    const member = members[0]
+    expect(member).toHaveProperty('id')
+    expect(member).toHaveProperty('name')
+    expect(member).toHaveProperty('race')
+    expect(member).toHaveProperty('class')
+    expect(member).toHaveProperty('level')
+    expect(member).toHaveProperty('hp')
+    expect(member).toHaveProperty('ac')
+  })
+
+  it('returns 404 for non-existent campaign', async () => {
+    const response = await fetch(`${BASE_URL}/campaigns/nonexistent/party/`)
+    expect(response.status).toBe(404)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Leave Campaign
+// ---------------------------------------------------------------------------
+
+describe('Campaign: Leave Campaign', () => {
+  it('leaves a campaign successfully', async () => {
+    const response = await fetch(`${BASE_URL}/campaigns/camp-001/leave/`, {
+      method: 'POST',
+    })
+    expect(response.ok).toBe(true)
+
+    const result = await response.json()
+    expect(result.detail).toContain('left')
+  })
+
+  it('returns 404 for non-existent campaign', async () => {
+    const response = await fetch(`${BASE_URL}/campaigns/nonexistent/leave/`, {
+      method: 'POST',
+    })
+    expect(response.status).toBe(404)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Campaign Utility Functions (continued)
+// ---------------------------------------------------------------------------
 
 describe('Campaign: Display Utilities', () => {
   it('truncateDescription trims long text', () => {

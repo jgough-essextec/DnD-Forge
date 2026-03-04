@@ -160,8 +160,8 @@ class CampaignViewSetTests(TestCase):
         self.assertEqual(response.data["name"], "New Campaign")
         self.assertEqual(response.data["description"], "A grand adventure")
         self.assertEqual(str(response.data["owner"]), str(self.user.id))
-        self.assertFalse(response.data["is_archived"])
-        self.assertIsNotNone(response.data["join_code"])
+        self.assertFalse(response.data["isArchived"])
+        self.assertIsNotNone(response.data["joinCode"])
 
     def test_create_campaign_minimal(self):
         response = self.client.post(
@@ -197,7 +197,7 @@ class CampaignViewSetTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["name"], "My Campaign")
         self.assertIn("characters", response.data)
-        self.assertIn("character_count", response.data)
+        self.assertIn("characterCount", response.data)
 
     def test_retrieve_campaign_not_owned(self):
         campaign = Campaign.objects.create(name="Other", owner=self.other_user)
@@ -380,7 +380,7 @@ class CampaignRegenerateCodeTests(TestCase):
             f"/api/campaigns/{self.campaign.id}/regenerate-code/"
         )
         self.assertIn("campaign", response.data)
-        self.assertIn("join_code", response.data["campaign"])
+        self.assertIn("joinCode", response.data["campaign"])
 
 
 class CampaignRemoveCharacterTests(TestCase):
@@ -460,11 +460,11 @@ class CampaignCharacterIntegrationTests(TestCase):
         response = self.client.get(f"/api/campaigns/{self.campaign.id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["characters"]), 2)
-        self.assertEqual(response.data["character_count"], 2)
+        self.assertEqual(response.data["characterCount"], 2)
 
     def test_campaign_character_count_empty(self):
         response = self.client.get(f"/api/campaigns/{self.campaign.id}/")
-        self.assertEqual(response.data["character_count"], 0)
+        self.assertEqual(response.data["characterCount"], 0)
 
     def test_delete_campaign_does_not_delete_characters(self):
         character = Character.objects.create(
@@ -475,3 +475,221 @@ class CampaignCharacterIntegrationTests(TestCase):
         self.assertTrue(Character.objects.filter(id=character.id).exists())
         character.refresh_from_db()
         self.assertIsNone(character.campaign)
+
+
+class CampaignJoinedEndpointTests(TestCase):
+    """Tests for the /campaigns/joined/ endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.player = User.objects.create_user(username="player", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Test Campaign", owner=self.dm)
+        self.player_char = Character.objects.create(
+            name="Player Hero", race="Elf", class_name="Wizard",
+            owner=self.player, campaign=self.campaign,
+        )
+
+    def test_joined_returns_campaigns_player_has_joined(self):
+        self.client.force_authenticate(user=self.player)
+        response = self.client.get("/api/campaigns/joined/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "Test Campaign")
+
+    def test_joined_excludes_owned_campaigns(self):
+        """DM should not see their own campaigns in the joined list."""
+        self.client.force_authenticate(user=self.dm)
+        response = self.client.get("/api/campaigns/joined/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_joined_empty_for_user_with_no_campaigns(self):
+        other = User.objects.create_user(username="nobody", password="testpass123")
+        self.client.force_authenticate(user=other)
+        response = self.client.get("/api/campaigns/joined/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+
+class CampaignPartyEndpointTests(TestCase):
+    """Tests for the /campaigns/{id}/party/ endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.player = User.objects.create_user(username="player", password="testpass123")
+        self.outsider = User.objects.create_user(username="outsider", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Test Campaign", owner=self.dm)
+        self.dm_char = Character.objects.create(
+            name="DM NPC", race="Human", class_name="Rogue",
+            owner=self.dm, campaign=self.campaign,
+        )
+        self.player_char = Character.objects.create(
+            name="Player Hero", race="Elf", class_name="Wizard",
+            owner=self.player, campaign=self.campaign,
+        )
+
+    def test_party_returns_all_characters_for_dm(self):
+        self.client.force_authenticate(user=self.dm)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/party/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_party_returns_all_characters_for_player(self):
+        self.client.force_authenticate(user=self.player)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/party/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_party_denied_for_non_member(self):
+        self.client.force_authenticate(user=self.outsider)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/party/")
+        # Non-members get 404 because the queryset filters out campaigns they can't access
+        self.assertIn(response.status_code, [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND])
+
+    def test_party_returns_expected_fields(self):
+        self.client.force_authenticate(user=self.player)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/party/")
+        member = response.data[0]
+        self.assertIn("id", member)
+        self.assertIn("name", member)
+        self.assertIn("race", member)
+        self.assertIn("class", member)
+        self.assertIn("level", member)
+        self.assertIn("hp", member)
+        self.assertIn("ac", member)
+
+
+class CampaignLeaveEndpointTests(TestCase):
+    """Tests for the /campaigns/{id}/leave/ endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.player = User.objects.create_user(username="player", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Test Campaign", owner=self.dm)
+        self.player_char = Character.objects.create(
+            name="Player Hero", race="Elf", class_name="Wizard",
+            owner=self.player, campaign=self.campaign,
+        )
+
+    def test_leave_removes_player_character(self):
+        self.client.force_authenticate(user=self.player)
+        response = self.client.post(f"/api/campaigns/{self.campaign.id}/leave/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.player_char.refresh_from_db()
+        self.assertIsNone(self.player_char.campaign)
+
+    def test_leave_denied_for_campaign_owner(self):
+        self.client.force_authenticate(user=self.dm)
+        response = self.client.post(f"/api/campaigns/{self.campaign.id}/leave/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_leave_denied_for_non_member(self):
+        outsider = User.objects.create_user(username="outsider", password="testpass123")
+        self.client.force_authenticate(user=outsider)
+        response = self.client.post(f"/api/campaigns/{self.campaign.id}/leave/")
+        # Non-members get 404 because the queryset filters out campaigns they can't access
+        self.assertIn(response.status_code, [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND])
+
+    def test_leave_removes_multiple_characters(self):
+        """If a player has multiple characters in a campaign, all are removed."""
+        second_char = Character.objects.create(
+            name="Second Hero", race="Dwarf", class_name="Fighter",
+            owner=self.player, campaign=self.campaign,
+        )
+        self.client.force_authenticate(user=self.player)
+        response = self.client.post(f"/api/campaigns/{self.campaign.id}/leave/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.player_char.refresh_from_db()
+        second_char.refresh_from_db()
+        self.assertIsNone(self.player_char.campaign)
+        self.assertIsNone(second_char.campaign)
+
+
+class CampaignLookupByCodeTests(TestCase):
+    """Tests for the /campaigns/lookup/{code}/ endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="player", password="testpass123")
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Findable Campaign", owner=self.dm)
+        self.client.force_authenticate(user=self.user)
+
+    def test_lookup_returns_campaign_info(self):
+        response = self.client.get(f"/api/campaigns/lookup/{self.campaign.join_code}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Findable Campaign")
+        self.assertIn("id", response.data)
+        self.assertIn("characterCount", response.data)
+
+    def test_lookup_not_found(self):
+        response = self.client.get("/api/campaigns/lookup/ZZZZZ1/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class CampaignPlayerRetrieveTests(TestCase):
+    """Tests that a player can retrieve a campaign they've joined."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.player = User.objects.create_user(username="player", password="testpass123")
+        self.outsider = User.objects.create_user(username="outsider", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Test Campaign", owner=self.dm)
+        self.player_char = Character.objects.create(
+            name="Player Hero", race="Elf", class_name="Wizard",
+            owner=self.player, campaign=self.campaign,
+        )
+
+    def test_player_can_retrieve_joined_campaign(self):
+        self.client.force_authenticate(user=self.player)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Test Campaign")
+
+    def test_outsider_cannot_retrieve_campaign(self):
+        self.client.force_authenticate(user=self.outsider)
+        response = self.client.get(f"/api/campaigns/{self.campaign.id}/")
+        # Non-members get 404 because the queryset filters out campaigns they can't access
+        self.assertIn(response.status_code, [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND])
+
+    def test_player_appears_in_campaign_list(self):
+        """Player's campaigns should include joined campaigns."""
+        self.client.force_authenticate(user=self.player)
+        response = self.client.get("/api/campaigns/")
+        # Player should see the campaign they joined
+        campaign_ids = [c["id"] for c in response.data["results"]]
+        self.assertIn(str(self.campaign.id), campaign_ids)
+
+
+class PartyMemberCharacterAccessTests(TestCase):
+    """Tests that players can view party members' character sheets."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.dm = User.objects.create_user(username="dm", password="testpass123")
+        self.player1 = User.objects.create_user(username="player1", password="testpass123")
+        self.player2 = User.objects.create_user(username="player2", password="testpass123")
+        self.outsider = User.objects.create_user(username="outsider", password="testpass123")
+        self.campaign = Campaign.objects.create(name="Test Campaign", owner=self.dm)
+        self.char1 = Character.objects.create(
+            name="Player 1 Hero", race="Elf", class_name="Wizard",
+            owner=self.player1, campaign=self.campaign,
+        )
+        self.char2 = Character.objects.create(
+            name="Player 2 Hero", race="Dwarf", class_name="Fighter",
+            owner=self.player2, campaign=self.campaign,
+        )
+
+    def test_player_can_view_party_member_character(self):
+        self.client.force_authenticate(user=self.player1)
+        response = self.client.get(f"/api/characters/{self.char2.id}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_outsider_cannot_view_party_member_character(self):
+        self.client.force_authenticate(user=self.outsider)
+        response = self.client.get(f"/api/characters/{self.char2.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

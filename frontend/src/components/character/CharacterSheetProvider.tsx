@@ -73,6 +73,8 @@ export interface CharacterSheetContextValue {
   undoRedo: UseUndoRedoReturn
   /** All computed derived stats */
   derivedStats: DerivedStats
+  /** Whether the sheet is in read-only mode (e.g. viewing a party member) */
+  readOnly: boolean
 }
 
 const CharacterSheetContext = createContext<CharacterSheetContextValue | null>(
@@ -86,11 +88,13 @@ const CharacterSheetContext = createContext<CharacterSheetContextValue | null>(
 export interface CharacterSheetProviderProps {
   children: ReactNode
   characterId: string
+  readOnly?: boolean
 }
 
 export function CharacterSheetProvider({
   children,
   characterId,
+  readOnly = false,
 }: CharacterSheetProviderProps) {
   // 1. Fetch character data
   const {
@@ -127,9 +131,9 @@ export function CharacterSheetProvider({
     editMode.setDirty(isDirty)
   }, [editableCharacter, character, editMode])
 
-  // 4. Auto-save (only when editing and data has changed from server state)
+  // 4. Auto-save (only when editing and data has changed from server state, and not read-only)
   const autoSaveData =
-    editMode.isEditing && editMode.isDirty ? editableCharacter : {}
+    !readOnly && editMode.isEditing && editMode.isDirty ? editableCharacter : {}
   const {
     status: saveStatus,
     lastSavedAt,
@@ -138,9 +142,9 @@ export function CharacterSheetProvider({
     retry: retrySave,
   } = useCharacterAutoSave(characterId, autoSaveData)
 
-  // 5. Undo/redo
+  // 5. Undo/redo (disabled in read-only mode)
   const undoRedo = useUndoRedo({
-    enabled: editMode.isEditing,
+    enabled: !readOnly && editMode.isEditing,
     onRestore: (state) => {
       setEditableCharacter(state)
     },
@@ -191,6 +195,7 @@ export function CharacterSheetProvider({
     retrySave,
     undoRedo,
     derivedStats: derivedStats ?? EMPTY_DERIVED_STATS,
+    readOnly,
   }
 
   return (

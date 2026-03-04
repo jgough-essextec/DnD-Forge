@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Scroll } from 'lucide-react'
 import { CampaignList } from '@/components/dm/CampaignList'
 import { CreateCampaignModal } from '@/components/dm/CreateCampaignModal'
 import { EditCampaignModal } from '@/components/dm/EditCampaignModal'
 import { DeleteCampaignDialog } from '@/components/dm/DeleteCampaignDialog'
+import { JoinedCampaignCard } from '@/components/campaigns/JoinedCampaignCard'
 import {
   useCampaigns,
+  useJoinedCampaigns,
   useArchiveCampaign,
   useDeleteCampaign,
 } from '@/hooks/useCampaigns'
@@ -14,6 +16,7 @@ import type { Campaign } from '@/types/campaign'
 
 export default function CampaignsPage() {
   const { data: campaigns, isLoading, error } = useCampaigns()
+  const { data: joinedCampaigns, isLoading: joinedLoading } = useJoinedCampaigns()
   const archiveCampaign = useArchiveCampaign()
   const deleteCampaign = useDeleteCampaign()
   const addToast = useUIStore((s) => s.addToast)
@@ -112,6 +115,31 @@ export default function CampaignsPage() {
         onDelete={setDeletingCampaign}
         onCopyCode={handleCopyCode}
       />
+
+      {/* Joined Campaigns Section */}
+      {(joinedLoading || (joinedCampaigns && joinedCampaigns.length > 0)) && (
+        <div className="mt-10">
+          <h2 className="font-heading text-2xl text-parchment mb-4">
+            Joined Campaigns
+          </h2>
+          {joinedLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2].map((n) => (
+                <div
+                  key={n}
+                  className="h-32 bg-parchment/5 rounded-lg border border-parchment/10 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : joinedCampaigns && joinedCampaigns.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {joinedCampaigns.map((campaign) => (
+                <JoinedCampaignCard key={campaign.id} campaign={campaign} />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      )}
 
       <CreateCampaignModal
         isOpen={showCreate}

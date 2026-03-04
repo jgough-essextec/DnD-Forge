@@ -2,6 +2,7 @@ import json
 import re
 from datetime import timedelta
 
+from django.db.models import Q
 from django.http import HttpResponse as DjangoHttpResponse
 from django.utils import timezone
 from rest_framework import status
@@ -25,10 +26,19 @@ class CharacterViewSet(ModelViewSet):
     """
     ViewSet for Character CRUD. Only returns characters owned by
     the requesting user. Excludes archived characters by default.
+
+    For retrieve, also returns characters in campaigns where the user
+    has a character (party member viewing).
     """
 
     serializer_class = CharacterSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+
+    def get_permissions(self):
+        if self.action == "retrieve":
+            # For retrieve, queryset handles access control (includes party members)
+            return [IsAuthenticated()]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -36,7 +46,18 @@ class CharacterViewSet(ModelViewSet):
         return CharacterSerializer
 
     def get_queryset(self):
-        qs = Character.objects.filter(owner=self.request.user)
+        user = self.request.user
+        qs = Character.objects.filter(owner=user)
+
+        if self.action == "retrieve":
+            # Also include characters in campaigns where this user has a character
+            user_campaign_ids = Character.objects.filter(
+                owner=user, campaign__isnull=False
+            ).values_list("campaign_id", flat=True)
+            qs = Character.objects.filter(
+                Q(owner=user) | Q(campaign_id__in=user_campaign_ids)
+            )
+
         include_archived = self.request.query_params.get("include_archived", "").lower()
         if include_archived not in ("true", "1", "yes"):
             qs = qs.filter(is_archived=False)

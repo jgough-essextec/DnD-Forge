@@ -8,6 +8,9 @@ import {
   useUpdateCampaign,
   useDeleteCampaign,
   useJoinCampaign,
+  useJoinedCampaigns,
+  useCampaignParty,
+  useLeaveCampaign,
 } from '@/hooks/useCampaigns'
 import type { ReactNode } from 'react'
 
@@ -140,5 +143,57 @@ describe('useJoinCampaign', () => {
     })
 
     await waitFor(() => expect(result.current.isError).toBe(true))
+  })
+})
+
+describe('useJoinedCampaigns', () => {
+  it('fetches joined campaigns', async () => {
+    const { result } = renderHook(() => useJoinedCampaigns(), {
+      wrapper: createWrapper(),
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(result.current.data).toBeInstanceOf(Array)
+  })
+})
+
+describe('useCampaignParty', () => {
+  it('fetches party members for a campaign', async () => {
+    const { result } = renderHook(() => useCampaignParty('camp-001'), {
+      wrapper: createWrapper(),
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(result.current.data).toBeInstanceOf(Array)
+    expect(result.current.data!.length).toBeGreaterThan(0)
+    expect(result.current.data![0]).toHaveProperty('name')
+    expect(result.current.data![0]).toHaveProperty('race')
+    expect(result.current.data![0]).toHaveProperty('class')
+    expect(result.current.data![0]).toHaveProperty('hp')
+    expect(result.current.data![0]).toHaveProperty('ac')
+  })
+
+  it('does not fetch when id is null', () => {
+    const { result } = renderHook(() => useCampaignParty(null), {
+      wrapper: createWrapper(),
+    })
+
+    expect(result.current.fetchStatus).toBe('idle')
+  })
+})
+
+describe('useLeaveCampaign', () => {
+  it('leaves a campaign successfully', async () => {
+    const { result } = renderHook(() => useLeaveCampaign(), {
+      wrapper: createWrapper(),
+    })
+
+    await act(async () => {
+      await result.current.mutateAsync('camp-001')
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
   })
 })
