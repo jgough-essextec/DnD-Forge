@@ -7,7 +7,6 @@
  */
 
 import type { Character, CharacterValidationEntry } from '@/types/character';
-import type { AbilityScores, AbilityName, ABILITY_NAMES as AbilityNamesType } from '@/types/core';
 import { ABILITY_NAMES } from '@/types/core';
 import { getClassById } from '@/data/classes';
 import { getBackgroundById } from '@/data/backgrounds';
@@ -16,10 +15,6 @@ import {
   POINT_BUY_BUDGET,
   STANDARD_ARRAY,
   CARRY_CAPACITY_MULTIPLIER,
-  FULL_CASTER_SPELL_SLOTS,
-  HALF_CASTER_SPELL_SLOTS,
-  THIRD_CASTER_SPELL_SLOTS,
-  PACT_MAGIC_SLOTS,
 } from '@/data/reference';
 import { getTotalInventoryWeight } from './currency';
 

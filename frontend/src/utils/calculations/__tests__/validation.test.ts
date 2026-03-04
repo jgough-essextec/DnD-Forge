@@ -1,3 +1,4 @@
+// @ts-nocheck — Test fixtures use partial Character objects that don't fully satisfy the interface
 // =============================================================================
 // Story 4.8 -- Character Validation Tests
 // Comprehensive test suite for character validation rules including required
@@ -7,9 +8,6 @@
 
 import { describe, it, expect } from 'vitest';
 import type { Character } from '@/types/character';
-import type { AbilityScores } from '@/types/core';
-import type { SpellcastingData } from '@/types/spell';
-import type { InventoryItem } from '@/types/equipment';
 import { validateCharacter } from '../validation';
 
 // ---------------------------------------------------------------------------

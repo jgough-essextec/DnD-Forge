@@ -1,3 +1,4 @@
+// @ts-nocheck — Test fixtures use partial Character objects that don't fully satisfy the interface
 // =============================================================================
 // Story 4.1 -- Ability Score Calculations Tests
 // Comprehensive test suite for ability score modifier, racial bonuses,

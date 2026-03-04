@@ -6,7 +6,6 @@
 
 import type {
   AbilityScores,
-  AbilityName,
   Character,
   Race,
   RaceSelection,

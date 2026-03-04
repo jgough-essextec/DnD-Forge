@@ -1,3 +1,4 @@
+// @ts-nocheck — Test fixtures use partial Character objects that don't fully satisfy the interface
 // =============================================================================
 // Story 4.2 -- Skill & Proficiency Calculations Tests
 // Comprehensive test suite for skill modifiers, proficiency bonus,
@@ -5,7 +6,7 @@
 // =============================================================================
 
 import { describe, it, expect } from 'vitest';
-import type { AbilityScores, AbilityName, Character, SkillName, SkillProficiency } from '@/types';
+import type { AbilityScores, Character, SkillName, SkillProficiency } from '@/types';
 import { ABILITY_NAMES, SKILL_NAMES } from '@/types';
 import {
   getProficiencyBonus,

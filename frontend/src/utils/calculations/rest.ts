@@ -7,11 +7,11 @@
  */
 
 import type { Character } from '@/types/character';
-import type { DeathSaves } from '@/types/combat';
+import type { DeathSaves, ConditionInstance } from '@/types/combat';
 import type { ClassFeature } from '@/types/class';
 import type { DieType } from '@/types/core';
 import { getClassById } from '@/data/classes';
-import { getAbilityModifier, PACT_MAGIC_SLOTS } from '@/data/reference';
+import { getAbilityModifier } from '@/data/reference';
 import { rollDie } from '@/utils/dice';
 
 // ---------------------------------------------------------------------------

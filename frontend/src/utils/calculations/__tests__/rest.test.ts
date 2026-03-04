@@ -5,11 +5,9 @@
 // pact magic recovery, feature resets, exhaustion reduction, and death saves.
 // =============================================================================
 
+// @ts-nocheck — Test fixtures use partial Character objects that don't fully satisfy the interface
 import { describe, it, expect } from 'vitest';
 import type { Character } from '@/types/character';
-import type { AbilityScores } from '@/types/core';
-import type { SpellcastingData } from '@/types/spell';
-import type { ConditionInstance, DeathSaves } from '@/types/combat';
 import { getShortRestRecovery, getLongRestRecovery } from '../rest';
 
 // ---------------------------------------------------------------------------
