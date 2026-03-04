@@ -1,0 +1,131 @@
+# Phase 5: DM Features — Overview
+
+> **Timeline:** Weeks 9-10 | **Epics:** 33-38 | **Stories:** 27 | **Tasks:** ~135 | **New Components:** ~35+
+
+## Summary
+
+Phase 5 delivers a complete Dungeon Master toolkit for D&D Character Forge. Campaign CRUD with house rules and invite codes, a party dashboard with at-a-glance stats grid and skill/language matrices, a full combat/initiative tracker with turn cycling and NPC/monster support, DM-only character notes, a campaign session log, an NPC tracker, a loot/reward tracker, and XP/milestone level-up distribution — all while maintaining the local-first IndexedDB architecture.
+
+**Phase 4 Dependencies:** Phase 5 assumes all Phase 4 session play features are complete — dice roller, HP tracker, spell slot tracker, conditions tracker, rest automation, and level-up flow. The DM features build on these by orchestrating them across multiple characters simultaneously (party HP, group initiative, party-wide XP awards, etc.).
+
+---
+
+## Epics
+
+| Epic | Name | Stories | Focus |
+|------|------|---------|-------|
+| 33 | Campaign CRUD & Data Model | 33.1 - 33.5 (5) | Campaign lifecycle: data model, create, list, edit, character assignment |
+| 34 | Campaign Dashboard & Party Overview | 34.1 - 34.5 (5) | DM command center: stats grid, skill matrix, language coverage, composition analysis |
+| 35 | Initiative & Combat Tracker | 35.1 - 35.6 (6) | Combat management: encounter setup, initiative, turn tracking, HP/conditions, mid-combat, XP |
+| 36 | DM Notes System | 36.1 - 36.4 (4) | Note-taking: per-character DM notes, session log, NPC tracker, loot tracker |
+| 37 | XP & Milestone Management | 37.1 - 37.3 (3) | Progression: XP awards, milestone level-up, level progress tracking |
+| 38 | Campaign Routing & Navigation | 38.1 - 38.4 (4) | Integration: routes, DM vs player context, join flow, campaign export/import |
+
+---
+
+## Key Deliverables
+
+- **~135 tasks** across 27 stories in 6 epics
+- **~35+ new components** (campaign modals, dashboard panels, combat tracker views, note editors, etc.)
+- **7 new data types:** Campaign, HouseRules, SessionNote, Encounter, Combatant, NPCEntry, LootEntry
+- **5 new routes:** `/campaigns`, `/campaign/:id`, `/campaign/:id/encounter/:encounterId`, `/campaign/:id/session/:sessionId`, `/join/:code`
+- **4 dashboard tabs:** Party, Sessions, Encounters, Notes
+- **10+ party grid columns** for at-a-glance character stats
+- **18 x N skill matrix** (18 skills by N characters)
+- **3 combat tracker states:** Setup, Rolling, Active Combat, End
+- **7 party roles analyzed** for composition
+- **4 NPC statuses** and **6 NPC role tags**
+
+---
+
+## Pre-Phase Audit Notes
+
+### Gap D1 — Local DM Role Model (No Authentication)
+
+The app is local-first with no user accounts. Resolution: the user who creates a campaign is the DM by definition. Characters added to a campaign are always from the local IndexedDB. Players "join" by importing a character JSON into the DM's app, or by the DM creating a placeholder character. The `dmId` field is set to a locally generated persistent user ID stored in the preferences table. This is a single-device DM-centric workflow.
+
+### Gap D2 — Campaign-Character Relationship
+
+A character can be in zero or one campaign at a time. The same character cannot be in two campaigns simultaneously. Removing a character from a campaign unlinks but does not delete. Deleting a campaign unlinks all characters without deleting them.
+
+### Gap D3 — HouseRules Interface
+
+Defined for Phase 5 with fields: `allowedSources`, `abilityScoreMethod`, `startingLevel`, `startingGold`, `hpMethod`, `allowFeats`, `allowMulticlass`, `encumbranceRule`, `criticalHitRule`, `customNotes`.
+
+### Gap D4 — SessionNote Interface
+
+Defined for Phase 5 with fields: `id`, `sessionNumber`, `date`, `title`, `summary`, `npcsEncountered`, `locationsVisited`, `lootAwarded`, `xpAwarded`, `milestoneLevel`, `tags`, `createdAt`, `updatedAt`.
+
+### Gap D5 — Combatant Model for Initiative Tracker
+
+Lightweight combatant model: `id`, `name`, `type` (player/npc/monster), `characterId`, `initiativeRoll`, `initiativeModifier`, `armorClass`, `hitPointMax`, `hitPointCurrent`, `tempHitPoints`, `conditions`, `notes`, `isVisible`, `groupId`.
+
+### Gap D6 — Encounter Data Model
+
+Defined: `id`, `campaignId`, `sessionId`, `name`, `combatants`, `currentTurnIndex`, `roundNumber`, `isActive`, `xpBudget`, `notes`, `createdAt`.
+
+### Gap D7 — Party Role Mapping
+
+Class-to-role mapping for composition analysis. Roles: Tank/Defender, Melee Striker, Ranged Striker, Healer/Support, Controller, Utility/Skill Monkey, Face (Social). Analysis is informational, not prescriptive.
+
+### Gap D8 — Join Codes as Local Import Mechanism
+
+Without a backend, join codes work as a local import mechanism: DM generates a 6-char code tied to a campaign export. Players import the campaign metadata JSON. True sharing is via JSON export/import. This scaffolding pattern matches the future backend-enabled flow.
+
+---
+
+## Dependencies
+
+### External Phase Dependencies
+- **Phase 1-3:** Full character creation, sheet display, data layer, export/import
+- **Phase 4:** Dice roller, HP tracker, spell slot tracker, conditions tracker, rest automation, level-up flow
+
+### Internal Dependency Graph
+
+```
+Epic 33 (Campaign CRUD & Data Model) <- FOUNDATION - build first
+  |
+  +-- Story 33.1 (Data model) <- everything depends on this
+  |
+  +-- Epic 34 (Campaign Dashboard & Party Overview)
+  |     +-- Story 34.1 (Dashboard layout) <- shell for all tabs
+  |     +-- Story 34.2 (Stats grid) <- uses character data
+  |     +-- Story 34.3 (Skill matrix) <- uses character skills
+  |     +-- Story 34.4 (Languages) <- uses character languages
+  |     +-- Story 34.5 (Composition) <- uses class/subclass data
+  |
+  +-- Epic 35 (Initiative & Combat Tracker)
+  |     +-- Story 35.1 (Setup) <- uses campaign characters
+  |     +-- Story 35.2 (Initiative) <- uses dice roller from Phase 4
+  |     +-- Story 35.3 (Combat view) <- uses encounter data model
+  |     +-- Story 35.4 (HP/Conditions) <- uses Phase 4 HP & conditions
+  |     +-- Story 35.5 (Mid-combat add) <- extends setup
+  |     +-- Story 35.6 (End encounter) <- uses XP system, session log
+  |
+  +-- Epic 36 (DM Notes System)
+  |     +-- Story 36.1 (Character notes) <- uses dmNotes field
+  |     +-- Story 36.2 (Session log) <- standalone, links to encounters
+  |     +-- Story 36.3 (NPC tracker) <- cross-references session log
+  |     +-- Story 36.4 (Loot tracker) <- links to characters + sessions
+  |
+  +-- Epic 37 (XP & Milestone)
+  |     +-- Story 37.1 (XP awards) <- uses character XP field
+  |     +-- Story 37.2 (Milestone) <- triggers Phase 4 level-up
+  |     +-- Story 37.3 (Progress tracking) <- extends stats grid
+  |
+  +-- Epic 38 (Routing & Navigation)
+        +-- Story 38.1 (Routes) <- scaffold early
+        +-- Story 38.2 (DM vs Player context) <- applies across app
+        +-- Story 38.3 (Join campaign) <- uses campaign import
+        +-- Story 38.4 (Export/Import) <- extends Phase 3 JSON system
+```
+
+### Recommended Build Order
+
+1. **Week 9, Day 1:** Epic 33 (Campaign data model, store, CRUD) + Epic 38 Story 38.1 (Route scaffolding)
+2. **Week 9, Day 2-3:** Epic 34 (Campaign Dashboard + Party Overview)
+3. **Week 9, Day 4-5:** Epic 35 Stories 35.1-35.3 (Encounter Setup + Initiative Rolling + Combat Main View)
+4. **Week 10, Day 1:** Epic 35 Stories 35.4-35.6 (Combatant management + Mid-combat + End encounter)
+5. **Week 10, Day 2-3:** Epic 36 (DM Notes — character notes, session log, NPC tracker, loot tracker)
+6. **Week 10, Day 4:** Epic 37 (XP & Milestone management)
+7. **Week 10, Day 5:** Epic 38 Stories 38.2-38.4 (DM context, join flow, campaign export/import)

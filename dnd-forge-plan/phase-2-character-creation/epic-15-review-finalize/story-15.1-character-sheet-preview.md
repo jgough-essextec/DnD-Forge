@@ -1,0 +1,76 @@
+# Story 15.1 — Character Sheet Preview
+
+> **Epic 15: Review & Finalize Step** | **Phase 2: Character Creation Wizard** (Weeks 3-4)
+
+## Description
+
+As a player, I need to see a full preview of my finished character with all derived stats computed before I save. This story builds a comprehensive 3-page character sheet preview using the calculation engine to compute all derived stats, rendered in the dark fantasy styling of the app.
+
+## Technical Context
+
+- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
+- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **Calculation Engine**: Computes all derived stats from the wizard state: ability modifiers, proficiency bonus (+2 at level 1), saving throw modifiers (with proficiency), skill modifiers (with proficiency), AC (from armor + DEX), HP (hit die max + CON mod + any subclass bonuses), initiative (DEX mod), speed, passive Perception, attack bonuses, damage rolls, spell save DC, spell attack bonus
+- **3-Page Character Sheet Layout**:
+  - **Page 1 (Core Stats)**: The main character sheet with abilities, combat stats, skills, personality, features
+  - **Page 2 (Backstory & Details)**: Physical description, backstory, allies, equipment, treasure
+  - **Page 3 (Spellcasting)**: Only for spellcasters — spellcasting class, ability, DC, attack bonus, cantrips, spell slots, spell list
+- **Styling**: Dark fantasy theme with parchment textures, Cinzel headings, consistent with the app's visual identity
+
+## Tasks
+
+- [ ] **T15.1.1** — Create `components/wizard/ReviewStep.tsx` as the Step 7 container. Uses the calculation engine to compute ALL derived stats from the wizard state
+- [ ] **T15.1.2** — Create `components/wizard/review/CharacterPreview.tsx` — renders a read-only character sheet matching the 3-page layout described in the spec. This is a preview of what the saved character will look like
+- [ ] **T15.1.3** — **Page 1 Preview (Core Stats):**
+  - Top banner: character name, "Level 1 [Class]", background, player name, race, alignment, XP (0)
+  - Left column: all 6 ability scores with modifiers, saving throws (with proficiency dots), all 18 skills (with proficiency dots and modifiers), passive Perception
+  - Center column: AC, initiative, speed, HP max, hit dice, death saves (empty), attacks section (showing equipped weapons with computed attack bonus and damage), spellcasting summary (if applicable)
+  - Right column: personality traits, ideals, bonds, flaws, features & traits list (racial + class + background)
+- [ ] **T15.1.4** — **Page 2 Preview (Backstory & Details):**
+  - Character appearance fields (age, height, weight, eyes, skin, hair)
+  - Backstory text
+  - Allies & organizations
+  - Equipment/inventory with weight totals
+  - Treasure/currency
+- [ ] **T15.1.5** — **Page 3 Preview (Spellcasting — if applicable):**
+  - Spellcasting class, ability, spell save DC, spell attack bonus
+  - Cantrips listed
+  - Level 1 spell slots (count)
+  - Known/prepared spells listed with school and brief description
+- [ ] **T15.1.6** — Use the dark fantasy styling (parchment textures, Cinzel headings) for the preview to match the app's theme
+
+## Acceptance Criteria
+
+- The Review Step computes all derived stats using the calculation engine
+- Page 1 shows character header, ability scores, saving throws, skills, AC, HP, initiative, attacks, personality, features
+- Page 2 shows appearance, backstory, allies, equipment inventory, and treasure
+- Page 3 shows spellcasting details (only for spellcasters)
+- All values are correctly computed: ability modifiers, proficiency-marked saving throws and skills, AC from armor, HP from hit die + CON mod, attack bonuses, spell save DC
+- The preview is read-only and styled with the dark fantasy theme (parchment textures, Cinzel headings)
+- Non-spellcasters do not see Page 3
+
+## Dependencies
+
+- **Depends on:** ALL previous Epics (8-14, 16) — all wizard state must be available to assemble the complete character preview; Phase 1 calculation engine for all derived stats; Epic 16 Story 16.3 (AbilityScoreDisplay, ProficiencyDot, ModifierBadge, DiceNotation)
+- **Blocks:** Story 15.2 (validation summary appears alongside or above the preview), Story 15.3 (save assembles the same data), Story 15.4 (quick edit modifies sections of the preview)
+
+## Notes
+
+- **Derived Stat Computations for Level 1**:
+  - Proficiency bonus: +2 (always at level 1)
+  - Saving throw modifier: ability modifier + proficiency bonus (if proficient)
+  - Skill modifier: ability modifier + proficiency bonus (if proficient)
+  - AC: depends on armor type and class features — no armor: 10+DEX; light armor: base+DEX; medium armor: base+DEX(max 2); heavy armor: base only; special: Barbarian Unarmored Defense (10+DEX+CON), Monk (10+DEX+WIS), Draconic Resilience (13+DEX); shield adds +2
+  - HP: hit die maximum + CON modifier (+ subclass bonuses like Sorcerer Draconic Resilience +1, Dwarf Hill Dwarf Toughness +1)
+  - Initiative: DEX modifier
+  - Passive Perception: 10 + Perception skill modifier
+  - Melee attack bonus: STR modifier + proficiency bonus (or DEX for finesse weapons)
+  - Ranged attack bonus: DEX modifier + proficiency bonus
+  - Spell save DC: 8 + proficiency bonus + spellcasting ability modifier
+  - Spell attack bonus: proficiency bonus + spellcasting ability modifier
+- The attack section should show each equipped weapon with its full attack string (e.g., "Longsword: +5 to hit, 1d8+3 slashing")
+- Features & traits list should be comprehensive: all racial traits + class level 1 features + subclass features + background feature + feat (Variant Human)
+- The preview should be visually impressive — this is the "payoff" moment where the player sees their complete character for the first time
+- Consider making the preview scrollable or paginated (tabs for Page 1/2/3) rather than one very long scroll

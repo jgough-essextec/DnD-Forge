@@ -1,0 +1,45 @@
+# Epic 25: Routing & Navigation
+
+> **Phase 3: Character Sheet & Management** (Weeks 5-6)
+
+## Goal
+Wire up all Phase 3 pages into the React Router route structure and build the app's navigation chrome — top bar, side navigation, and page transitions.
+
+## Stories
+
+| Story | Title | Description |
+|-------|-------|-------------|
+| 25.1 | Route Structure | All Phase 3 pages properly routed with clean URLs and navigation |
+| 25.2 | Top Navigation Bar | Consistent navigation bar with breadcrumbs and key actions |
+| 25.3 | Settings & Preferences | Settings page for user preferences, data management, and accessibility |
+
+## Key Components
+- `pages/HomePage.tsx` — gallery route (`/`)
+- `pages/SharedCharacterView.tsx` — shared view route (`/share#[data]`)
+- `pages/SettingsPage.tsx` — settings route
+- `components/layout/TopNav.tsx` — fixed top navigation bar
+
+## Routes
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Home (Character Gallery) | Main entry point |
+| `/character/new` | Creation Wizard | Phase 2 (already exists) |
+| `/character/:id` | Character Sheet View | Default tab: Core Stats |
+| `/character/:id/edit` | Character Sheet Edit | Or query param `?mode=edit` |
+| `/share#[data]` | Shared Character View | Read-only |
+| `/import` | Import Character | Modal overlay or dedicated page |
+
+## Dependencies
+- Phase 2: Creation wizard routes (already exist)
+- Epic 17-19: Character sheet pages (route targets)
+- Epic 21: Gallery page (home route)
+- Epic 22: Import/share routes
+
+## Notes
+- Scaffold routes early, flesh out as pages are built
+- Page transitions: slide-in from right (deeper), slide-in from left (back) using framer-motion
+- Browser back button works intuitively: sheet to gallery, edit mode to view mode
+- 404 handling for non-existent character IDs
+- Breadcrumbs dynamically update based on current route
+- Mobile: hamburger menu with slide-out drawer
+- Settings stored in IndexedDB preferences table

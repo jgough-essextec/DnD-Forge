@@ -1,0 +1,42 @@
+# Story 18.4 — Currency Section
+
+> **Epic 18: Character Sheet — Page 2 (Backstory & Details)** | **Phase 3: Character Sheet & Management** (Weeks 5-6)
+
+## Description
+As a player, I need to track my currency across all five denominations with auto-conversion.
+
+## Technical Context
+- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
+- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
+- **Currency Denominations (D&D 5e)**: CP (Copper Pieces), SP (Silver Pieces), EP (Electrum Pieces), GP (Gold Pieces), PP (Platinum Pieces)
+- **Conversion Rates**: 1 PP = 10 GP = 20 EP = 100 SP = 1000 CP
+- **Always Editable**: Currency changes frequently during gameplay — the fields should be editable even in view mode (like current HP)
+- **Starting Currency**: From the character creation wizard's equipment selection; typically a small amount of gold
+
+## Tasks
+- [ ] **T18.4.1** — Create `components/character/page2/CurrencyTracker.tsx` — five currency fields arranged horizontally: CP, SP, EP, GP, PP. Each shows the denomination icon/abbreviation and current amount
+- [ ] **T18.4.2** — Always editable (even in view mode since currency changes frequently). +/- buttons for quick adjustment. Direct numeric input for larger changes
+- [ ] **T18.4.3** — "Auto-Convert" toggle: when enabled, converts currency up automatically (e.g., 10 SP -> 1 GP). Show the conversion rates in a tooltip: "1 PP = 10 GP = 20 EP = 100 SP = 1000 CP"
+- [ ] **T18.4.4** — Display total wealth in GP equivalent at the bottom: "Total: X.XX GP equivalent"
+
+## Acceptance Criteria
+- Five currency fields (CP, SP, EP, GP, PP) display horizontally with denomination labels
+- All currency fields are always editable, even in view mode
+- +/- buttons provide quick adjustment for each denomination
+- Direct numeric input works for larger changes
+- "Auto-Convert" toggle converts currency up automatically when enabled
+- Conversion rates tooltip displays the full conversion table
+- Total wealth in GP equivalent displays at the bottom
+- Currency values persist to IndexedDB
+
+## Dependencies
+- Phase 2 character data (starting currency from equipment selection)
+- Epic 20 auto-save system for persisting currency changes
+
+## Notes
+- Electrum Pieces (EP) are often omitted by DMs but should still be available
+- Currency is always editable because it changes constantly during gameplay (looting, shopping, quest rewards)
+- The auto-convert feature is optional — some players prefer to track exact denominations
+- Total wealth calculation: (CP/100) + (SP/10) + (EP/5) + GP + (PP*10)

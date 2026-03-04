@@ -1,0 +1,55 @@
+# Story 41.4 — Reduced Motion & Animation Preferences
+
+> **Epic 41: Accessibility Audit & Remediation** | **Phase 6: Polish & Export** (Weeks 11-12)
+
+## Description
+
+As a player sensitive to motion, I need all animations to respect my system preference or an in-app toggle. This story covers auditing all animations in the app, wrapping them in `prefers-reduced-motion` checks, providing an in-app toggle that overrides the system preference, and replacing animated loading states with static alternatives.
+
+## Technical Context
+
+- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
+- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
+- **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
+- **Accessibility Target**: WCAG 2.1 AA compliance
+- **WCAG Motion Requirements**: Animation from interactions can be disabled (WCAG 2.3.3), motion not essential (WCAG 2.3.1)
+- **Animations in the App**: Dice tumble animation, page transitions (framer-motion), hover effects, loading spinners, toast notifications, modal open/close, condition badge pulse, level-up celebration, HP bar changes, death save fills
+- **Reduced Motion Behavior**: Dice show results instantly (no tumble), page transitions are instant (no slide), modals appear/disappear without animation, HP changes instant (no animated counting), toasts appear without slide-in
+- **In-App Toggle**: "Reduce Motion" in settings (Phase 3 Story 25.3), overrides system preference, stored in preferences, applied via CSS class and React context value
+- **System Detection**: `prefers-reduced-motion` CSS media query and `window.matchMedia('(prefers-reduced-motion: reduce)')` in JS
+
+## Tasks
+
+- [ ] **T41.4.1** — Audit all animations in the app: dice tumble animation, page transitions (framer-motion), hover effects, loading spinners, toast notifications, modal open/close, condition badge pulse, level-up celebration, HP bar changes, death save fills
+- [ ] **T41.4.2** — Wrap all animations in a `prefers-reduced-motion` media query check. When reduced motion is preferred: dice show results instantly (no tumble), page transitions are instant (no slide), modals appear/disappear without animation, HP changes are instant (no animated counting), toasts appear without slide-in
+- [ ] **T41.4.3** — In-app "Reduce Motion" toggle in settings (Phase 3 Story 25.3). This overrides the system preference for users who want reduced motion only in this app. Store in preferences, apply via a CSS class and a React context value that animation components check
+- [ ] **T41.4.4** — Loading states: replace spinning loaders with static "Loading..." text or a simple progress bar when reduced motion is active
+
+## Acceptance Criteria
+
+- All animations in the app are identified and documented
+- When `prefers-reduced-motion: reduce` is set (system level), all animations are disabled or replaced with instant transitions
+- Dice results appear instantly without tumble animation when reduced motion is active
+- Page transitions (framer-motion) are instant with no slide/fade when reduced motion is active
+- Modals appear and disappear without open/close animation when reduced motion is active
+- HP bar changes are instant (no animated counting) when reduced motion is active
+- Toast notifications appear without slide-in animation when reduced motion is active
+- In-app "Reduce Motion" toggle exists in settings and overrides system preference
+- Reduced motion preference persists across sessions (stored in IndexedDB)
+- Loading spinners are replaced with static "Loading..." text or simple progress bar when reduced motion is active
+- No vestibular triggers remain when reduced motion is enabled
+
+## Dependencies
+
+- All Phase 1-5 features complete (animation audit spans entire app)
+- Phase 3 preferences/settings system (for in-app toggle storage)
+- framer-motion library (page transitions)
+
+## Notes
+
+- The in-app toggle should use a React context (e.g., `useReducedMotion()`) that animation components can check
+- CSS animations can be disabled globally with `.reduce-motion * { animation-duration: 0s !important; transition-duration: 0s !important; }`
+- framer-motion respects `prefers-reduced-motion` natively but may need additional configuration for the in-app toggle
+- The condition badge pulse animation and level-up celebration are likely the most jarring animations for motion-sensitive users
