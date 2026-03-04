@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 16
+## Current Round: 17
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -445,3 +445,41 @@
   - useLookupCampaignByCode hook + MSW handler for GET /campaigns/join/:code/
 - Checkpoint: PASSED (4049 frontend + 105 backend = 4154 tests)
 - PHASE 5 GATE: Full DM workflow: create campaign → add characters → view party dashboard → run encounter → award XP / milestone level up → write session notes → manage NPCs → track loot → export campaign. DM vs Player context switching. Join campaign flow with code validation. Campaign export/import with 5-stage validation. Permission boundaries enforced. TypeScript compiles, build succeeds, all tests pass.
+
+### Round 17: PDF Export + Print Styles + Accessibility
+- [x] Agent A (backend-dev): Epic 39 stories 39.1-39.6 (WeasyPrint PDF Export) — COMPLETE (58 backend + 15 frontend = 73 tests)
+  - Backend: `pdf/` Django app with PDFGenerationService, context builder, and CharacterPDFView
+  - Context builder: transforms Character model JSONFields into template-friendly format (modifiers, proficiency, saves, skills, combat stats, spells)
+  - Templates: character_sheet.html (master), page1_core_stats.html (3-column: abilities/saves/skills | combat/HP/attacks | personality/features)
+  - Templates: page2_backstory.html (2-column: appearance/backstory | equipment/currency), page3_spellcasting.html (conditional for casters)
+  - PDF CSS: @page US Letter, page numbering in footer, character name in header, Cinzel headings, 10pt body
+  - Multi-page assembly: non-casters get 2-page PDF, spellcasters get 3-page PDF
+  - Endpoint: GET /api/characters/:id/pdf/ with owner auth, Content-Disposition attachment, PDF magic bytes
+  - Graceful fallback when WeasyPrint system dependencies missing
+  - Frontend: ExportPDFButton (blob download via URL.createObjectURL, loading state, error toast)
+  - exportCharacterPDF API function, extractPDFFilename header parser, MSW mock handler
+- [x] Agent B (frontend-dev): Epic 40 stories 40.1-40.3 (Print Stylesheet Optimization) — COMPLETE (66 tests)
+  - character-sheet-print.css enhanced (215→537+ lines): hides all Phase 4-5 UI chrome, white bg, Cinzel/serif headings
+  - Print typography: 16pt h1, 14pt h2, 12pt h3, 10pt body, 8pt labels
+  - Table row protection (break-inside: avoid), condition badges as text, spell slot circles as outlines
+  - Ink-saving mode (.ink-saving class): lighter borders, reduced decoration
+  - Cross-browser: legacy (page-break-*) + modern (break-*), Safari -webkit-print-color-adjust
+  - print-layouts.css: Page 1 three-column, Page 2 two-column with portrait, Page 3 multi-column spells
+  - Gallery print: compact roster (3 per page), Campaign dashboard: clean data table
+  - usePrintMode hook: isPrinting detection, inkSaving toggle with localStorage persistence
+  - PrintButton enhanced: ink-saving mode dropdown toggle
+  - Global print CSS imports in main.tsx
+- [x] Agent C (frontend-dev): Epic 41 stories 41.1-41.5 (Accessibility Audit & Remediation) — COMPLETE (77 tests)
+  - accessibility.ts: Screen reader announcer (announce(message, priority)), contrast ratio utilities (getContrastRatio, meetsContrastAA)
+  - useKeyboardShortcuts hook: 9 shortcuts (D/R/E/S/L/N///Esc/?), input suppression, modifier key handling
+  - KeyboardShortcutsHelp modal: grouped shortcuts (Global/Character Sheet/Combat), focus trap, ARIA dialog
+  - useReducedMotion hook: system prefers-reduced-motion detection + in-app override, .reduce-motion CSS class
+  - useHighContrast hook: high contrast mode toggle, .high-contrast CSS class, API preference persistence
+  - globals.css: text-muted lightened #657b83→#7d9199 (4.5:1 contrast), focus-visible gold outlines (2px), skip-nav link
+  - High contrast styles: white text, increased borders, reduced transparency, thicker focus outlines
+  - Reduced motion: @media rule + CSS class disabling all animations/transitions
+  - Touch target utility: .touch-target-44 (min 44x44px)
+  - MainLayout: skip navigation link + #main-content landmark
+  - PageTransition: reduced motion bypass (instant rendering)
+  - SettingsPage: Accessibility section with High Contrast + Reduce Motion toggles
+- Checkpoint: PASSED (4207 frontend + 163 backend = 4370 tests)
