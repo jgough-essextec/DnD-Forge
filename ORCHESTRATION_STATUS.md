@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 4
+## Current Round: 5
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -46,3 +46,26 @@
   - getShortRestRecovery, getLongRestRecovery
   - validateCharacter (required fields, ability scores, point buy, skills, spells, attunement, multiclass)
 - Checkpoint: PASSED (1188 frontend + 30 backend = 1218 tests, 570 calculation-specific)
+
+### Round 5: Django API + React State Management
+- [x] Agent M (backend-dev): Epic 5 stories 5.1-5.4 (Django models + DRF CRUD APIs) — COMPLETE (50 new tests)
+  - Character model (UUID PK, JSONFields for ability_scores/skills/equipment/spells, FK to Campaign/User)
+  - Campaign model (UUID PK, auto-generated 6-char join code, collision retry)
+  - UserPreferences model (OneToOne to User, theme/auto_save_enabled/last_active_character)
+  - CharacterViewSet (CRUD, owner filtering, archive toggle, IsOwner permission)
+  - CampaignViewSet (CRUD, owner filtering, @action join with code validation)
+  - PreferencesView (GET with auto-create defaults, PUT)
+  - Migrations for all 3 apps
+- [x] Agent N (frontend-dev): Epic 6 stories 6.1-6.4 (React Query hooks + Zustand stores) — COMPLETE (82 new tests)
+  - API layers: characters.ts, campaigns.ts, preferences.ts (all using shared Axios instance)
+  - React Query hooks: useCharacters, useCharacter, useCharacterMutations (create/update/delete)
+  - React Query hooks: useCampaigns, useCampaign, useCampaignMutations (create/update/delete/join)
+  - React Query hooks: usePreferences, useUpdatePreferences, useSyncTheme
+  - useAutoSave hook (2s debounce, optimistic updates, rollback on error)
+  - useIsMobile hook (matchMedia responsive detection)
+  - Zustand stores: wizardStore (ephemeral creation state), uiStore (modals/sidebar/theme/toasts), diceStore (roll history + dice engine)
+  - AutoSaveIndicator component (saving/saved/error states)
+  - transformWizardToPayload utility
+  - Extended MSW handlers for all new API endpoints
+- Checkpoint: PASSED (1270 frontend + 80 backend = 1350 tests, 96% backend coverage)
+- PHASE 1 GATE: TypeScript compiles, build succeeds, all tests pass, API CRUD works, auth flow works, SRD data loads, calculations correct
