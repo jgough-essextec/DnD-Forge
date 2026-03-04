@@ -338,7 +338,7 @@ function PersonalitySection({
 
       {/* Table entries */}
       {!customMode && (
-        <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+        <div className="space-y-1.5">
           {entries.map((entry, index) => {
             const isSelected = selectedValues.includes(entry.text)
             const { mainText, tag } = showAlignmentTags

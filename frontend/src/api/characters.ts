@@ -1,12 +1,24 @@
 import { api } from '@/lib/api'
 import type { Character, CharacterSummary, CreateCharacterData } from '@/types/character'
 
+/** DRF paginated response shape. */
+interface PaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
 /**
  * Fetch all characters for the current user (gallery view).
  */
 export async function getCharacters(): Promise<CharacterSummary[]> {
-  const response = await api.get<CharacterSummary[]>('/characters/')
-  return response.data
+  const response = await api.get<PaginatedResponse<CharacterSummary> | CharacterSummary[]>('/characters/')
+  // Handle both paginated (DRF default) and array responses
+  if (Array.isArray(response.data)) {
+    return response.data
+  }
+  return response.data.results
 }
 
 /**
