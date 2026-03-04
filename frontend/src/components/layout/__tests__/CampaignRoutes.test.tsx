@@ -49,16 +49,18 @@ describe('Campaign route resolution', () => {
   it('should resolve /campaigns to CampaignsPage', async () => {
     renderCampaignRoutes('/campaigns')
 
+    // CampaignsPage now shows the heading "Campaigns" and a "Create New Campaign" button
     expect(
-      await screen.findByText('Campaign management coming soon.')
+      await screen.findByText('Campaigns')
     ).toBeInTheDocument()
   })
 
   it('should resolve /campaign/:id to CampaignDashboardPage', async () => {
     renderCampaignRoutes('/campaign/camp-001')
 
+    // CampaignDashboardPage shows the campaign name from the mock
     expect(
-      await screen.findByText('Campaign dashboard coming soon.')
+      await screen.findByText('Lost Mine of Phandelver')
     ).toBeInTheDocument()
   })
 
@@ -81,8 +83,9 @@ describe('Campaign route resolution', () => {
   it('should resolve /join/:code to JoinCampaignPage', async () => {
     renderCampaignRoutes('/join/ABC123')
 
+    // JoinCampaignPage now shows the descriptive text
     expect(
-      await screen.findByText('Campaign join flow coming soon.')
+      await screen.findByText('Enter the campaign ID and join code provided by your Dungeon Master.')
     ).toBeInTheDocument()
   })
 })

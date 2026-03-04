@@ -175,6 +175,8 @@ interface MockCampaign {
   }
   sessions: never[]
   npcs: never[]
+  isArchived: boolean
+  characterCount: number
   createdAt: string
   updatedAt: string
 }
@@ -201,6 +203,8 @@ const mockCampaigns: MockCampaign[] = [
     },
     sessions: [],
     npcs: [],
+    isArchived: false,
+    characterCount: 2,
     createdAt: '2024-05-01T10:00:00Z',
     updatedAt: '2024-06-15T10:00:00Z',
   },
@@ -549,7 +553,7 @@ export const handlers = [
       playerIds: [],
       characterIds: [],
       joinCode: 'XYZ789',
-      settings: {
+      settings: body.settings ?? {
         xpTracking: 'milestone',
         houseRules: {
           allowedSources: ['PHB'],
@@ -562,6 +566,8 @@ export const handlers = [
       },
       sessions: [],
       npcs: [],
+      isArchived: false,
+      characterCount: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -592,6 +598,59 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
+  http.post(`${BASE_URL}/campaigns/:id/archive/`, ({ params }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    campaign.isArchived = !campaign.isArchived
+    return HttpResponse.json({
+      detail: `Campaign ${campaign.isArchived ? 'archived' : 'unarchived'}.`,
+      campaign,
+    })
+  }),
+
+  http.post(
+    `${BASE_URL}/campaigns/:id/regenerate-code/`,
+    ({ params }) => {
+      const { id } = params
+      const campaign = mockCampaigns.find((c) => c.id === id)
+      if (!campaign) {
+        return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+      }
+      campaign.joinCode = 'NEW123'
+      return HttpResponse.json({
+        detail: 'Join code regenerated.',
+        campaign,
+      })
+    }
+  ),
+
+  http.post(
+    `${BASE_URL}/campaigns/:id/remove-character/`,
+    async ({ params, request }) => {
+      const { id } = params
+      const campaign = mockCampaigns.find((c) => c.id === id)
+      if (!campaign) {
+        return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+      }
+      const body = (await request.json()) as Record<string, string>
+      const charId = body.character_id
+      if (!charId || !campaign.characterIds.includes(charId)) {
+        return HttpResponse.json(
+          { detail: 'Character not found in this campaign.' },
+          { status: 404 }
+        )
+      }
+      campaign.characterIds = campaign.characterIds.filter(
+        (cid) => cid !== charId
+      )
+      campaign.characterCount = campaign.characterIds.length
+      return HttpResponse.json({ detail: 'Character removed.' })
+    }
+  ),
+
   http.post(`${BASE_URL}/campaigns/:id/join/`, async ({ params, request }) => {
     const { id } = params
     const campaign = mockCampaigns.find((c) => c.id === id)
@@ -599,7 +658,9 @@ export const handlers = [
       return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
     }
     const body = (await request.json()) as Record<string, string>
-    if (body.joinCode !== campaign.joinCode) {
+    // Support both camelCase (legacy) and snake_case (current API) parameter names
+    const joinCode = body.join_code || body.joinCode
+    if (joinCode !== campaign.joinCode) {
       return HttpResponse.json(
         { detail: 'Invalid join code.' },
         { status: 400 }

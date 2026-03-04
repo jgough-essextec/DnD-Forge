@@ -21,6 +21,7 @@ class Campaign(models.Model):
         related_name="campaigns",
     )
     settings = models.JSONField(default=dict, blank=True)
+    is_archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -28,6 +29,7 @@ class Campaign(models.Model):
         ordering = ["-updated_at"]
         indexes = [
             models.Index(fields=["name"]),
+            models.Index(fields=["is_archived"]),
         ]
 
     def __str__(self):
@@ -50,3 +52,27 @@ class Campaign(models.Model):
         if not self.join_code:
             self.join_code = self.generate_join_code()
         super().save(*args, **kwargs)
+
+
+class Encounter(models.Model):
+    """
+    A combat encounter tracked by the DM within a campaign.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name="encounters",
+    )
+    name = models.CharField(max_length=200)
+    combatants = models.JSONField(default=list, blank=True)
+    round = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} ({self.campaign.name})"

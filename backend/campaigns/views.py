@@ -16,8 +16,8 @@ class CampaignViewSet(ModelViewSet):
     ViewSet for Campaign CRUD. Only returns campaigns owned by
     the requesting user.
 
-    Includes a custom 'join' action to add a character to a campaign
-    via the campaign's join code.
+    Includes custom actions for joining, archiving, regenerating
+    join codes, and managing characters.
     """
 
     serializer_class = CampaignSerializer
@@ -63,6 +63,12 @@ class CampaignViewSet(ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        if character.campaign and character.campaign != campaign:
+            return Response(
+                {"detail": "Character is already in another campaign."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         character.campaign = campaign
         character.save()
 
@@ -70,3 +76,73 @@ class CampaignViewSet(ModelViewSet):
             {"detail": f"Character '{character.name}' joined campaign '{campaign.name}'."},
             status=status.HTTP_200_OK,
         )
+
+    @action(detail=True, methods=["post"])
+    def archive(self, request, pk=None):
+        """
+        Toggle the is_archived flag on a campaign.
+        """
+        campaign = self.get_object()
+        campaign.is_archived = not campaign.is_archived
+        campaign.save()
+
+        state = "archived" if campaign.is_archived else "unarchived"
+        serializer = self.get_serializer(campaign)
+        return Response(
+            {"detail": f"Campaign '{campaign.name}' has been {state}.", "campaign": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="regenerate-code")
+    def regenerate_code(self, request, pk=None):
+        """
+        Generate a new join code for the campaign, invalidating the old one.
+        """
+        campaign = self.get_object()
+        campaign.join_code = Campaign.generate_join_code()
+        campaign.save()
+
+        serializer = self.get_serializer(campaign)
+        return Response(
+            {"detail": "Join code regenerated.", "campaign": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="remove-character")
+    def remove_character(self, request, pk=None):
+        """
+        Remove a character from this campaign (unlink, not delete).
+
+        Expects JSON body: {"character_id": "<uuid>"}
+        """
+        campaign = self.get_object()
+        character_id = request.data.get("character_id")
+
+        if not character_id:
+            return Response(
+                {"detail": "character_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            character = Character.objects.get(id=character_id, campaign=campaign)
+        except Character.DoesNotExist:
+            return Response(
+                {"detail": "Character not found in this campaign."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        character.campaign = None
+        character.save()
+
+        return Response(
+            {"detail": f"Character '{character.name}' removed from campaign '{campaign.name}'."},
+            status=status.HTTP_200_OK,
+        )
+
+    def perform_destroy(self, instance):
+        """
+        On campaign deletion, unlink all characters (don't delete them).
+        """
+        instance.characters.update(campaign=None)
+        instance.delete()

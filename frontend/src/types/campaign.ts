@@ -204,8 +204,33 @@ export interface Campaign {
   sessions: SessionNote[];
   /** NPCs tracked by the DM */
   npcs: NPC[];
+  /** Whether this campaign is archived (soft-deleted) */
+  isArchived: boolean;
+  /** Number of characters in this campaign */
+  characterCount?: number;
   /** ISO 8601 timestamp of creation */
   createdAt: string;
   /** ISO 8601 timestamp of last update */
   updatedAt: string;
+}
+
+/**
+ * Payload for creating a new campaign.
+ */
+export interface CreateCampaignData {
+  name: string;
+  description?: string;
+  settings?: Partial<CampaignSettings>;
+}
+
+/**
+ * A character summary as returned nested within a campaign response.
+ */
+export interface CampaignCharacterSummary {
+  id: string;
+  name: string;
+  race: string;
+  className: string;
+  level: number;
+  owner: string;
 }

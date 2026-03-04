@@ -6,8 +6,11 @@ import {
   updateCampaign,
   deleteCampaign,
   joinCampaign,
+  archiveCampaign,
+  regenerateCode,
+  removeCharacterFromCampaign,
 } from '@/api/campaigns'
-import type { Campaign } from '@/types/campaign'
+import type { Campaign, CreateCampaignData } from '@/types/campaign'
 
 export const CAMPAIGNS_KEY = ['campaigns'] as const
 export const CAMPAIGN_KEY = (id: string) => ['campaign', id] as const
@@ -41,7 +44,7 @@ export function useCreateCampaign() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { name: string; description?: string }) => createCampaign(data),
+    mutationFn: (data: CreateCampaignData) => createCampaign(data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
     },
@@ -96,6 +99,57 @@ export function useJoinCampaign() {
     }) => joinCampaign(campaignId, joinCode, characterId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
+    },
+  })
+}
+
+/**
+ * Mutation hook for archiving/unarchiving a campaign.
+ */
+export function useArchiveCampaign() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => archiveCampaign(id),
+    onSuccess: (_data, id) => {
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY(id) })
+    },
+  })
+}
+
+/**
+ * Mutation hook for regenerating a campaign join code.
+ */
+export function useRegenerateCode() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => regenerateCode(id),
+    onSuccess: (_data, id) => {
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY(id) })
+    },
+  })
+}
+
+/**
+ * Mutation hook for removing a character from a campaign.
+ */
+export function useRemoveCharacter() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      campaignId,
+      characterId,
+    }: {
+      campaignId: string
+      characterId: string
+    }) => removeCharacterFromCampaign(campaignId, characterId),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY(variables.campaignId) })
     },
   })
 }
