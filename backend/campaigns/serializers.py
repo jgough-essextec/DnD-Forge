@@ -56,3 +56,35 @@ class CampaignSerializer(serializers.ModelSerializer):
 
     def get_character_count(self, obj):
         return obj.characters.count()
+
+    def to_internal_value(self, data):
+        """Accept camelCase keys from the frontend and map to snake_case."""
+        mapped = {}
+        for key, value in data.items():
+            if key == "isArchived":
+                mapped["is_archived"] = value
+            elif key == "joinCode":
+                mapped["join_code"] = value
+            else:
+                mapped[key] = value
+        return super().to_internal_value(mapped)
+
+    def to_representation(self, instance):
+        """Return camelCase keys to match the frontend Campaign type."""
+        data = super().to_representation(instance)
+        characters = data["characters"]
+        return {
+            "id": data["id"],
+            "name": data["name"],
+            "description": data["description"],
+            "joinCode": data["join_code"],
+            "dmId": data["owner"],
+            "owner": data["owner"],
+            "settings": data["settings"],
+            "isArchived": data["is_archived"],
+            "characters": characters,
+            "characterIds": [str(c["id"]) for c in characters],
+            "characterCount": data["character_count"],
+            "createdAt": data["created_at"],
+            "updatedAt": data["updated_at"],
+        }

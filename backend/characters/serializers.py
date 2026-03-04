@@ -117,6 +117,19 @@ class CharacterSerializer(serializers.ModelSerializer):
             result["version"] = 1
             if instance.campaign_id:
                 result["campaignId"] = str(instance.campaign_id)
+            # Ensure abilityScores is available (frontend expects this key)
+            if "baseAbilityScores" in result and "abilityScores" not in result:
+                result["abilityScores"] = result["baseAbilityScores"]
+            # Ensure level is a top-level field (sum of class levels)
+            if "level" not in result:
+                classes = result.get("classes", [])
+                if isinstance(classes, list) and classes:
+                    result["level"] = sum(
+                        (c.get("level", 1) if isinstance(c, dict) else 1)
+                        for c in classes
+                    )
+                else:
+                    result["level"] = instance.level
             return result
 
         # Fallback for legacy flat records

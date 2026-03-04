@@ -98,8 +98,9 @@ export function useJoinCampaign() {
       joinCode: string
       characterId: string
     }) => joinCampaign(campaignId, joinCode, characterId),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
+      void queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY(variables.campaignId) })
     },
   })
 }
