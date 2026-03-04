@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 9
+## Current Round: 10
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -187,3 +187,30 @@
   - CharacterAvatar: reusable display (sm/md/lg/xl sizes 32-128px), custom or default avatar, editable overlay, circular mask, parchment border ring, corrupted data URL fallback, keyboard accessible
   - Class colors for all 12 classes, race silhouettes for all 9 races
 - Checkpoint: PASSED (2222 frontend + 80 backend = 2302 tests)
+
+### Round 10: Character Sheet Pages
+- [x] Agent D (frontend-dev): Epic 17 stories 17.1-17.10 (Page 1: Core Stats) — COMPLETE (32 tests)
+  - Page1Layout: 3-column responsive grid, identity banner with avatar/name/race/class/level/alignment/XP/inspiration
+  - AbilityScoresPanel: 6 ability score blocks with modifiers, edit mode score adjustment
+  - SavingThrowsList: 6 saves with ProficiencyDot, computed modifiers, click-to-roll
+  - SkillsList: 18 skills with proficiency/expertise dots, modifiers, passive scores
+  - CombatStatsBlock: AC/Initiative/Speed in prominent display boxes
+  - HitPointsBlock: HP current/max/temp, color-coded health bar, damage/heal controls
+  - HitDiceDeathSaves: Hit dice spend/restore, death save circles with nat 20/1 handling
+  - AttacksSection: Auto-populated from equipped weapons, attack bonus + damage computation
+  - PersonalityFeatures: Traits/ideals/bonds/flaws cards, collapsible feature groups
+  - ProficiencyBonusDisplay: Circular proficiency bonus badge
+- [x] Agent E (frontend-dev): Epic 18 stories 18.1-18.5 (Page 2: Backstory & Details) — COMPLETE (29 tests)
+  - Page2Layout: 2-column responsive layout (appearance left, backstory right)
+  - AppearanceSection: Physical details (age/height/weight/eyes/skin/hair), appearance notes, avatar
+  - BackstorySection: Backstory narrative textarea with markdown-lite, additional features, allies & orgs
+  - EquipmentSection: Inventory table with equipped toggle, weight tracking, encumbrance indicator, attunement
+  - CurrencySection: 5 denominations (CP/SP/EP/GP/PP), increment/decrement, total GP equivalent
+  - TreasureSection: Freeform treasure textarea
+- [x] Agent F (frontend-dev): Epic 19 stories 19.1-19.4 (Page 3: Spellcasting) — COMPLETE (14 tests)
+  - Page3Layout: Conditional rendering for casters only, non-caster placeholder message
+  - SpellcastingHeader: Class/ability/spell save DC/spell attack bonus in stat boxes with tooltips
+  - CantripsSection: Known cantrips with school icons, expandable spell details
+  - SpellSlotsAndLists: Interactive slot tracker (filled/empty circles), spell lists by level, prepared toggle
+  - DomainSpells: Always-prepared domain/subclass spells with special badge
+- Checkpoint: PASSED (2297 frontend + 80 backend = 2377 tests)
