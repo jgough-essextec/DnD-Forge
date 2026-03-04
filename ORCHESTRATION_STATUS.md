@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 5
+## Current Round: 6
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -69,3 +69,28 @@
   - Extended MSW handlers for all new API endpoints
 - Checkpoint: PASSED (1270 frontend + 80 backend = 1350 tests, 96% backend coverage)
 - PHASE 1 GATE: TypeScript compiles, build succeeds, all tests pass, API CRUD works, auth flow works, SRD data loads, calculations correct
+
+### Round 6: Wizard Framework + Shared Components
+- [x] Agent A (frontend-dev): Epic 8 stories 8.1-8.3 (wizard shell, intro, freeform) — COMPLETE (52 tests)
+  - CreationWizard controller with framer-motion slide transitions
+  - WizardProgress sidebar/topbar (completed/current/future/N/A states)
+  - WizardNavigation bottom bar (Back/Next/Save Character, validation gating)
+  - IntroStep with mode cards (Guided/Freeform), name inputs, resume banner
+  - FreeformCreation with accordion sections, computed stats sidebar, warning validation
+  - Wizard step registry with conditional spellcasting skip logic
+  - PlaceholderStep for unbuilt steps (Round 7)
+  - CharacterNewPage updated to render CreationWizard
+- [x] Agent B (frontend-dev): Epic 16 stories 16.1-16.3 (shared components) — COMPLETE (53 tests)
+  - SelectableCardGrid (generic, responsive, single/multi-select, ARIA listbox)
+  - SearchFilterBar (search + dropdown/toggle/chip filters, 300ms debounce)
+  - DetailSlidePanel (desktop right slide / mobile bottom sheet, framer-motion, focus trap)
+  - CountSelector (choose N from list, checkbox with max enforcement)
+  - ChoiceGroup (radio-button group with descriptions, ARIA radiogroup)
+  - GameTermTooltip (hover/tap tooltip with 50-term dictionary)
+  - StepHelp (collapsible "Need Help?" panel)
+  - AbilityScoreDisplay (classic D&D block: modifier/score/label/racial bonus)
+  - ProficiencyDot (none/proficient/expertise/half states)
+  - DiceNotation (click-to-roll with dice store integration)
+  - ModifierBadge (+N/-N with color gradient)
+  - 50-entry game terms dictionary (data/game-terms.ts)
+- Checkpoint: PASSED (1375 frontend + 80 backend = 1455 tests)
