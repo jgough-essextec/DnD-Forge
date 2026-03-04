@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 10
+## Current Round: 11
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -214,3 +214,39 @@
   - SpellSlotsAndLists: Interactive slot tracker (filled/empty circles), spell lists by level, prepared toggle
   - DomainSpells: Always-prepared domain/subclass spells with special badge
 - Checkpoint: PASSED (2297 frontend + 80 backend = 2377 tests)
+
+### Round 11: Gallery + Export/Import + Responsive
+- [x] Agent G (frontend-dev): Epic 21 stories 21.1-21.3 (character gallery) — COMPLETE (114 tests)
+  - HomePage: Full gallery with data fetching, filtering, sorting, batch operations
+  - CharacterCard: Avatar, name, race/class/level, HP/AC/PP stats, relative timestamp, hover glow
+  - CharacterGallery: Responsive grid (1/2/3/4 columns), list view with sortable table
+  - GalleryToolbar: Search (200ms debounce), class/race/level filter chips, sort dropdown, view toggle
+  - CharacterActions: Kebab menu (View/Edit/Duplicate/Export/Archive/Delete), outside-click dismiss
+  - BatchActionBar: Multi-select mode with Archive/Export/Delete batch actions
+  - DeleteConfirmDialog: Modal confirmation for single and batch delete
+  - GalleryEmptyState: Welcome CTA for new users, no-results state for filters
+  - Gallery utilities: formatRelativeTime, filterCharacters, sortCharacters, duplicateCharacterName
+- [x] Agent H (backend-dev + frontend-dev): Epic 22 stories 22.1-22.3 (import/export/share) — COMPLETE (51 tests: 25 backend + 26 frontend)
+  - Backend: CharacterExportSerializer (metadata wrapper, pretty-printed JSON, Content-Disposition)
+  - Backend: Export endpoint (GET /api/characters/:id/export/) with owner verification
+  - Backend: CharacterImportSerializer (5-stage validation: syntax, schema, types, references, business rules)
+  - Backend: Import endpoint (POST /api/characters/import/) with multipart upload, 1MB limit
+  - Backend: CharacterShareToken model (UUID PK, 7-day TTL, cascade delete)
+  - Backend: Share endpoint (GET /api/characters/:id/share/) generates/reuses tokens
+  - Backend: Public shared endpoint (GET /api/shared/:token/) — no auth, 410 for expired
+  - Frontend: exportCharacter (blob download), importCharacter (multipart upload), shareCharacter, getSharedCharacter
+  - Frontend: ExportButton, ImportButton (file picker + validation), ShareDialog (copy-to-clipboard)
+  - Frontend: SharedCharacterPage at /shared/:token (read-only view, import button for auth users)
+  - Frontend: /shared/:token route added to App.tsx (public, not behind ProtectedRoute)
+  - MSW handlers extended for all new endpoints
+- [x] Agent I (frontend-dev): Epic 24 stories 24.1-24.4 (responsive design + print) — COMPLETE (55 tests)
+  - CharacterSheet: Main container with tab navigation (Core Stats/Backstory/Spellcasting), framer-motion transitions, ARIA tabs
+  - Desktop (1024px+): 3-column grid (4/12+4/12+4/12) matching official D&D 5e sheet
+  - Tablet (640-1024px): 2-column layout (5/12 left, 7/12 right), compact skills, 44px touch targets
+  - Mobile (<640px): Single column, combat-first ordering, collapsible skills/personality, compact ability scores
+  - FloatingActionBar: Fixed bottom bar with Roll d20, HP +/-, Spell Slots, Edit toggle (mobile only)
+  - PrintButton: window.print() with Printer icon, self-hiding in print
+  - character-sheet-print.css: @media print rules (white bg, 3-col forced, page breaks, pt fonts, no UI chrome)
+  - CharacterSheetPage updated to use CharacterSheet component with CharacterSheetProvider
+- Checkpoint: PASSED (2475 frontend + 105 backend = 2580 tests)
+- PHASE 3 GATE: Full lifecycle: create → view → edit → save → gallery. Character gallery with search/filter/sort/batch. JSON import/export roundtrip. Share via URL with token expiry. Responsive desktop/tablet/mobile. Print styles. All breakpoints. TypeScript compiles, build succeeds, all tests pass.
