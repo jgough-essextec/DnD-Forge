@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 13
+## Current Round: 14
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -349,3 +349,25 @@
     - Checkbox list with live counter, toggles for spell slots/conditions/features visibility
 - Checkpoint: PASSED (3314 frontend + 105 backend = 3419 tests)
 - PHASE 4 GATE: Full session scenario: take damage → cast spell → gain condition → short rest → long rest → level up. Dice roller panel with animations + sheet integration. HP tracker with strict 5e rules. Spell slot management with Pact Magic + Arcane Recovery. Conditions with mechanical effects. Rest automation with feature recovery. Level up for all 12 classes. Mobile session compact view. TypeScript compiles, build succeeds, all tests pass.
+
+### Round 14: Campaign Foundation
+- [x] Agent A (backend-dev): Epic 33 stories 33.1-33.5 (Campaign CRUD full stack) — COMPLETE (45 backend + 79 frontend tests)
+  - Backend: Campaign model extended with is_archived, Encounter model (UUID PK, combatants JSONField)
+  - Backend: CampaignViewSet extended with archive/regenerate_code/remove_character actions, perform_destroy unlinks characters
+  - Backend: 45 tests (model, viewset CRUD, join, archive, regenerate code, remove character, integration)
+  - Frontend: CreateCampaignModal (3-step: Basic Info → House Rules → Invite), CampaignForm (shared)
+  - Frontend: EditCampaignModal (tabbed: Details/House Rules/Invite), mid-campaign house rule banner
+  - Frontend: CampaignList (search, sort, archive toggle), CampaignCard (kebab menu, archived badge)
+  - Frontend: CharacterPicker (multi-select, soft cap warning at 7+), DeleteCampaignDialog
+  - Frontend: CampaignsPage replaced (full campaign management), CampaignDashboardPage replaced (character list, join code, add/remove)
+  - Frontend: JoinCampaignPage replaced (campaign ID + code + character select form)
+  - Frontend: campaign.ts utilities (sort, filter, search, format, constants)
+  - MSW handlers extended for archive, regenerate-code, remove-character endpoints
+- [x] Agent B (frontend-dev): Epic 38 story 38.1 (Campaign route scaffolding) — COMPLETE (67 tests)
+  - SessionNotePage placeholder + /campaign/:id/session/:sessionId route added to App.tsx
+  - Breadcrumbs enhanced: dynamic campaign name resolution via useCampaign hook, full campaign route hierarchy
+  - Navigation highlighting improved: campaigns section highlights on all /campaign/* routes
+  - Page transitions: framer-motion PageTransition wrapper integrated into MainLayout Outlet
+  - CampaignNotFound: reusable error component with "Go to Campaigns" link
+  - 43 breadcrumb tests, 15 MainLayout nav tests, 4 CampaignNotFound tests, 5 route resolution tests
+- Checkpoint: PASSED (3442 frontend + 150 backend = 3592 tests)
