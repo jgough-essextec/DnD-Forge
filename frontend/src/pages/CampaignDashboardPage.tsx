@@ -1,4 +1,12 @@
-import { useState } from 'react'
+/**
+ * CampaignDashboardPage (Story 34.1)
+ *
+ * The DM's command center for a campaign. Displays campaign header with
+ * tabbed navigation: Party (default), Sessions, Encounters, Notes.
+ * The Party tab hosts PartyStatsGrid, SkillMatrix, LanguageCoverage, and PartyComposition.
+ */
+
+import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -6,31 +14,46 @@ import {
   Users,
   Copy,
   Check,
-  UserMinus,
   UserPlus,
   AlertTriangle,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react'
-import { useCampaign, useRemoveCharacter } from '@/hooks/useCampaigns'
+import { useCampaign, useJoinCampaign } from '@/hooks/useCampaigns'
 import { useCharacters } from '@/hooks/useCharacters'
+import { useCampaignCharacters } from '@/hooks/useCampaignCharacters'
 import { EditCampaignModal } from '@/components/dm/EditCampaignModal'
 import { CharacterPicker } from '@/components/dm/CharacterPicker'
 import { useUIStore } from '@/stores/uiStore'
-import { useJoinCampaign } from '@/hooks/useCampaigns'
 import { formatCampaignDate, CHARACTER_SOFT_CAP } from '@/utils/campaign'
+import { DashboardTabs } from '@/components/dm/dashboard/DashboardTabs'
+import type { DashboardTab } from '@/components/dm/dashboard/DashboardTabs'
+import { PartyStatsGrid } from '@/components/dm/dashboard/PartyStatsGrid'
+import { SkillMatrix } from '@/components/dm/dashboard/SkillMatrix'
+import { LanguageCoverage } from '@/components/dm/dashboard/LanguageCoverage'
+import { PartyComposition } from '@/components/dm/dashboard/PartyComposition'
+import type { Character } from '@/types/character'
 
 export default function CampaignDashboardPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: campaign, isLoading, error } = useCampaign(id ?? null)
   const { data: allCharacters } = useCharacters()
-  const removeCharacter = useRemoveCharacter()
   const joinCampaign = useJoinCampaign()
   const addToast = useUIStore((s) => s.addToast)
 
+  const characterIds = useMemo(
+    () => campaign?.characterIds ?? [],
+    [campaign?.characterIds]
+  )
+  const { characters: campaignCharacters, isLoading: charsLoading } =
+    useCampaignCharacters(characterIds)
+
+  const [activeTab, setActiveTab] = useState<DashboardTab>('party')
   const [showEdit, setShowEdit] = useState(false)
   const [showCharacterPicker, setShowCharacterPicker] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [removingCharacterId, setRemovingCharacterId] = useState<string | null>(null)
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
   const handleCopyCode = async () => {
     if (!campaign) return
@@ -40,26 +63,9 @@ export default function CampaignDashboardPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleRemoveCharacter = (characterId: string) => {
+  const handleAddCharacters = (selectedIds: string[]) => {
     if (!campaign) return
-    removeCharacter.mutate(
-      { campaignId: campaign.id, characterId },
-      {
-        onSuccess: () => {
-          addToast({ message: 'Character removed from campaign.', type: 'success' })
-          setRemovingCharacterId(null)
-        },
-        onError: () => {
-          addToast({ message: 'Failed to remove character.', type: 'error' })
-        },
-      }
-    )
-  }
-
-  const handleAddCharacters = (characterIds: string[]) => {
-    if (!campaign) return
-    // Use the join action for each character
-    const promises = characterIds.map((charId) =>
+    const promises = selectedIds.map((charId) =>
       joinCampaign.mutateAsync({
         campaignId: campaign.id,
         joinCode: campaign.joinCode,
@@ -69,7 +75,7 @@ export default function CampaignDashboardPage() {
     Promise.all(promises)
       .then(() => {
         addToast({
-          message: `${characterIds.length} character${characterIds.length !== 1 ? 's' : ''} added to campaign!`,
+          message: `${selectedIds.length} character${selectedIds.length !== 1 ? 's' : ''} added to campaign!`,
           type: 'success',
         })
         setShowCharacterPicker(false)
@@ -79,47 +85,48 @@ export default function CampaignDashboardPage() {
       })
   }
 
+  // Characters available to add (not already in campaign)
+  const availableCharacters = useMemo(() => {
+    if (!campaign || !allCharacters) return []
+    return allCharacters.filter(
+      (c) => !characterIds.includes(c.id)
+    )
+  }, [campaign, allCharacters, characterIds])
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="p-8">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-parchment/10 rounded w-64" />
-          <div className="h-32 bg-parchment/5 rounded-lg" />
+          <div className="h-4 bg-parchment/5 rounded w-48" />
+          <div className="h-10 bg-parchment/5 rounded-lg" />
+          <div className="h-64 bg-parchment/5 rounded-lg" />
         </div>
       </div>
     )
   }
 
+  // Error / not found state
   if (error || !campaign) {
     return (
-      <div className="p-8">
-        <p className="text-red-400">Campaign not found.</p>
+      <div className="p-8 text-center" data-testid="campaign-not-found">
+        <p className="text-red-400 text-lg mb-4">Campaign not found.</p>
         <button
           onClick={() => navigate('/campaigns')}
-          className="mt-4 text-accent-gold hover:text-accent-gold/80"
+          className="px-4 py-2 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors"
         >
-          Back to Campaigns
+          Go to Campaigns
         </button>
       </div>
     )
   }
 
-  // Characters available to add: not already in any campaign
-  const availableCharacters = (allCharacters ?? []).filter(
-    (c) => !campaign.characterIds?.includes(c.id)
-  )
-
-  const campaignCharacters = campaign.characterIds ?? []
-  const isAtCap = campaignCharacters.length >= CHARACTER_SOFT_CAP
-
-  // Type helper for rendering character data from the campaign
-  const characterEntries = campaignCharacters.map((charId) => {
-    const char = allCharacters?.find((c) => c.id === charId)
-    return { id: charId, name: char?.name ?? 'Unknown', race: char?.race ?? '', className: char?.class ?? '', level: char?.level ?? 0 }
-  })
+  const charCount = characterIds.length
+  const isAtCap = charCount >= CHARACTER_SOFT_CAP
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <button
@@ -129,7 +136,7 @@ export default function CampaignDashboardPage() {
         >
           <ArrowLeft className="w-5 h-5 text-parchment/60" />
         </button>
-        <h1 className="font-heading text-3xl text-accent-gold flex-1">
+        <h1 className="font-heading text-2xl md:text-3xl text-accent-gold flex-1 truncate">
           {campaign.name}
         </h1>
         <button
@@ -141,16 +148,34 @@ export default function CampaignDashboardPage() {
         </button>
       </div>
 
+      {/* Description (collapsible) */}
       {campaign.description && (
-        <p className="text-parchment/70 mb-6 ml-9">{campaign.description}</p>
+        <div className="ml-9 mb-4">
+          <button
+            onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+            className="flex items-center gap-1 text-parchment/50 hover:text-parchment/70 text-sm transition-colors"
+          >
+            {descriptionExpanded ? (
+              <ChevronDown className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronRight className="w-3.5 h-3.5" />
+            )}
+            <span>Description</span>
+          </button>
+          {descriptionExpanded && (
+            <p className="text-parchment/70 mt-1 text-sm">
+              {campaign.description}
+            </p>
+          )}
+        </div>
       )}
 
       {/* Campaign Info Bar */}
-      <div className="flex flex-wrap gap-4 mb-8 ml-9">
+      <div className="flex flex-wrap items-center gap-3 mb-6 ml-9">
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg-primary border border-parchment/10">
           <Users className="w-4 h-4 text-parchment/50" />
           <span className="text-sm text-parchment">
-            {campaignCharacters.length} character{campaignCharacters.length !== 1 ? 's' : ''}
+            {charCount} character{charCount !== 1 ? 's' : ''}
           </span>
         </div>
 
@@ -171,90 +196,42 @@ export default function CampaignDashboardPage() {
         <div className="text-sm text-parchment/50 flex items-center">
           Updated {formatCampaignDate(campaign.updatedAt)}
         </div>
-      </div>
-
-      {/* Characters Section */}
-      <div className="ml-9">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-heading text-xl text-parchment flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            Characters
-          </h2>
-          <button
-            onClick={() => setShowCharacterPicker(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold text-sm hover:bg-accent-gold/20 transition-colors"
-          >
-            <UserPlus className="w-4 h-4" />
-            Add Character
-          </button>
-        </div>
 
         {isAtCap && (
-          <div className="mb-4 p-3 rounded-lg bg-amber-900/20 border border-amber-500/30 flex items-start gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-amber-200">
-              This campaign has {campaignCharacters.length} characters, which is at or above
-              the recommended limit of {CHARACTER_SOFT_CAP}.
-            </p>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-900/20 border border-amber-500/30">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-xs text-amber-200">At character cap</span>
           </div>
         )}
+      </div>
 
-        {characterEntries.length === 0 ? (
-          <div className="text-center py-8 rounded-lg border border-parchment/10 bg-bg-primary">
-            <Users className="w-10 h-10 text-parchment/20 mx-auto mb-3" />
-            <p className="text-parchment/60">
-              No characters yet. Add characters to this campaign or share the
-              join code.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {characterEntries.map((char) => (
-              <div
-                key={char.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-bg-primary border border-parchment/10"
-              >
-                <div>
-                  <p className="text-sm font-medium text-parchment">
-                    {char.name}
-                  </p>
-                  <p className="text-xs text-parchment/60">
-                    {char.level > 0
-                      ? `Level ${char.level} ${char.race} ${char.className}`
-                      : 'Character details loading...'}
-                  </p>
-                </div>
-                <div>
-                  {removingCharacterId === char.id ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-amber-200">Remove?</span>
-                      <button
-                        onClick={() => handleRemoveCharacter(char.id)}
-                        disabled={removeCharacter.isPending}
-                        className="px-2 py-1 rounded text-xs bg-red-600 text-white hover:bg-red-700 transition-colors"
-                      >
-                        Yes
-                      </button>
-                      <button
-                        onClick={() => setRemovingCharacterId(null)}
-                        className="px-2 py-1 rounded text-xs border border-parchment/20 text-parchment hover:bg-parchment/10 transition-colors"
-                      >
-                        No
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setRemovingCharacterId(char.id)}
-                      className="p-1.5 rounded hover:bg-red-400/10 transition-colors"
-                      aria-label={`Remove ${char.name} from campaign`}
-                    >
-                      <UserMinus className="w-4 h-4 text-parchment/40 hover:text-red-400" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Tab Navigation */}
+      <div className="ml-0 md:ml-9">
+        <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+
+      {/* Tab Content */}
+      <div
+        className="mt-6 ml-0 md:ml-9"
+        role="tabpanel"
+        id={`tabpanel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+      >
+        {activeTab === 'party' && (
+          <PartyTabContent
+            characters={campaignCharacters}
+            isLoading={charsLoading}
+            onAddCharacter={() => setShowCharacterPicker(true)}
+          />
+        )}
+        {activeTab === 'sessions' && (
+          <PlaceholderTab label="Sessions" description="Session logs and notes will appear here." />
+        )}
+        {activeTab === 'encounters' && (
+          <PlaceholderTab label="Encounters" description="Combat encounters and initiative tracking will appear here." />
+        )}
+        {activeTab === 'notes' && (
+          <PlaceholderTab label="Notes" description="DM notes and NPC tracking will appear here." />
         )}
       </div>
 
@@ -272,9 +249,94 @@ export default function CampaignDashboardPage() {
         onClose={() => setShowCharacterPicker(false)}
         onSelect={handleAddCharacters}
         characters={availableCharacters}
-        currentCharacterCount={campaignCharacters.length}
+        currentCharacterCount={charCount}
         isSubmitting={joinCampaign.isPending}
       />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Party Tab Content
+// ---------------------------------------------------------------------------
+
+interface PartyTabContentProps {
+  characters: Character[]
+  isLoading: boolean
+  onAddCharacter: () => void
+}
+
+function PartyTabContent({ characters, isLoading: _isLoading, onAddCharacter }: PartyTabContentProps) {
+  if (characters.length === 0) {
+    return (
+      <div
+        className="text-center py-12 rounded-lg border border-parchment/10 bg-bg-primary"
+        data-testid="empty-party-state"
+      >
+        <Users className="w-12 h-12 text-parchment/20 mx-auto mb-4" />
+        <p className="text-parchment/60 mb-4">
+          No characters in this campaign yet. Add characters to get started!
+        </p>
+        <button
+          onClick={onAddCharacter}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors"
+        >
+          <UserPlus className="w-4 h-4" />
+          Add Character
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Party Stats Grid */}
+      <section>
+        <h3 className="font-heading text-lg text-parchment mb-3">Party Overview</h3>
+        <PartyStatsGrid characters={characters} />
+      </section>
+
+      {/* Party Composition */}
+      <section>
+        <PartyComposition characters={characters} />
+      </section>
+
+      {/* Skill Proficiency Matrix */}
+      <section>
+        <h3 className="font-heading text-lg text-parchment mb-3">
+          Skill Proficiency Matrix
+        </h3>
+        <SkillMatrix characters={characters} />
+      </section>
+
+      {/* Language & Tool Coverage */}
+      <section>
+        <h3 className="font-heading text-lg text-parchment mb-3">
+          Language & Tool Coverage
+        </h3>
+        <LanguageCoverage characters={characters} />
+      </section>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Placeholder for tabs that will be filled by other agents
+// ---------------------------------------------------------------------------
+
+function PlaceholderTab({
+  label,
+  description,
+}: {
+  label: string
+  description: string
+}) {
+  return (
+    <div
+      className="text-center py-12 rounded-lg border border-dashed border-parchment/10 bg-bg-primary"
+      data-testid={`placeholder-${label.toLowerCase()}`}
+    >
+      <p className="text-parchment/40 text-sm">{description}</p>
     </div>
   )
 }
