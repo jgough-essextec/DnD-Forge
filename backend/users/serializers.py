@@ -102,3 +102,14 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         if User.objects.filter(email__iexact=normalized).exclude(pk=user.pk).exists():
             raise serializers.ValidationError("A user with that email already exists.")
         return normalized
+
+
+class UserPreferencesSerializer(serializers.ModelSerializer):
+    """Serializer for user preferences (theme, auto-save, last active character)."""
+
+    class Meta:
+        from .models import UserPreferences
+
+        model = UserPreferences
+        fields = ["id", "user", "theme", "auto_save_enabled", "last_active_character"]
+        read_only_fields = ["id", "user"]

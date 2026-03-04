@@ -5,10 +5,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .models import UserPreferences
 from .serializers import (
     LoginSerializer,
     ProfileUpdateSerializer,
     RegisterSerializer,
+    UserPreferencesSerializer,
     UserSerializer,
 )
 
@@ -83,3 +85,23 @@ class MeView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(UserSerializer(request.user).data)
+
+
+class PreferencesView(APIView):
+    """
+    GET: Return the current user's preferences (auto-creates with defaults).
+    PUT: Update the current user's preferences.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        prefs, _created = UserPreferences.objects.get_or_create(user=request.user)
+        return Response(UserPreferencesSerializer(prefs).data)
+
+    def put(self, request):
+        prefs, _created = UserPreferences.objects.get_or_create(user=request.user)
+        serializer = UserPreferencesSerializer(prefs, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
