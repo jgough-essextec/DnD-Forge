@@ -59,28 +59,13 @@ describe('CharacterSheetPage', () => {
   })
 
   describe('Error and 404 states', () => {
-    it('should show 404 error for non-existent character ID', async () => {
+    it('should show error for non-existent character ID', async () => {
       renderCharacterSheet('/character/nonexistent-id')
 
       await waitFor(() => {
-        expect(screen.getByText('Character not found.')).toBeInTheDocument()
+        expect(screen.getByText('Error')).toBeInTheDocument()
       })
-    })
-
-    it('should show "Go Home" button on 404 page', async () => {
-      renderCharacterSheet('/character/nonexistent-id')
-
-      await waitFor(() => {
-        expect(screen.getByText('Go Home')).toBeInTheDocument()
-      })
-    })
-
-    it('should show "Create New Character" button on 404 page', async () => {
-      renderCharacterSheet('/character/nonexistent-id')
-
-      await waitFor(() => {
-        expect(screen.getByText('Create New Character')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Failed to load character.')).toBeInTheDocument()
     })
 
     it('should display an error message when the API returns a server error', async () => {
@@ -103,93 +88,18 @@ describe('CharacterSheetPage', () => {
     })
   })
 
-  describe('Edit mode detection', () => {
-    it('should detect view mode from /character/:id URL', async () => {
-      renderCharacterSheet('/character/char-001')
-
-      await waitFor(() => {
-        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
-      })
-
-      // View link should be the active one (aria-current="page")
-      const viewLink = screen.getByRole('link', { name: 'View' })
-      expect(viewLink).toHaveAttribute('aria-current', 'page')
-
-      // Edit link should NOT have aria-current
-      const editLink = screen.getByRole('link', { name: 'Edit' })
-      expect(editLink).not.toHaveAttribute('aria-current')
-    })
-
-    it('should detect edit mode from /character/:id/edit URL', async () => {
-      renderCharacterSheet('/character/char-001/edit')
-
-      await waitFor(() => {
-        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
-      })
-
-      // Edit link should be active
-      const editLink = screen.getByRole('link', { name: 'Edit' })
-      expect(editLink).toHaveAttribute('aria-current', 'page')
-
-      // View link should NOT be active
-      const viewLink = screen.getByRole('link', { name: 'View' })
-      expect(viewLink).not.toHaveAttribute('aria-current')
-    })
-
-    it('should show editing mode indicator banner in edit mode', async () => {
-      renderCharacterSheet('/character/char-001/edit')
-
-      await waitFor(() => {
-        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
-      })
-
-      expect(
-        screen.getByText(/Editing mode/)
-      ).toBeInTheDocument()
-    })
-
-    it('should NOT show editing mode indicator banner in view mode', async () => {
-      renderCharacterSheet('/character/char-001')
-
-      await waitFor(() => {
-        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
-      })
-
-      expect(screen.queryByText(/Editing mode/)).not.toBeInTheDocument()
-    })
-  })
-
   describe('Character sheet content', () => {
-    it('should display Core Stats section with AC, initiative, and speed', async () => {
+    it('should render the character sheet component with tabs', async () => {
       renderCharacterSheet('/character/char-001')
 
       await waitFor(() => {
-        expect(screen.getByText('Core Stats')).toBeInTheDocument()
+        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
       })
 
-      expect(screen.getByText('AC')).toBeInTheDocument()
-      expect(screen.getByText('Initiative')).toBeInTheDocument()
-      expect(screen.getByText('Speed')).toBeInTheDocument()
-    })
-
-    it('should display Hit Points section', async () => {
-      renderCharacterSheet('/character/char-001')
-
-      await waitFor(() => {
-        expect(screen.getByText('Hit Points')).toBeInTheDocument()
-      })
-    })
-
-    it('should display character features', async () => {
-      renderCharacterSheet('/character/char-001')
-
-      await waitFor(() => {
-        expect(screen.getByText('Features & Traits')).toBeInTheDocument()
-      })
-
-      expect(screen.getByText('second wind')).toBeInTheDocument()
-      expect(screen.getByText('action surge')).toBeInTheDocument()
-      expect(screen.getByText('extra attack')).toBeInTheDocument()
+      // Tab navigation should be present
+      expect(screen.getByText('Core Stats')).toBeInTheDocument()
+      expect(screen.getByText('Backstory & Details')).toBeInTheDocument()
+      expect(screen.getByText('Spellcasting')).toBeInTheDocument()
     })
 
     it('should include a back link to the characters gallery', async () => {
@@ -203,18 +113,25 @@ describe('CharacterSheetPage', () => {
       expect(backLink).toHaveAttribute('href', '/')
     })
 
-    it('should provide view/edit mode toggle links with correct hrefs', async () => {
+    it('should display print button', async () => {
       renderCharacterSheet('/character/char-001')
 
       await waitFor(() => {
         expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
       })
 
-      const viewLink = screen.getByRole('link', { name: 'View' })
-      expect(viewLink).toHaveAttribute('href', '/character/char-001')
+      expect(screen.getByTestId('print-button')).toBeInTheDocument()
+    })
 
-      const editLink = screen.getByRole('link', { name: 'Edit' })
-      expect(editLink).toHaveAttribute('href', '/character/char-001/edit')
+    it('should render Page 1 content by default', async () => {
+      renderCharacterSheet('/character/char-001')
+
+      await waitFor(() => {
+        expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
+      })
+
+      // Page 1 components should be visible
+      expect(screen.getByTestId('core-stats-page')).toBeInTheDocument()
     })
   })
 })

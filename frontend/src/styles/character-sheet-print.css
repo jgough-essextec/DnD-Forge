@@ -1,0 +1,215 @@
+/**
+ * Character Sheet Print Styles (Story 24.4)
+ *
+ * @media print rules for rendering the character sheet on paper.
+ * - Removes all UI chrome (nav, buttons, toggles, hover states)
+ * - Forces white background with dark text
+ * - Forces 3-column Page 1 layout
+ * - Each page on new printed page (page-break-before: always)
+ * - pt-based font sizes
+ * - Hides parchment textures
+ * - No orphaned headers
+ */
+
+@media print {
+  /* === Global print reset === */
+  *,
+  *::before,
+  *::after {
+    background: white !important;
+    color: #1a1a1a !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 10pt;
+    line-height: 1.4;
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+
+  /* === Hide UI chrome === */
+  .print\:hidden,
+  nav,
+  header,
+  footer,
+  [data-testid="floating-action-bar"],
+  [data-testid="sheet-tabs"],
+  [data-testid="print-button"],
+  .fixed,
+  button,
+  .cursor-pointer {
+    display: none !important;
+  }
+
+  /* Re-show the print blocks */
+  .print\:block {
+    display: block !important;
+  }
+
+  /* === Typography === */
+  h1 {
+    font-size: 16pt;
+    font-weight: bold;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: bold;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: bold;
+  }
+
+  p,
+  span,
+  div,
+  li {
+    font-size: 9pt;
+  }
+
+  /* === Layout overrides === */
+  .character-sheet {
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Force 3-column layout on Page 1 */
+  [data-testid="page1-grid"] {
+    display: grid !important;
+    grid-template-columns: 4fr 4fr 4fr !important;
+    gap: 12pt !important;
+  }
+
+  [data-testid="left-column"] {
+    order: 1 !important;
+    grid-column: span 1 !important;
+  }
+
+  [data-testid="center-column"] {
+    order: 2 !important;
+    grid-column: span 1 !important;
+  }
+
+  [data-testid="right-column"] {
+    order: 3 !important;
+    grid-column: span 1 !important;
+  }
+
+  /* Force mobile-hidden elements to be visible in print */
+  .hidden.sm\:block {
+    display: block !important;
+  }
+
+  /* Hide mobile-only elements in print */
+  .sm\:hidden {
+    display: none !important;
+  }
+
+  /* === Page breaks === */
+  .break-before-page {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .print-page-1 {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .print-page-2 {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Prevent orphaned headers */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Keep sections together */
+  [data-testid="ability-scores-panel"],
+  [data-testid="saving-throws-list"],
+  [data-testid="combat-stats-block"],
+  [data-testid="hit-points-block"],
+  [data-testid="attacks-section"],
+  [data-testid="personality-features"],
+  [data-testid="hit-dice-death-saves"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* === Borders and backgrounds for print === */
+  .rounded-lg,
+  .rounded-xl {
+    border-radius: 4pt;
+  }
+
+  /* Make borders visible in print */
+  [data-testid="page1-layout"] .border-2,
+  [data-testid="page2-layout"] .border,
+  [data-testid="page3-spellcasting"] .border {
+    border: 1pt solid #ccc !important;
+  }
+
+  /* === Remove interactive states === */
+  .hover\:bg-parchment\/10,
+  .hover\:bg-bg-secondary\/50,
+  .hover\:border-accent-gold\/50,
+  .hover\:text-parchment {
+    background: transparent !important;
+    border-color: inherit !important;
+    color: inherit !important;
+  }
+
+  /* Remove animations */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+
+  /* === Page margins === */
+  @page {
+    margin: 0.5in;
+    size: letter portrait;
+  }
+
+  /* === Parchment texture removal === */
+  .bg-parchment,
+  .bg-bg-primary,
+  .bg-bg-secondary {
+    background: white !important;
+  }
+
+  /* === Accent gold becomes dark in print === */
+  .text-accent-gold {
+    color: #333 !important;
+    font-weight: bold;
+  }
+
+  /* === Scroll containers === */
+  .overflow-auto,
+  .overflow-hidden,
+  .overflow-scroll {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}
