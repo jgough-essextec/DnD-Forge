@@ -9,6 +9,7 @@ import {
   Download,
   Info,
   Eye,
+  ExternalLink,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePreferences, useUpdatePreferences } from '@/hooks/usePreferences'
@@ -24,16 +25,21 @@ type DiceSpeed = 'fast' | 'normal' | 'dramatic'
 type AutoSaveInterval = '500' | '1000' | '2000' | 'manual'
 type AbilityScoreMethod = 'standard' | 'pointBuy' | 'rolled'
 type GallerySort = 'name' | 'level' | 'updated' | 'created'
+type UndoDepth = '10' | '25' | '50' | '100'
 
 interface LocalSettings {
   // Display
   reducedMotion: boolean
+  detailedGalleryCards: boolean
   // Dice
   diceAnimationSpeed: DiceSpeed
   showDiceResultsInline: boolean
+  soundEffectsEnabled: boolean
+  defaultAdvantageLock: 'normal' | 'advantage' | 'disadvantage'
   // Auto-Save
   autoSaveEnabled: boolean
   autoSaveInterval: AutoSaveInterval
+  undoHistoryDepth: UndoDepth
   // Defaults
   defaultPlayerName: string
   defaultAbilityScoreMethod: AbilityScoreMethod
@@ -42,10 +48,14 @@ interface LocalSettings {
 
 const DEFAULT_SETTINGS: LocalSettings = {
   reducedMotion: false,
+  detailedGalleryCards: true,
   diceAnimationSpeed: 'normal',
   showDiceResultsInline: true,
+  soundEffectsEnabled: false,
+  defaultAdvantageLock: 'normal',
   autoSaveEnabled: true,
   autoSaveInterval: '1000',
+  undoHistoryDepth: '25',
   defaultPlayerName: '',
   defaultAbilityScoreMethod: 'standard',
   galleryDefaultSort: 'updated',
@@ -350,6 +360,14 @@ export default function SettingsPage() {
             checked={settings.reducedMotion}
             onChange={(val) => updateSetting('reducedMotion', val)}
           />
+
+          <ToggleSwitch
+            id="detailed-gallery-cards"
+            label="Detailed Gallery Cards"
+            description="Show extra stats on character gallery cards"
+            checked={settings.detailedGalleryCards}
+            onChange={(val) => updateSetting('detailedGalleryCards', val)}
+          />
         </div>
       </SectionCard>
 
@@ -371,6 +389,18 @@ export default function SettingsPage() {
             checked={prefersReducedMotion}
             onChange={toggleAppOverride}
           />
+
+          {/* Screen reader hints */}
+          <div className="py-3">
+            <p className="text-sm font-medium text-parchment mb-2">
+              Screen Reader Tips
+            </p>
+            <ul className="space-y-1 text-xs text-parchment/50">
+              <li>Use heading navigation (H key) to jump between sections</li>
+              <li>Use landmarks (D key) to navigate to main content areas</li>
+              <li>Tab key navigates interactive elements sequentially</li>
+            </ul>
+          </div>
         </div>
       </SectionCard>
 
@@ -395,6 +425,27 @@ export default function SettingsPage() {
             description="Display dice results directly in the character sheet"
             checked={settings.showDiceResultsInline}
             onChange={(val) => updateSetting('showDiceResultsInline', val)}
+          />
+
+          <ToggleSwitch
+            id="sound-effects"
+            label="Sound Effects"
+            description="Play sounds for dice rolls and celebrations"
+            checked={settings.soundEffectsEnabled}
+            onChange={(val) => updateSetting('soundEffectsEnabled', val)}
+          />
+
+          <SelectField<'normal' | 'advantage' | 'disadvantage'>
+            id="default-advantage-lock"
+            label="Default Advantage/Disadvantage"
+            description="Default roll modifier for dice rolls"
+            value={settings.defaultAdvantageLock}
+            onChange={(val) => updateSetting('defaultAdvantageLock', val)}
+            options={[
+              { value: 'normal', label: 'Normal' },
+              { value: 'advantage', label: 'Advantage' },
+              { value: 'disadvantage', label: 'Disadvantage' },
+            ]}
           />
         </div>
       </SectionCard>
@@ -421,6 +472,20 @@ export default function SettingsPage() {
               { value: '1000', label: '1 second' },
               { value: '2000', label: '2 seconds' },
               { value: 'manual', label: 'Manual only' },
+            ]}
+          />
+
+          <SelectField<UndoDepth>
+            id="undo-history-depth"
+            label="Undo History Depth"
+            description="Number of undo steps to keep in memory"
+            value={settings.undoHistoryDepth}
+            onChange={(val) => updateSetting('undoHistoryDepth', val)}
+            options={[
+              { value: '10', label: '10 steps' },
+              { value: '25', label: '25 steps' },
+              { value: '50', label: '50 steps' },
+              { value: '100', label: '100 steps' },
             ]}
           />
         </div>
@@ -558,6 +623,18 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <span>Version</span>
             <span className="text-parchment" data-testid="app-version">0.1.0</span>
+          </div>
+          <div className="flex items-center justify-between border-t border-parchment/5 pt-3">
+            <span>Changelog</span>
+            <a
+              href="https://github.com/dnd-forge/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-accent-gold hover:text-accent-gold/80 transition-colors"
+              data-testid="changelog-link"
+            >
+              View <ExternalLink className="h-3 w-3" />
+            </a>
           </div>
           <div className="border-t border-parchment/5 pt-3">
             <p className="mb-2 font-medium text-parchment">Acknowledgments</p>

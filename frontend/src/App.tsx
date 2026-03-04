@@ -5,6 +5,7 @@ import { MainLayout } from '@/components/layout/MainLayout'
 import { Loading } from '@/components/layout/Loading'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { PublicOnlyRoute } from '@/components/layout/PublicOnlyRoute'
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 
 const HomePage = lazy(() => import('@/pages/HomePage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
@@ -26,10 +27,11 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Suspense fallback={<Loading />}>
-          <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <Suspense fallback={<Loading />}>
+            <Routes>
             {/* Public-only routes (redirect to home if already logged in) */}
             <Route
               path="/login"
@@ -153,9 +155,10 @@ export default function App() {
               />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
-          </Routes>
-        </Suspense>
-      </AuthProvider>
-    </BrowserRouter>
+            </Routes>
+          </Suspense>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
