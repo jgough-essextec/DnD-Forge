@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 7
+## Current Round: 8
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -140,3 +140,25 @@
   - Warlock Pact Magic support
 - CreationWizard.tsx updated: all PlaceholderStep references replaced with real step components (Review remains placeholder for Round 8)
 - Checkpoint: PASSED (1763 frontend + 80 backend = 1843 tests)
+
+### Round 8: Review Step + Phase 2 QA
+- [x] Agent I (frontend-dev): Epic 15 stories 15.1-15.4 (review, validation, save, quick-edit) — COMPLETE (60 tests)
+  - ReviewStep container with tabbed 3-page preview (Core Stats / Backstory / Spellcasting)
+  - CharacterPreviewPage1 (abilities, saves, skills, AC, HP, initiative, attacks, personality, features)
+  - CharacterPreviewPage2 (appearance, backstory, equipment inventory, currency, proficiencies)
+  - CharacterPreviewPage3 (spellcasting class/ability/DC, cantrips, spell slots, spell list — casters only)
+  - useReviewData hook computing all derived stats via calculation engine
+  - ValidationSummary (errors red/warnings yellow/info blue, Fix links, collapsible, save gating)
+  - SaveActions (Save Character, Save & Create Another, Go Back & Edit, error handling, JSON export fallback)
+  - SaveCelebration ("Your Adventurer is Ready!" themed overlay with auto-dismiss)
+  - QuickEditModal (renders step components in dialog, Save Changes/Cancel, focus trap)
+  - EditableSection (pencil icon overlay, section-to-step mapping)
+  - InlineNameEdit (click-to-edit character name)
+  - CreationWizard.tsx updated: ReviewStep replaces last PlaceholderStep — all 8 steps now use real components
+- [x] Agent J (qa-engineer): Phase 2 E2E QA — COMPLETE (187 integration tests)
+  - wizardFlow.test.tsx (42 tests): Human Fighter + High Elf Wizard full flows, state persistence, spell step skip logic, validation, race/class data verification
+  - derivedStats.test.ts (97 tests): AC formulas (chain mail+shield=18, unarmored defense), HP (all hit dice+CON), spell save DC/attack, proficiency scaling, skill/save modifiers, attack bonuses, initiative, all 12 classes at L1
+  - validationCoverage.test.ts (21 tests): valid characters pass, missing fields fail, point buy/standard array validation, attunement limits
+  - payloadTransform.test.ts (27 tests): Fighter/Wizard payloads, required fields, spell/equipment inclusion, empty state defaults
+- Checkpoint: PASSED (2010 frontend + 80 backend = 2090 tests)
+- PHASE 2 GATE: All wizard steps built and integrated, 3-page character preview, validation with fix links, save with celebration, quick-edit modals, all 12 classes verified via integration tests, TypeScript compiles, build succeeds, all tests pass
