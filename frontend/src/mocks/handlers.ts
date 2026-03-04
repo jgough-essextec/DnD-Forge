@@ -5,6 +5,221 @@ const BASE_URL = 'http://localhost:8000/api'
 // Simulated session state for test mocking
 let currentUser: Record<string, unknown> | null = null
 
+// ---------------------------------------------------------------------------
+// Mock data: Characters
+// ---------------------------------------------------------------------------
+
+interface MockCharacterSummary {
+  id: string
+  name: string
+  race: string
+  class: string
+  level: number
+  hp: { current: number; max: number }
+  ac: number
+  avatarUrl?: string
+}
+
+const mockCharacterSummaries: MockCharacterSummary[] = [
+  {
+    id: 'char-001',
+    name: 'Thorn Ironforge',
+    race: 'Dwarf',
+    class: 'Fighter',
+    level: 5,
+    hp: { current: 44, max: 52 },
+    ac: 18,
+  },
+  {
+    id: 'char-002',
+    name: 'Elara Nightwhisper',
+    race: 'Elf',
+    class: 'Wizard',
+    level: 3,
+    hp: { current: 18, max: 18 },
+    ac: 12,
+    avatarUrl: 'https://example.com/elara.png',
+  },
+]
+
+const mockCharacterDetail: Record<string, unknown> = {
+  id: 'char-001',
+  name: 'Thorn Ironforge',
+  playerName: 'Test Player',
+  avatarUrl: null,
+  createdAt: '2024-06-01T12:00:00Z',
+  updatedAt: '2024-06-15T08:30:00Z',
+  version: 3,
+  race: { raceId: 'dwarf', subraceId: 'hill-dwarf' },
+  classes: [
+    {
+      classId: 'fighter',
+      level: 5,
+      subclassId: 'champion',
+      hitDie: 10,
+      skillProficiencies: ['athletics', 'perception'],
+    },
+  ],
+  background: {
+    backgroundId: 'soldier',
+    characterIdentity: { name: 'Thorn Ironforge' },
+    characterPersonality: {
+      personalityTraits: [
+        'I can stare down a hell hound without flinching.',
+        'I enjoy being strong.',
+      ],
+      ideal: 'Greater Good',
+      bond: 'I fight for those who cannot fight for themselves.',
+      flaw: 'I have a weakness for ale.',
+    },
+  },
+  alignment: 'lawful-good',
+  baseAbilityScores: {
+    strength: 16,
+    dexterity: 12,
+    constitution: 14,
+    intelligence: 10,
+    wisdom: 13,
+    charisma: 8,
+  },
+  abilityScores: {
+    strength: 16,
+    dexterity: 12,
+    constitution: 16,
+    intelligence: 10,
+    wisdom: 14,
+    charisma: 8,
+  },
+  abilityScoreMethod: 'standard',
+  level: 5,
+  experiencePoints: 6500,
+  hpMax: 52,
+  hpCurrent: 44,
+  tempHp: 0,
+  hitDiceTotal: [5],
+  hitDiceUsed: [1],
+  speed: { walk: 25 },
+  deathSaves: { successes: 0, failures: 0, stable: false },
+  combatStats: {
+    armorClass: { base: 18, formula: '16 + 2 (shield)', modifiers: [] },
+    initiative: 1,
+    speed: { walk: 25 },
+    hitPoints: { current: 44, max: 52, temporary: 0 },
+    attacks: [],
+    savingThrows: { strength: 6, constitution: 5 },
+  },
+  proficiencies: {
+    armor: ['light', 'medium', 'heavy', 'shields'],
+    weapons: ['simple melee', 'martial melee'],
+    tools: [],
+    languages: ['common', 'dwarvish'],
+    skills: [],
+    savingThrows: ['strength', 'constitution'],
+  },
+  inventory: [],
+  currency: { cp: 0, sp: 15, ep: 0, gp: 50, pp: 0 },
+  attunedItems: [],
+  spellcasting: null,
+  features: ['second-wind', 'action-surge', 'extra-attack'],
+  feats: [],
+  description: {
+    name: 'Thorn Ironforge',
+    age: '150',
+    height: "4'4\"",
+    weight: '180 lbs',
+    eyes: 'Brown',
+    skin: 'Tan',
+    hair: 'Black',
+    appearance: 'Stocky and battle-scarred',
+    backstory: 'A veteran of many wars.',
+    alliesAndOrgs: 'The Ironforge Clan',
+    treasure: 'A family crest ring',
+  },
+  personality: {
+    personalityTraits: [
+      'I can stare down a hell hound without flinching.',
+      'I enjoy being strong.',
+    ],
+    ideal: 'Greater Good',
+    bond: 'I fight for those who cannot fight for themselves.',
+    flaw: 'I have a weakness for ale.',
+  },
+  conditions: [],
+  inspiration: false,
+  campaignId: null,
+  isArchived: false,
+}
+
+// ---------------------------------------------------------------------------
+// Mock data: Campaigns
+// ---------------------------------------------------------------------------
+
+interface MockCampaign {
+  id: string
+  name: string
+  description: string
+  dmId: string
+  playerIds: string[]
+  characterIds: string[]
+  joinCode: string
+  settings: {
+    xpTracking: 'milestone' | 'xp'
+    houseRules: {
+      allowedSources: string[]
+      abilityScoreMethod: string
+      startingLevel: number
+      allowMulticlass: boolean
+      allowFeats: boolean
+      encumbranceVariant: boolean
+    }
+  }
+  sessions: never[]
+  npcs: never[]
+  createdAt: string
+  updatedAt: string
+}
+
+const mockCampaigns: MockCampaign[] = [
+  {
+    id: 'camp-001',
+    name: 'Lost Mine of Phandelver',
+    description: 'A classic introductory adventure.',
+    dmId: 'user-001',
+    playerIds: ['user-002', 'user-003'],
+    characterIds: ['char-001', 'char-002'],
+    joinCode: 'ABC123',
+    settings: {
+      xpTracking: 'milestone',
+      houseRules: {
+        allowedSources: ['PHB', 'DMG'],
+        abilityScoreMethod: 'any',
+        startingLevel: 1,
+        allowMulticlass: true,
+        allowFeats: true,
+        encumbranceVariant: false,
+      },
+    },
+    sessions: [],
+    npcs: [],
+    createdAt: '2024-05-01T10:00:00Z',
+    updatedAt: '2024-06-15T10:00:00Z',
+  },
+]
+
+// ---------------------------------------------------------------------------
+// Mock data: Preferences
+// ---------------------------------------------------------------------------
+
+let mockPreferences = {
+  theme: 'dark' as const,
+  autoSaveEnabled: true,
+  lastActiveCharacterId: 'char-001',
+}
+
+// ---------------------------------------------------------------------------
+// Handlers
+// ---------------------------------------------------------------------------
+
 export const handlers = [
   // Auth endpoints
   http.get(`${BASE_URL}/auth/me/`, () => {
@@ -76,10 +291,162 @@ export const handlers = [
     return HttpResponse.json({ csrfToken: 'test-csrf-token' })
   }),
 
-  // Existing endpoints
+  // -------------------------------------------------------------------------
+  // Character endpoints
+  // -------------------------------------------------------------------------
+
   http.get(`${BASE_URL}/characters/`, () => {
-    return HttpResponse.json([])
+    return HttpResponse.json(mockCharacterSummaries)
   }),
+
+  http.get(`${BASE_URL}/characters/:id/`, ({ params }) => {
+    const { id } = params
+    if (id === 'char-001') {
+      return HttpResponse.json(mockCharacterDetail)
+    }
+    return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+  }),
+
+  http.post(`${BASE_URL}/characters/`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const newCharacter = {
+      ...mockCharacterDetail,
+      ...body,
+      id: 'char-new-001',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      version: 1,
+    }
+    return HttpResponse.json(newCharacter, { status: 201 })
+  }),
+
+  http.patch(`${BASE_URL}/characters/:id/`, async ({ params, request }) => {
+    const { id } = params
+    if (id !== 'char-001') {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    const body = (await request.json()) as Record<string, unknown>
+    const updated = {
+      ...mockCharacterDetail,
+      ...body,
+      updatedAt: new Date().toISOString(),
+      version: (mockCharacterDetail.version as number) + 1,
+    }
+    return HttpResponse.json(updated)
+  }),
+
+  http.delete(`${BASE_URL}/characters/:id/`, ({ params }) => {
+    const { id } = params
+    if (id !== 'char-001') {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // -------------------------------------------------------------------------
+  // Campaign endpoints
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/campaigns/`, () => {
+    return HttpResponse.json(mockCampaigns)
+  }),
+
+  http.get(`${BASE_URL}/campaigns/:id/`, ({ params }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (campaign) {
+      return HttpResponse.json(campaign)
+    }
+    return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+  }),
+
+  http.post(`${BASE_URL}/campaigns/`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const newCampaign = {
+      id: 'camp-new-001',
+      name: body.name ?? 'New Campaign',
+      description: body.description ?? '',
+      dmId: 'user-001',
+      playerIds: [],
+      characterIds: [],
+      joinCode: 'XYZ789',
+      settings: {
+        xpTracking: 'milestone',
+        houseRules: {
+          allowedSources: ['PHB'],
+          abilityScoreMethod: 'any',
+          startingLevel: 1,
+          allowMulticlass: true,
+          allowFeats: true,
+          encumbranceVariant: false,
+        },
+      },
+      sessions: [],
+      npcs: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    return HttpResponse.json(newCampaign, { status: 201 })
+  }),
+
+  http.patch(`${BASE_URL}/campaigns/:id/`, async ({ params, request }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    const body = (await request.json()) as Record<string, unknown>
+    const updated = {
+      ...campaign,
+      ...body,
+      updatedAt: new Date().toISOString(),
+    }
+    return HttpResponse.json(updated)
+  }),
+
+  http.delete(`${BASE_URL}/campaigns/:id/`, ({ params }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  http.post(`${BASE_URL}/campaigns/:id/join/`, async ({ params, request }) => {
+    const { id } = params
+    const campaign = mockCampaigns.find((c) => c.id === id)
+    if (!campaign) {
+      return HttpResponse.json({ detail: 'Not found.' }, { status: 404 })
+    }
+    const body = (await request.json()) as Record<string, string>
+    if (body.joinCode !== campaign.joinCode) {
+      return HttpResponse.json(
+        { detail: 'Invalid join code.' },
+        { status: 400 }
+      )
+    }
+    return HttpResponse.json({ detail: 'Joined successfully.' })
+  }),
+
+  // -------------------------------------------------------------------------
+  // Preferences endpoints
+  // -------------------------------------------------------------------------
+
+  http.get(`${BASE_URL}/preferences/`, () => {
+    return HttpResponse.json(mockPreferences)
+  }),
+
+  http.put(`${BASE_URL}/preferences/`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    mockPreferences = { ...mockPreferences, ...body } as typeof mockPreferences
+    return HttpResponse.json(mockPreferences)
+  }),
+
+  // -------------------------------------------------------------------------
+  // Reference data stubs
+  // -------------------------------------------------------------------------
+
   http.get(`${BASE_URL}/races/`, () => {
     return HttpResponse.json([])
   }),
