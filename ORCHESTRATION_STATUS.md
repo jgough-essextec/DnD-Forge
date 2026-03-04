@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 3
+## Current Round: 4
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -30,3 +30,19 @@
 - [x] Agent I (frontend-dev): Story 7.1 (dice engine) — COMPLETE (92 tests, 100% coverage)
   - crypto.getRandomValues(), notation parsing, 4d6-drop-lowest, advantage/disadvantage
 - Checkpoint: PASSED (618 frontend + 30 backend = 648 tests)
+
+### Round 4: Calculation Engine
+- [x] Agent J (frontend-dev): Stories 4.1-4.2 (ability + skill calculations) — COMPLETE (216 tests)
+  - getModifier, getTotalAbilityScore, getEffectiveAbilityScores, validatePointBuy, validateStandardArray
+  - getProficiencyBonus, getSkillModifier (Jack of All Trades, Remarkable Athlete, Expertise)
+  - getSavingThrowModifier, getPassiveScore, getAllSkillModifiers, getAllSavingThrows
+- [x] Agent K (frontend-dev): Stories 4.3-4.4 (combat + spellcasting calculations) — COMPLETE (213 tests)
+  - getArmorClass (14 formulas), getInitiative, getSpeed, getHitPointMax, getAttackBonus, getWeaponDamage
+  - getSpellSaveDC, getSpellAttackBonus, getSpellSlots (single+multiclass), getPactMagicSlots
+  - getCantripsKnown, getSpellsPrepared, getEncumbrance
+- [x] Agent L (frontend-dev): Stories 4.5-4.8 (levelup/currency/rest/validation) — COMPLETE (141 tests)
+  - getLevelUpGains, getXPForLevel, getLevelForXP, getAverageHPRoll
+  - convertCurrency, getTotalWealth, getTotalInventoryWeight, rollStartingGold
+  - getShortRestRecovery, getLongRestRecovery
+  - validateCharacter (required fields, ability scores, point buy, skills, spells, attunement, multiclass)
+- Checkpoint: PASSED (1188 frontend + 30 backend = 1218 tests, 570 calculation-specific)
