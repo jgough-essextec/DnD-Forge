@@ -75,8 +75,9 @@ describe('Campaign route resolution', () => {
   it('should resolve /campaign/:id/session/:sessionId to SessionNotePage', async () => {
     renderCampaignRoutes('/campaign/camp-001/session/5')
 
+    // SessionNotePage now shows full session detail view; if no session matches, shows "Session not found."
     expect(
-      await screen.findByText('Session notes coming soon.')
+      await screen.findByText('Session not found.')
     ).toBeInTheDocument()
   })
 
