@@ -1,7 +1,11 @@
 import { useRef, useState } from 'react'
+import { Upload } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { importCharacter } from '@/api/characters'
 import { useUIStore } from '@/stores/uiStore'
+import { CHARACTERS_KEY } from '@/hooks/useCharacters'
+import { cn } from '@/lib/utils'
 
 interface ImportButtonProps {
   /** Render as a menu item instead of a standalone button. */
@@ -13,6 +17,7 @@ export function ImportButton({ variant = 'button' }: ImportButtonProps) {
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const addToast = useUIStore((s) => s.addToast)
 
   function handleClick() {
@@ -42,6 +47,9 @@ export function ImportButton({ variant = 'button' }: ImportButtonProps) {
     try {
       const result = await importCharacter(file)
       const charId = result.character.id
+
+      // Invalidate the character list so the gallery refreshes
+      void queryClient.invalidateQueries({ queryKey: CHARACTERS_KEY })
 
       if (result.warnings.length > 0) {
         addToast({
@@ -93,7 +101,7 @@ export function ImportButton({ variant = 'button' }: ImportButtonProps) {
           role="menuitem"
           onClick={handleClick}
           disabled={isImporting}
-          className="w-full text-left px-4 py-2 text-sm hover:bg-surface-700 disabled:opacity-50"
+          className="w-full text-left px-4 py-2 text-sm hover:bg-parchment/5 disabled:opacity-50"
         >
           {isImporting ? 'Importing...' : 'Import from JSON'}
         </button>
@@ -111,9 +119,15 @@ export function ImportButton({ variant = 'button' }: ImportButtonProps) {
         type="button"
         onClick={handleClick}
         disabled={isImporting}
-        className="inline-flex items-center gap-2 rounded-lg border border-surface-600 px-3 py-2 text-sm font-medium text-text-secondary hover:bg-surface-700 disabled:opacity-50"
+        className={cn(
+          'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors',
+          'text-parchment/60 border border-parchment/20 hover:text-parchment hover:border-parchment/40',
+          'disabled:opacity-50',
+        )}
+        data-testid="import-json-btn"
       >
-        {isImporting ? 'Importing...' : 'Import JSON'}
+        <Upload size={16} />
+        {isImporting ? 'Importing...' : 'Import'}
       </button>
       {error && (
         <p className="mt-1 text-xs text-red-400" role="alert">{error}</p>

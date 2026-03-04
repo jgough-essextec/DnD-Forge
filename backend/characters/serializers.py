@@ -185,10 +185,8 @@ class CharacterListSerializer(serializers.ModelSerializer):
         hp_max = cd.get("hpMax", instance.hp) or 0
         hp_current = cd.get("hpCurrent", hp_max) or 0
 
-        # AC — try combatStats first, fall back to 10
-        combat = cd.get("combatStats", {})
-        ac_obj = combat.get("armorClass", {}) if isinstance(combat, dict) else {}
-        ac = ac_obj.get("base", 10) if isinstance(ac_obj, dict) else 10
+        # AC — compute from ability scores + equipped armor
+        ac = self._compute_ac(cd)
 
         return {
             "id": str(instance.id),
@@ -203,6 +201,103 @@ class CharacterListSerializer(serializers.ModelSerializer):
             "isArchived": instance.is_archived,
             "campaignId": str(instance.campaign_id) if instance.campaign_id else None,
         }
+
+
+    # SRD racial ability score bonuses: {(raceId, subraceId?): {ability: bonus}}
+    _RACIAL_DEX_BONUSES = {
+        ("elf", None): 2,
+        ("elf", "high-elf"): 2,
+        ("elf", "wood-elf"): 2,
+        ("elf", "dark-elf"): 2,
+        ("halfling", None): 2,
+        ("halfling", "lightfoot"): 2,
+        ("halfling", "stout"): 2,
+        ("human", None): 1,
+    }
+
+    # SRD armor data: {equipmentId: (baseAC, category, dexCap)}
+    # dexCap: None=uncapped (light), 2=medium, 0=heavy
+    _ARMOR_DATA = {
+        "padded": (11, "light", None),
+        "leather": (11, "light", None),
+        "studded-leather": (12, "light", None),
+        "hide": (12, "medium", 2),
+        "chain-shirt": (13, "medium", 2),
+        "scale-mail": (14, "medium", 2),
+        "breastplate": (14, "medium", 2),
+        "half-plate": (15, "medium", 2),
+        "ring-mail": (14, "heavy", 0),
+        "chain-mail": (16, "heavy", 0),
+        "splint": (17, "heavy", 0),
+        "plate": (18, "heavy", 0),
+    }
+
+    def _compute_ac(self, cd):
+        """Compute AC from character_data using D&D 5e rules."""
+        # First check for a stored combatStats value
+        combat = cd.get("combatStats", {})
+        if isinstance(combat, dict):
+            ac_obj = combat.get("armorClass", {})
+            if isinstance(ac_obj, dict) and "base" in ac_obj:
+                return ac_obj["base"]
+
+        # Compute DEX modifier including racial bonuses
+        scores = cd.get("baseAbilityScores", {})
+        base_dex = scores.get("dexterity", 10) if isinstance(scores, dict) else 10
+
+        race_raw = cd.get("race", {})
+        racial_dex = 0
+        if isinstance(race_raw, dict):
+            race_id = race_raw.get("raceId", "")
+            subrace_id = race_raw.get("subraceId")
+            # Try specific subrace first, then race-level
+            racial_dex = self._RACIAL_DEX_BONUSES.get(
+                (race_id, subrace_id),
+                self._RACIAL_DEX_BONUSES.get((race_id, None), 0),
+            )
+
+        effective_dex = base_dex + racial_dex
+        dex_mod = (effective_dex - 10) // 2
+
+        # Check inventory for equipped armor
+        inventory = cd.get("inventory", [])
+        best_armor = None
+        has_shield = False
+
+        if isinstance(inventory, list):
+            for item in inventory:
+                if not isinstance(item, dict):
+                    continue
+                eq_id = item.get("equipmentId", "")
+
+                if eq_id == "shield":
+                    has_shield = True
+                    continue
+
+                armor_info = self._ARMOR_DATA.get(eq_id)
+                if armor_info:
+                    if best_armor is None or armor_info[0] > best_armor[0]:
+                        best_armor = armor_info
+
+        if best_armor:
+            base_ac, _category, dex_cap = best_armor
+            if dex_cap is None:
+                # Light armor: full DEX
+                ac = base_ac + dex_mod
+            elif dex_cap == 0:
+                # Heavy armor: no DEX
+                ac = base_ac
+            else:
+                # Medium armor: DEX capped
+                ac = base_ac + min(dex_mod, dex_cap)
+        else:
+            # Unarmored: 10 + DEX
+            ac = 10 + dex_mod
+
+        if has_shield:
+            ac += 2
+
+        return ac
 
 
 class CharacterExportSerializer(serializers.ModelSerializer):

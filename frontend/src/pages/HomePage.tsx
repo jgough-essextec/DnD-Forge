@@ -8,7 +8,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, CheckSquare } from 'lucide-react';
+import { Plus, CheckSquare, Upload } from 'lucide-react';
 import { useCharacters } from '@/hooks/useCharacters';
 import { getCharacter } from '@/api/characters';
 import { useCreateCharacter } from '@/hooks/useCharacterMutations';
@@ -18,6 +18,7 @@ import { useUIStore } from '@/stores/uiStore';
 import { CharacterGallery } from '@/components/gallery/CharacterGallery';
 import { GalleryToolbar } from '@/components/gallery/GalleryToolbar';
 import { BatchActionBar } from '@/components/gallery/BatchActionBar';
+import { ImportButton } from '@/components/gallery/ImportButton';
 import { DeleteConfirmDialog } from '@/components/gallery/DeleteConfirmDialog';
 import {
   filterCharacters,
@@ -370,6 +371,9 @@ export default function HomePage() {
               Select
             </button>
           )}
+
+          {/* Import Character */}
+          <ImportButton />
 
           {/* Create New Character FAB */}
           <button
