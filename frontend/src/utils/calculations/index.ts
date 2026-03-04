@@ -10,8 +10,13 @@ export {
   getPointBuyCost,
   validatePointBuy,
   validateStandardArray,
+  validateStandardArrayAssignments,
   getTotalAbilityScores,
+  getTotalAbilityScore,
   getSavingThrowBonus,
+  getEffectiveAbilityScores,
+  getRacialBonuses,
+  getFeatBonuses,
 } from './ability';
 
 export {
@@ -20,4 +25,11 @@ export {
   getAllSkillModifiers,
   getPassiveScore,
   isSkillProficient,
+  hasJackOfAllTrades,
+  hasRemarkableAthlete,
+  getCharacterSkillModifier,
+  getSavingThrowModifier,
+  getCharacterPassiveScore,
+  getCharacterAllSkillModifiers,
+  getAllSavingThrows,
 } from './skills';

@@ -6,6 +6,8 @@
 
 import type {
   AbilityScores,
+  AbilityName,
+  Character,
   Race,
   RaceSelection,
 } from '@/types';
@@ -22,6 +24,9 @@ import {
   STANDARD_ARRAY,
   PROFICIENCY_BONUS_BY_LEVEL,
 } from '@/data/reference';
+
+import { races } from '@/data/races';
+import { getFeatById } from '@/data/feats';
 
 // ---------------------------------------------------------------------------
 // Ability Modifier
@@ -256,4 +261,234 @@ export function getSavingThrowBonus(
   }
   const proficiencyBonus = PROFICIENCY_BONUS_BY_LEVEL[level - 1];
   return modifier + proficiencyBonus;
+}
+
+// ---------------------------------------------------------------------------
+// Single Ability Score Total
+// ---------------------------------------------------------------------------
+
+/**
+ * Calculate the total for a single ability score by summing all bonus sources,
+ * capped at maxScore (default 20).
+ *
+ * @param base        - Base score before any bonuses
+ * @param racialBonus - Racial ability score increase (0 if none)
+ * @param asiBonus    - Ability Score Improvement increase (0 if none)
+ * @param featBonus   - Feat ability score increase (0 if none)
+ * @param miscBonus   - Miscellaneous bonuses from items/effects (0 if none)
+ * @param maxScore    - Maximum allowed score (default 20)
+ * @returns The capped total ability score
+ */
+export function getTotalAbilityScore(
+  base: number,
+  racialBonus: number,
+  asiBonus: number,
+  featBonus: number,
+  miscBonus: number,
+  maxScore: number = 20,
+): number {
+  const total = base + racialBonus + asiBonus + featBonus + miscBonus;
+  return Math.min(total, maxScore);
+}
+
+// ---------------------------------------------------------------------------
+// Validate Standard Array (number[] overload)
+// ---------------------------------------------------------------------------
+
+/**
+ * Validate that an array of six numbers is a valid permutation of the
+ * standard array [15, 14, 13, 12, 10, 8].
+ *
+ * @param assignments - Array of exactly 6 numbers to validate
+ * @returns true if the assignments are a valid permutation of the standard array
+ */
+export function validateStandardArrayAssignments(assignments: number[]): boolean {
+  if (assignments.length !== 6) {
+    return false;
+  }
+
+  const sorted = [...assignments].sort((a, b) => a - b);
+  const expected = [...STANDARD_ARRAY].sort((a, b) => a - b);
+
+  for (let i = 0; i < sorted.length; i++) {
+    if (sorted[i] !== expected[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Effective Ability Scores (Character-level)
+// ---------------------------------------------------------------------------
+
+/**
+ * Compute the effective (final) ability scores for a character by applying
+ * all bonus sources to the base scores:
+ *
+ * 1. Racial ability score increases (from race + subrace + chosen bonuses)
+ * 2. Feat ability score increases (from selected feats)
+ *
+ * Note: ASI increases from level-ups are not explicitly stored on the
+ * Character interface; they are assumed to be already incorporated into
+ * baseAbilityScores or passed separately via getTotalAbilityScores.
+ *
+ * Each ability is independently capped at 20 (standard D&D 5e cap).
+ *
+ * @param character - The full character object
+ * @returns The computed AbilityScores with all bonuses applied
+ */
+export function getEffectiveAbilityScores(character: Character): AbilityScores {
+  const base = character.baseAbilityScores;
+
+  // 1. Gather racial bonuses
+  const racialBonuses: Partial<AbilityScores> = {};
+  const raceData = races.find((r) => r.id === character.race.raceId);
+
+  if (raceData) {
+    // Fixed racial ability score increases
+    for (const ability of ABILITY_NAMES) {
+      const bonus = raceData.abilityScoreIncrease[ability];
+      if (bonus !== undefined) {
+        racialBonuses[ability] = (racialBonuses[ability] ?? 0) + bonus;
+      }
+    }
+
+    // Subrace ability score increases
+    if (character.race.subraceId) {
+      const subrace = raceData.subraces.find(
+        (s) => s.id === character.race.subraceId,
+      );
+      if (subrace) {
+        for (const ability of ABILITY_NAMES) {
+          const bonus = subrace.abilityScoreIncrease[ability];
+          if (bonus !== undefined) {
+            racialBonuses[ability] = (racialBonuses[ability] ?? 0) + bonus;
+          }
+        }
+      }
+    }
+  }
+
+  // Player-chosen ability bonuses (e.g., Half-Elf, Variant Human)
+  if (character.race.chosenAbilityBonuses) {
+    for (const { abilityName, bonus } of character.race.chosenAbilityBonuses) {
+      racialBonuses[abilityName] = (racialBonuses[abilityName] ?? 0) + bonus;
+    }
+  }
+
+  // 2. Gather feat bonuses
+  const featBonuses: Partial<AbilityScores> = {};
+  for (const featSelection of character.feats) {
+    const feat = getFeatById(featSelection.featId);
+    if (feat?.abilityScoreIncrease) {
+      // If the feat has a chosenAbility (player picks which ability gets the bonus),
+      // use that. Otherwise apply the fixed bonus from the feat definition.
+      if (featSelection.chosenAbility) {
+        // Sum all values from abilityScoreIncrease and apply to the chosen ability
+        const totalBonus = Object.values(feat.abilityScoreIncrease).reduce(
+          (sum, val) => sum + (val ?? 0),
+          0,
+        );
+        featBonuses[featSelection.chosenAbility] =
+          (featBonuses[featSelection.chosenAbility] ?? 0) + totalBonus;
+      } else {
+        // Apply fixed ability score increases from the feat
+        for (const ability of ABILITY_NAMES) {
+          const bonus = feat.abilityScoreIncrease[ability];
+          if (bonus !== undefined) {
+            featBonuses[ability] = (featBonuses[ability] ?? 0) + bonus;
+          }
+        }
+      }
+    }
+  }
+
+  // 3. Combine: base + racial + feat, capped at 20
+  return getTotalAbilityScores(base, racialBonuses, {}, featBonuses, 20);
+}
+
+// ---------------------------------------------------------------------------
+// Get Racial Bonuses (convenience extractor)
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the total racial ability score bonuses for a character, including
+ * base race, subrace, and player-chosen bonuses.
+ *
+ * @param character - The character to extract racial bonuses for
+ * @returns A partial AbilityScores record with the bonuses
+ */
+export function getRacialBonuses(character: Character): Partial<AbilityScores> {
+  const bonuses: Partial<AbilityScores> = {};
+  const raceData = races.find((r) => r.id === character.race.raceId);
+
+  if (raceData) {
+    for (const ability of ABILITY_NAMES) {
+      const bonus = raceData.abilityScoreIncrease[ability];
+      if (bonus !== undefined) {
+        bonuses[ability] = (bonuses[ability] ?? 0) + bonus;
+      }
+    }
+
+    if (character.race.subraceId) {
+      const subrace = raceData.subraces.find(
+        (s) => s.id === character.race.subraceId,
+      );
+      if (subrace) {
+        for (const ability of ABILITY_NAMES) {
+          const bonus = subrace.abilityScoreIncrease[ability];
+          if (bonus !== undefined) {
+            bonuses[ability] = (bonuses[ability] ?? 0) + bonus;
+          }
+        }
+      }
+    }
+  }
+
+  if (character.race.chosenAbilityBonuses) {
+    for (const { abilityName, bonus } of character.race.chosenAbilityBonuses) {
+      bonuses[abilityName] = (bonuses[abilityName] ?? 0) + bonus;
+    }
+  }
+
+  return bonuses;
+}
+
+// ---------------------------------------------------------------------------
+// Get Feat Bonuses (convenience extractor)
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the total feat ability score bonuses for a character.
+ *
+ * @param character - The character to extract feat bonuses for
+ * @returns A partial AbilityScores record with the bonuses
+ */
+export function getFeatBonuses(character: Character): Partial<AbilityScores> {
+  const bonuses: Partial<AbilityScores> = {};
+
+  for (const featSelection of character.feats) {
+    const feat = getFeatById(featSelection.featId);
+    if (feat?.abilityScoreIncrease) {
+      if (featSelection.chosenAbility) {
+        const totalBonus = Object.values(feat.abilityScoreIncrease).reduce(
+          (sum, val) => sum + (val ?? 0),
+          0,
+        );
+        bonuses[featSelection.chosenAbility] =
+          (bonuses[featSelection.chosenAbility] ?? 0) + totalBonus;
+      } else {
+        for (const ability of ABILITY_NAMES) {
+          const bonus = feat.abilityScoreIncrease[ability];
+          if (bonus !== undefined) {
+            bonuses[ability] = (bonuses[ability] ?? 0) + bonus;
+          }
+        }
+      }
+    }
+  }
+
+  return bonuses;
 }

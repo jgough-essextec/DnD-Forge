@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { describe, it, expect } from 'vitest';
-import type { AbilityScores, Race, RaceSelection } from '@/types';
+import type { AbilityScores, Character, Race, RaceSelection } from '@/types';
 import {
   getModifier,
   applyRacialBonuses,
@@ -13,8 +13,13 @@ import {
   getPointBuyCost,
   validatePointBuy,
   validateStandardArray,
+  validateStandardArrayAssignments,
   getTotalAbilityScores,
+  getTotalAbilityScore,
   getSavingThrowBonus,
+  getEffectiveAbilityScores,
+  getRacialBonuses,
+  getFeatBonuses,
 } from '../ability';
 
 // ---------------------------------------------------------------------------
@@ -705,5 +710,495 @@ describe('getSavingThrowBonus', () => {
   it('should handle score 1 with proficiency at level 1', () => {
     // modifier for 1 = -5, proficiency at level 1 = +2
     expect(getSavingThrowBonus(1, true, 1)).toBe(-3);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Character Factory Helper (for Character-level function tests)
+// ---------------------------------------------------------------------------
+
+function makeCharacter(overrides: Partial<Character> = {}): Character {
+  const defaults: Character = {
+    id: 'test-char-1',
+    name: 'Test Character',
+    playerName: 'Test Player',
+    avatarUrl: null,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    version: 1,
+    race: { raceId: 'human' },
+    classes: [{ classId: 'fighter', level: 1, chosenSkills: [], hpRolls: [] }],
+    background: {
+      backgroundId: 'soldier',
+      characterIdentity: { name: 'Test' },
+      characterPersonality: {
+        personalityTraits: ['Brave', 'Loyal'],
+        ideal: 'Honor',
+        bond: 'Duty',
+        flaw: 'Stubborn',
+      },
+    },
+    alignment: 'true-neutral',
+    baseAbilityScores: makeScores(15, 14, 13, 12, 10, 8),
+    abilityScores: makeScores(15, 14, 13, 12, 10, 8),
+    abilityScoreMethod: 'standard',
+    level: 1,
+    experiencePoints: 0,
+    hpMax: 10,
+    hpCurrent: 10,
+    tempHp: 0,
+    hitDiceTotal: [1],
+    hitDiceUsed: [0],
+    speed: { walk: 30 },
+    deathSaves: { successes: 0, failures: 0 },
+    combatStats: {
+      armorClass: 10,
+      initiative: 0,
+      proficiencyBonus: 2,
+      passivePerception: 10,
+      passiveInsight: 10,
+      passiveInvestigation: 10,
+    },
+    proficiencies: {
+      armor: [],
+      weapons: [],
+      tools: [],
+      languages: ['common'],
+      skills: [],
+      savingThrows: ['strength', 'constitution'],
+    },
+    inventory: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    attunedItems: [],
+    spellcasting: null,
+    features: [],
+    feats: [],
+    description: {
+      name: 'Test',
+      age: '25',
+      height: '6ft',
+      weight: '180lbs',
+      eyes: 'brown',
+      skin: 'tan',
+      hair: 'black',
+      appearance: '',
+      backstory: '',
+      alliesAndOrgs: '',
+      treasure: '',
+    },
+    personality: {
+      personalityTraits: ['Brave', 'Loyal'],
+      ideal: 'Honor',
+      bond: 'Duty',
+      flaw: 'Stubborn',
+    },
+    conditions: [],
+    inspiration: false,
+    campaignId: null,
+    isArchived: false,
+  };
+
+  return { ...defaults, ...overrides };
+}
+
+// ---------------------------------------------------------------------------
+// getTotalAbilityScore (single score)
+// ---------------------------------------------------------------------------
+
+describe('getTotalAbilityScore', () => {
+  it('should sum all bonus sources', () => {
+    expect(getTotalAbilityScore(10, 2, 2, 1, 0)).toBe(15);
+  });
+
+  it('should cap at 20 by default', () => {
+    expect(getTotalAbilityScore(15, 2, 4, 1, 0)).toBe(20);
+  });
+
+  it('should respect custom cap of 24', () => {
+    expect(getTotalAbilityScore(15, 2, 4, 1, 2, 24)).toBe(24);
+  });
+
+  it('should allow exactly 24 with Barbarian capstone', () => {
+    expect(getTotalAbilityScore(20, 0, 4, 0, 0, 24)).toBe(24);
+  });
+
+  it('should handle zero bonuses', () => {
+    expect(getTotalAbilityScore(10, 0, 0, 0, 0)).toBe(10);
+  });
+
+  it('should handle negative totals (no floor)', () => {
+    // Technically ability scores should not go below 1 but the function
+    // only has a cap, not a floor
+    expect(getTotalAbilityScore(3, 0, 0, 0, 0)).toBe(3);
+  });
+
+  it('should include misc bonus in calculation', () => {
+    // base 14 + racial 2 + ASI 0 + feat 0 + misc 3 = 19
+    expect(getTotalAbilityScore(14, 2, 0, 0, 3)).toBe(19);
+  });
+
+  it('should cap even with large misc bonus', () => {
+    expect(getTotalAbilityScore(18, 2, 2, 1, 5)).toBe(20);
+  });
+
+  it('should work with cap of 30 (for magic items)', () => {
+    expect(getTotalAbilityScore(18, 2, 4, 1, 5, 30)).toBe(30);
+  });
+
+  it('should handle all zero inputs', () => {
+    expect(getTotalAbilityScore(0, 0, 0, 0, 0)).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validateStandardArrayAssignments (number[] overload)
+// ---------------------------------------------------------------------------
+
+describe('validateStandardArrayAssignments', () => {
+  it('should accept [15, 14, 13, 12, 10, 8]', () => {
+    expect(validateStandardArrayAssignments([15, 14, 13, 12, 10, 8])).toBe(true);
+  });
+
+  it('should accept reversed order [8, 10, 12, 13, 14, 15]', () => {
+    expect(validateStandardArrayAssignments([8, 10, 12, 13, 14, 15])).toBe(true);
+  });
+
+  it('should accept scrambled order [13, 8, 15, 10, 14, 12]', () => {
+    expect(validateStandardArrayAssignments([13, 8, 15, 10, 14, 12])).toBe(true);
+  });
+
+  it('should reject wrong values', () => {
+    expect(validateStandardArrayAssignments([15, 14, 13, 12, 10, 9])).toBe(false);
+  });
+
+  it('should reject duplicate values', () => {
+    expect(validateStandardArrayAssignments([15, 15, 13, 12, 10, 8])).toBe(false);
+  });
+
+  it('should reject fewer than 6 values', () => {
+    expect(validateStandardArrayAssignments([15, 14, 13])).toBe(false);
+  });
+
+  it('should reject more than 6 values', () => {
+    expect(validateStandardArrayAssignments([15, 14, 13, 12, 10, 8, 7])).toBe(false);
+  });
+
+  it('should reject empty array', () => {
+    expect(validateStandardArrayAssignments([])).toBe(false);
+  });
+
+  it('should reject all same values', () => {
+    expect(validateStandardArrayAssignments([10, 10, 10, 10, 10, 10])).toBe(false);
+  });
+
+  it('should reject values with correct sum but wrong distribution', () => {
+    // 72 = 16+14+13+12+10+7
+    expect(validateStandardArrayAssignments([16, 14, 13, 12, 10, 7])).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getEffectiveAbilityScores (Character-level)
+// ---------------------------------------------------------------------------
+
+describe('getEffectiveAbilityScores', () => {
+  it('should apply Human +1 to all scores', () => {
+    const character = makeCharacter({
+      race: { raceId: 'human' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // Human gets +1 to all
+    expect(result.strength).toBe(11);
+    expect(result.dexterity).toBe(11);
+    expect(result.constitution).toBe(11);
+    expect(result.intelligence).toBe(11);
+    expect(result.wisdom).toBe(11);
+    expect(result.charisma).toBe(11);
+  });
+
+  it('should apply Dwarf +2 CON', () => {
+    const character = makeCharacter({
+      race: { raceId: 'dwarf' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.constitution).toBe(12);
+    expect(result.strength).toBe(10);
+  });
+
+  it('should apply Dwarf +2 CON and Hill Dwarf +1 WIS', () => {
+    const character = makeCharacter({
+      race: { raceId: 'dwarf', subraceId: 'hill-dwarf' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.constitution).toBe(12);
+    expect(result.wisdom).toBe(11);
+  });
+
+  it('should apply Elf +2 DEX and High Elf +1 INT', () => {
+    const character = makeCharacter({
+      race: { raceId: 'elf', subraceId: 'high-elf' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.dexterity).toBe(12);
+    expect(result.intelligence).toBe(11);
+  });
+
+  it('should apply Half-Elf +2 CHA and chosen bonuses', () => {
+    const character = makeCharacter({
+      race: {
+        raceId: 'half-elf',
+        chosenAbilityBonuses: [
+          { abilityName: 'strength', bonus: 1 },
+          { abilityName: 'constitution', bonus: 1 },
+        ],
+      },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.charisma).toBe(12);
+    expect(result.strength).toBe(11);
+    expect(result.constitution).toBe(11);
+    expect(result.dexterity).toBe(10);
+  });
+
+  it('should apply feat ability score increases (fixed)', () => {
+    // Actor feat: +1 CHA
+    const character = makeCharacter({
+      race: { raceId: 'human' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [{ featId: 'actor' }],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // Human +1 all + Actor +1 CHA
+    expect(result.charisma).toBe(12);
+    expect(result.strength).toBe(11);
+  });
+
+  it('should apply feat with chosenAbility', () => {
+    // Athlete feat: normally +1 STR, but player chose DEX
+    const character = makeCharacter({
+      race: { raceId: 'human' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [{ featId: 'athlete', chosenAbility: 'dexterity' }],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // Human +1 all + Athlete +1 to chosen (DEX)
+    expect(result.dexterity).toBe(12);
+    expect(result.strength).toBe(11); // Only human +1, not athlete
+  });
+
+  it('should apply multiple feats', () => {
+    // Actor (+1 CHA) + Keen Mind (+1 INT)
+    const character = makeCharacter({
+      race: { raceId: 'human' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [{ featId: 'actor' }, { featId: 'keen-mind' }],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // Human +1 all + Actor +1 CHA + Keen Mind +1 INT
+    expect(result.charisma).toBe(12);
+    expect(result.intelligence).toBe(12);
+    expect(result.strength).toBe(11);
+  });
+
+  it('should cap ability scores at 20', () => {
+    const character = makeCharacter({
+      race: { raceId: 'human' }, // +1 all
+      baseAbilityScores: makeScores(20, 10, 10, 10, 10, 10),
+      feats: [{ featId: 'athlete' }], // default applies +1 STR
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // 20 + 1 (human) + 1 (athlete STR) = 22 -> capped at 20
+    expect(result.strength).toBe(20);
+  });
+
+  it('should handle character with no feats and unknown race gracefully', () => {
+    const character = makeCharacter({
+      race: { raceId: 'nonexistent-race' },
+      baseAbilityScores: makeScores(15, 14, 13, 12, 10, 8),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // No race found, so no bonuses applied
+    expect(result).toEqual(makeScores(15, 14, 13, 12, 10, 8));
+  });
+
+  it('should handle Dragonborn +2 STR +1 CHA', () => {
+    const character = makeCharacter({
+      race: { raceId: 'dragonborn' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.strength).toBe(12);
+    expect(result.charisma).toBe(11);
+    expect(result.constitution).toBe(10);
+  });
+
+  it('should handle Tiefling +2 CHA +1 INT', () => {
+    const character = makeCharacter({
+      race: { raceId: 'tiefling' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    expect(result.charisma).toBe(12);
+    expect(result.intelligence).toBe(11);
+  });
+
+  it('should handle feat with unknown featId gracefully', () => {
+    const character = makeCharacter({
+      race: { raceId: 'human' },
+      baseAbilityScores: makeScores(10, 10, 10, 10, 10, 10),
+      feats: [{ featId: 'nonexistent-feat' }],
+    });
+
+    const result = getEffectiveAbilityScores(character);
+
+    // Human +1 all, unknown feat adds nothing
+    expect(result.strength).toBe(11);
+    expect(result.charisma).toBe(11);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getRacialBonuses
+// ---------------------------------------------------------------------------
+
+describe('getRacialBonuses', () => {
+  it('should return Human +1 to all', () => {
+    const character = makeCharacter({ race: { raceId: 'human' } });
+    const bonuses = getRacialBonuses(character);
+
+    expect(bonuses.strength).toBe(1);
+    expect(bonuses.dexterity).toBe(1);
+    expect(bonuses.constitution).toBe(1);
+    expect(bonuses.intelligence).toBe(1);
+    expect(bonuses.wisdom).toBe(1);
+    expect(bonuses.charisma).toBe(1);
+  });
+
+  it('should return Dwarf +2 CON + Hill Dwarf +1 WIS', () => {
+    const character = makeCharacter({
+      race: { raceId: 'dwarf', subraceId: 'hill-dwarf' },
+    });
+    const bonuses = getRacialBonuses(character);
+
+    expect(bonuses.constitution).toBe(2);
+    expect(bonuses.wisdom).toBe(1);
+    expect(bonuses.strength).toBeUndefined();
+  });
+
+  it('should include chosen ability bonuses for Half-Elf', () => {
+    const character = makeCharacter({
+      race: {
+        raceId: 'half-elf',
+        chosenAbilityBonuses: [
+          { abilityName: 'strength', bonus: 1 },
+          { abilityName: 'wisdom', bonus: 1 },
+        ],
+      },
+    });
+    const bonuses = getRacialBonuses(character);
+
+    expect(bonuses.charisma).toBe(2);
+    expect(bonuses.strength).toBe(1);
+    expect(bonuses.wisdom).toBe(1);
+  });
+
+  it('should return empty for unknown race', () => {
+    const character = makeCharacter({ race: { raceId: 'unknown' } });
+    const bonuses = getRacialBonuses(character);
+
+    expect(Object.keys(bonuses).length).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getFeatBonuses
+// ---------------------------------------------------------------------------
+
+describe('getFeatBonuses', () => {
+  it('should return empty for no feats', () => {
+    const character = makeCharacter({ feats: [] });
+    const bonuses = getFeatBonuses(character);
+
+    expect(Object.keys(bonuses).length).toBe(0);
+  });
+
+  it('should return Actor +1 CHA', () => {
+    const character = makeCharacter({ feats: [{ featId: 'actor' }] });
+    const bonuses = getFeatBonuses(character);
+
+    expect(bonuses.charisma).toBe(1);
+  });
+
+  it('should apply chosenAbility when specified', () => {
+    const character = makeCharacter({
+      feats: [{ featId: 'athlete', chosenAbility: 'dexterity' }],
+    });
+    const bonuses = getFeatBonuses(character);
+
+    expect(bonuses.dexterity).toBe(1);
+    expect(bonuses.strength).toBeUndefined();
+  });
+
+  it('should stack multiple feat bonuses to different abilities', () => {
+    const character = makeCharacter({
+      feats: [{ featId: 'actor' }, { featId: 'keen-mind' }],
+    });
+    const bonuses = getFeatBonuses(character);
+
+    expect(bonuses.charisma).toBe(1);
+    expect(bonuses.intelligence).toBe(1);
+  });
+
+  it('should handle feat with no ASI', () => {
+    const character = makeCharacter({ feats: [{ featId: 'alert' }] });
+    const bonuses = getFeatBonuses(character);
+
+    expect(Object.keys(bonuses).length).toBe(0);
+  });
+
+  it('should handle unknown feat gracefully', () => {
+    const character = makeCharacter({
+      feats: [{ featId: 'nonexistent-feat' }],
+    });
+    const bonuses = getFeatBonuses(character);
+
+    expect(Object.keys(bonuses).length).toBe(0);
   });
 });
