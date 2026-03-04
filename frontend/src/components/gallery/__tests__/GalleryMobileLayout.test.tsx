@@ -11,7 +11,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { GalleryToolbar } from '@/components/gallery/GalleryToolbar'
 import { CharacterGallery } from '@/components/gallery/CharacterGallery'
-import type { GalleryFilters, SortOption, ViewMode, GalleryCharacter } from '@/utils/gallery'
+import type { GalleryFilters, GalleryCharacter } from '@/utils/gallery'
 
 function makeCharacter(overrides: Partial<GalleryCharacter> = {}): GalleryCharacter {
   return {
@@ -106,7 +106,7 @@ describe('Gallery — Mobile Layout (Story 44.1)', () => {
       <GalleryToolbar
         filters={defaultFilters}
         onFiltersChange={vi.fn()}
-        sortOption="updated-desc"
+        sortOption="lastEdited"
         onSortChange={vi.fn()}
         viewMode="grid"
         onViewModeChange={vi.fn()}
@@ -125,7 +125,7 @@ describe('Gallery — Mobile Layout (Story 44.1)', () => {
       <GalleryToolbar
         filters={defaultFilters}
         onFiltersChange={vi.fn()}
-        sortOption="updated-desc"
+        sortOption="lastEdited"
         onSortChange={vi.fn()}
         viewMode="grid"
         onViewModeChange={vi.fn()}
@@ -151,7 +151,7 @@ describe('Gallery — Mobile Layout (Story 44.1)', () => {
       <GalleryToolbar
         filters={{ ...defaultFilters, classes: ['fighter', 'wizard'] }}
         onFiltersChange={vi.fn()}
-        sortOption="updated-desc"
+        sortOption="lastEdited"
         onSortChange={vi.fn()}
         viewMode="grid"
         onViewModeChange={vi.fn()}
