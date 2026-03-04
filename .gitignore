@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build
+frontend/dist/
+*.pyc
+__pycache__/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Python
+backend/.venv/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# ETL source data (cloned repo)
+etl/source-data/
+
+# Docker
+postgres_data/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/

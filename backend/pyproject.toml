@@ -1,0 +1,15 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "--cov=. --cov-report=term --cov-config=.coveragerc"
+
+[tool.coverage.run]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "config/wsgi.py",
+    "config/asgi.py",
+    ".venv/*",
+]

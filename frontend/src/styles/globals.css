@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Dark Fantasy Color Palette */
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-accent-gold: #e8b430;
+  --color-damage-red: #c0392b;
+  --color-healing-green: #27ae60;
+  --color-spell-blue: #2980b9;
+  --color-parchment: #eee8d5;
+
+  /* Typography */
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-primary);
+    color: var(--color-parchment);
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
