@@ -50,12 +50,20 @@ class CharacterViewSet(ModelViewSet):
         qs = Character.objects.filter(owner=user)
 
         if self.action == "retrieve":
-            # Also include characters in campaigns where this user has a character
+            # Also include characters in campaigns where this user has a
+            # character (party member viewing) or owns the campaign (DM viewing)
+            from campaigns.models import Campaign
+
             user_campaign_ids = Character.objects.filter(
                 owner=user, campaign__isnull=False
             ).values_list("campaign_id", flat=True)
+            dm_campaign_ids = Campaign.objects.filter(
+                owner=user
+            ).values_list("id", flat=True)
             qs = Character.objects.filter(
-                Q(owner=user) | Q(campaign_id__in=user_campaign_ids)
+                Q(owner=user)
+                | Q(campaign_id__in=user_campaign_ids)
+                | Q(campaign_id__in=dm_campaign_ids)
             )
 
         include_archived = self.request.query_params.get("include_archived", "").lower()
