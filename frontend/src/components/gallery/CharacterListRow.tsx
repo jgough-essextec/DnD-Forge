@@ -6,7 +6,7 @@
 // AC, HP, campaign, last edited, actions kebab.
 // =============================================================================
 
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { CharacterAvatar } from '@/components/shared/CharacterAvatar';
 import { CharacterActions } from './CharacterActions';
 import { formatRelativeTime } from '@/utils/gallery';
@@ -27,7 +27,7 @@ interface CharacterListRowProps {
   onDelete: (id: string, name: string) => void;
 }
 
-export function CharacterListRow({
+export const CharacterListRow = memo(function CharacterListRow({
   character,
   selectMode,
   isSelected,
@@ -156,4 +156,6 @@ export function CharacterListRow({
       </td>
     </tr>
   );
-}
+});
+
+CharacterListRow.displayName = 'CharacterListRow';

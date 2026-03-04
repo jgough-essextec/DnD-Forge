@@ -12,7 +12,7 @@
 // - Optional checkbox overlay for batch selection mode
 // =============================================================================
 
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Heart, Shield, Eye } from 'lucide-react';
 import { CharacterAvatar } from '@/components/shared/CharacterAvatar';
 import { CharacterActions } from './CharacterActions';
@@ -34,7 +34,7 @@ interface CharacterCardProps {
   onDelete: (id: string, name: string) => void;
 }
 
-export function CharacterCard({
+export const CharacterCard = memo(function CharacterCard({
   character,
   selectMode = false,
   isSelected = false,
@@ -208,7 +208,9 @@ export function CharacterCard({
       </div>
     </div>
   );
-}
+});
+
+CharacterCard.displayName = 'CharacterCard';
 
 // -- Internal sub-component ---------------------------------------------------
 
