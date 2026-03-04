@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 15
+## Current Round: 16
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -411,3 +411,37 @@
   - LootTracker: Sortable loot ledger table, type icons, character assignment, Party Gold widget, total value summary
   - LootEntryForm: Quick-add with item name, 5 loot types, value, quantity, character/session assignment
 - Checkpoint: PASSED (3907 frontend + 105 backend = 4012 tests)
+
+### Round 16: XP + DM Context + Join Flow + Campaign Export
+- [x] Agent F (frontend-dev): Epic 37 stories 37.1-37.3 (XP Awards, Milestone Level-Up, Level Progress) — COMPLETE (84 tests)
+  - xp.ts: Pure XP utility functions
+    - XP_THRESHOLDS re-exported from SRD data, getXPForNextLevel, getXPProgress (current/threshold/percentage/isMaxLevel)
+    - wouldLevelUp, getNewLevelAfterXP, formatXPProgress, formatXPTooltip, isNearNextLevel
+    - getBatchLevelUpSummary, buildLevelUpPreviews (pre-award preview for batch XP awards)
+  - XPAward: Modal with "Award to All" / "Award Individually" modes, pre-award level-up preview, reason field
+  - MilestoneLevelUp: Modal with "Level Up All" / "Level Up Selected" modes, 3-phase flow (select → confirm → summary), Level 20 cap
+  - LevelProgressBar: Mini progress bar for PartyStatsGrid
+    - Milestone mode: "Level N — Milestone" text
+    - Level 20: "MAX LEVEL" badge with Crown icon
+    - XP mode: progress bar with green/gold colors, pulsing gold when near next level
+  - XPThresholdTable: Collapsible SRD XP reference card with two-column layout (Levels 1-10, 11-20)
+  - CampaignDashboardPage: Added "Award XP" / "Milestone Level Up" buttons in header, XP threshold reference card below tabs
+  - PartyStatsGrid: Added "Level Progress" column with LevelProgressBar, accepts xpTrackingMode prop
+- [x] Agent G (frontend-dev): Epic 38 stories 38.2-38.4 (DM Context, Join Flow, Campaign Export) — COMPLETE (58 tests)
+  - DMContextProvider: React context with isDMView, campaignId, campaignName, enterDMView/exitDMView, safe fallback outside provider
+  - DMViewBadge: Gold shield badge with "DM View" text, campaign name link back to dashboard, returns null in player context
+  - DMContextActions: "Award XP" and "Add to Encounter" buttons with campaign context badge, returns null in player context
+  - JoinCampaignPage: Rewritten with 3-step flow (enter-code → select-character → success)
+    - Auto-fills join code from URL param /join/:code, validates 6 uppercase alphanumeric
+    - Campaign preview card with name, description, house rules tags
+    - Character selection dropdown, success state with campaign link
+  - campaign-export.ts: Full export/import utilities
+    - exportCampaign (full DM export), exportCampaignPlayerSafe (excludes DM notes/NPCs)
+    - generateExportFilename (sanitized name + date), downloadCampaignExport (browser download)
+    - validateCampaignImport (5-stage: syntax, schema, types, references, business rules)
+    - detectDuplicateCharacters (name + race + class match), importCampaign (new IDs)
+  - CampaignExportModal: Two export modes (Full DM / Player-Safe) with descriptions
+  - CampaignImportModal: File drop zone, 5-stage validation display, merge detection, confirm import
+  - useLookupCampaignByCode hook + MSW handler for GET /campaigns/join/:code/
+- Checkpoint: PASSED (4049 frontend + 105 backend = 4154 tests)
+- PHASE 5 GATE: Full DM workflow: create campaign → add characters → view party dashboard → run encounter → award XP / milestone level up → write session notes → manage NPCs → track loot → export campaign. DM vs Player context switching. Join campaign flow with code validation. Campaign export/import with 5-stage validation. Permission boundaries enforced. TypeScript compiles, build succeeds, all tests pass.

@@ -84,9 +84,9 @@ describe('Campaign route resolution', () => {
   it('should resolve /join/:code to JoinCampaignPage', async () => {
     renderCampaignRoutes('/join/ABC123')
 
-    // JoinCampaignPage now shows the descriptive text
+    // JoinCampaignPage now shows the join code entry step
     expect(
-      await screen.findByText('Enter the campaign ID and join code provided by your Dungeon Master.')
+      await screen.findByText('Enter the 6-character join code provided by your Dungeon Master.')
     ).toBeInTheDocument()
   })
 })

@@ -169,7 +169,7 @@ describe('PartyStatsGrid', () => {
   it('should render character class and level', () => {
     renderWithRouter(<PartyStatsGrid characters={[fighter]} />)
     expect(screen.getByText('Fighter')).toBeInTheDocument()
-    expect(screen.getByText('Lv.5')).toBeInTheDocument()
+    expect(screen.getAllByText('Lv.5').length).toBeGreaterThanOrEqual(1)
   })
 
   it('should render AC value', () => {
