@@ -1,12 +1,15 @@
 /**
- * CampaignDashboardPage (Story 34.1)
+ * CampaignDashboardPage (Story 34.1, 37.1-37.3)
  *
  * The DM's command center for a campaign. Displays campaign header with
  * tabbed navigation: Party (default), Sessions, Encounters, Notes.
  * The Party tab hosts PartyStatsGrid, SkillMatrix, LanguageCoverage, and PartyComposition.
+ *
+ * Includes XP Award / Milestone Level Up buttons in the header area
+ * and XP Threshold reference below tabs (Story 37.1-37.3).
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -18,6 +21,8 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  Award,
+  TrendingUp,
 } from 'lucide-react'
 import { useCampaign, useJoinCampaign } from '@/hooks/useCampaigns'
 import { useCharacters } from '@/hooks/useCharacters'
@@ -32,11 +37,18 @@ import { PartyStatsGrid } from '@/components/dm/dashboard/PartyStatsGrid'
 import { SkillMatrix } from '@/components/dm/dashboard/SkillMatrix'
 import { LanguageCoverage } from '@/components/dm/dashboard/LanguageCoverage'
 import { PartyComposition } from '@/components/dm/dashboard/PartyComposition'
+import { XPAward } from '@/components/dm/xp/XPAward'
+import { MilestoneLevelUp } from '@/components/dm/xp/MilestoneLevelUp'
+import { XPThresholdTable } from '@/components/dm/xp/XPThresholdTable'
+import { updateCharacter } from '@/api/characters'
+import { useQueryClient } from '@tanstack/react-query'
+import { CHARACTERS_KEY, CHARACTER_KEY } from '@/hooks/useCharacters'
 import type { Character } from '@/types/character'
 
 export default function CampaignDashboardPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: campaign, isLoading, error } = useCampaign(id ?? null)
   const { data: allCharacters } = useCharacters()
   const joinCampaign = useJoinCampaign()
@@ -52,8 +64,12 @@ export default function CampaignDashboardPage() {
   const [activeTab, setActiveTab] = useState<DashboardTab>('party')
   const [showEdit, setShowEdit] = useState(false)
   const [showCharacterPicker, setShowCharacterPicker] = useState(false)
+  const [showXPAward, setShowXPAward] = useState(false)
+  const [showMilestoneLevelUp, setShowMilestoneLevelUp] = useState(false)
   const [copied, setCopied] = useState(false)
   const [descriptionExpanded, setDescriptionExpanded] = useState(false)
+
+  const xpTrackingMode = campaign?.settings?.xpTracking ?? 'xp'
 
   const handleCopyCode = async () => {
     if (!campaign) return
@@ -84,6 +100,68 @@ export default function CampaignDashboardPage() {
         addToast({ message: 'Failed to add some characters.', type: 'error' })
       })
   }
+
+  // Handle XP award application
+  const handleApplyXP = useCallback(
+    async (xpAmounts: Record<string, number>, reason: string) => {
+      const updates = campaignCharacters
+        .filter((c) => (xpAmounts[c.id] ?? 0) > 0)
+        .map((c) => ({
+          id: c.id,
+          newXP: c.experiencePoints + (xpAmounts[c.id] ?? 0),
+          version: c.version,
+        }))
+
+      await Promise.all(
+        updates.map((u) =>
+          updateCharacter(u.id, { experiencePoints: u.newXP, version: u.version })
+        )
+      )
+
+      // Invalidate character queries to refresh data
+      void queryClient.invalidateQueries({ queryKey: CHARACTERS_KEY })
+      for (const u of updates) {
+        void queryClient.invalidateQueries({ queryKey: CHARACTER_KEY(u.id) })
+      }
+
+      const reasonSuffix = reason ? ` (${reason})` : ''
+      addToast({
+        message: `XP awarded to ${updates.length} character${updates.length !== 1 ? 's' : ''}${reasonSuffix}`,
+        type: 'success',
+      })
+    },
+    [campaignCharacters, queryClient, addToast],
+  )
+
+  // Handle milestone level-up application
+  const handleMilestoneLevelUp = useCallback(
+    async (charIds: string[]) => {
+      const targets = campaignCharacters.filter(
+        (c) => charIds.includes(c.id) && c.level < 20,
+      )
+
+      await Promise.all(
+        targets.map((c) =>
+          updateCharacter(c.id, {
+            level: c.level + 1,
+            version: c.version,
+          })
+        )
+      )
+
+      // Invalidate character queries to refresh data
+      void queryClient.invalidateQueries({ queryKey: CHARACTERS_KEY })
+      for (const c of targets) {
+        void queryClient.invalidateQueries({ queryKey: CHARACTER_KEY(c.id) })
+      }
+
+      addToast({
+        message: `${targets.length} character${targets.length !== 1 ? 's' : ''} leveled up!`,
+        type: 'success',
+      })
+    },
+    [campaignCharacters, queryClient, addToast],
+  )
 
   // Characters available to add (not already in campaign)
   const availableCharacters = useMemo(() => {
@@ -139,6 +217,32 @@ export default function CampaignDashboardPage() {
         <h1 className="font-heading text-2xl md:text-3xl text-accent-gold flex-1 truncate">
           {campaign.name}
         </h1>
+
+        {/* XP Award / Milestone Level Up Button */}
+        {charCount > 0 && (
+          xpTrackingMode === 'xp' ? (
+            <button
+              onClick={() => setShowXPAward(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors text-sm font-medium"
+              aria-label="Award XP"
+              data-testid="award-xp-button"
+            >
+              <Award className="w-4 h-4" />
+              <span className="hidden sm:inline">Award XP</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowMilestoneLevelUp(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors text-sm font-medium"
+              aria-label="Milestone Level Up"
+              data-testid="milestone-levelup-button"
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span className="hidden sm:inline">Milestone Level Up</span>
+            </button>
+          )
+        )}
+
         <button
           onClick={() => setShowEdit(true)}
           className="p-2 rounded-lg border border-parchment/20 hover:bg-parchment/10 transition-colors"
@@ -210,6 +314,13 @@ export default function CampaignDashboardPage() {
         <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
+      {/* XP Threshold Reference (collapsible, below tabs) */}
+      {xpTrackingMode === 'xp' && (
+        <div className="mt-4 ml-0 md:ml-9">
+          <XPThresholdTable />
+        </div>
+      )}
+
       {/* Tab Content */}
       <div
         className="mt-6 ml-0 md:ml-9"
@@ -222,6 +333,7 @@ export default function CampaignDashboardPage() {
             characters={campaignCharacters}
             isLoading={charsLoading}
             onAddCharacter={() => setShowCharacterPicker(true)}
+            xpTrackingMode={xpTrackingMode}
           />
         )}
         {activeTab === 'sessions' && (
@@ -252,6 +364,20 @@ export default function CampaignDashboardPage() {
         currentCharacterCount={charCount}
         isSubmitting={joinCampaign.isPending}
       />
+
+      <XPAward
+        isOpen={showXPAward}
+        onClose={() => setShowXPAward(false)}
+        characters={campaignCharacters}
+        onApply={handleApplyXP}
+      />
+
+      <MilestoneLevelUp
+        isOpen={showMilestoneLevelUp}
+        onClose={() => setShowMilestoneLevelUp(false)}
+        characters={campaignCharacters}
+        onApply={handleMilestoneLevelUp}
+      />
     </div>
   )
 }
@@ -264,9 +390,10 @@ interface PartyTabContentProps {
   characters: Character[]
   isLoading: boolean
   onAddCharacter: () => void
+  xpTrackingMode: 'xp' | 'milestone'
 }
 
-function PartyTabContent({ characters, isLoading: _isLoading, onAddCharacter }: PartyTabContentProps) {
+function PartyTabContent({ characters, isLoading: _isLoading, onAddCharacter, xpTrackingMode }: PartyTabContentProps) {
   if (characters.length === 0) {
     return (
       <div
@@ -293,7 +420,7 @@ function PartyTabContent({ characters, isLoading: _isLoading, onAddCharacter }: 
       {/* Party Stats Grid */}
       <section>
         <h3 className="font-heading text-lg text-parchment mb-3">Party Overview</h3>
-        <PartyStatsGrid characters={characters} />
+        <PartyStatsGrid characters={characters} xpTrackingMode={xpTrackingMode} />
       </section>
 
       {/* Party Composition */}

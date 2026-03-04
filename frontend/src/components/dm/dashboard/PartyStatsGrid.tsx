@@ -1,9 +1,9 @@
 /**
- * PartyStatsGrid (Story 34.2)
+ * PartyStatsGrid (Story 34.2, 37.3)
  *
  * Sortable data table showing all party characters with key combat stats.
  * Columns: Name, Race, Class/Level, AC, HP, Speed, Passive Perception,
- * Spell Save DC, Initiative, Conditions.
+ * Spell Save DC, Initiative, Level Progress, Conditions.
  */
 
 import { useState } from 'react'
@@ -34,9 +34,12 @@ import { getCharacterPassiveScore } from '@/utils/calculations/skills'
 import { CONDITION_DEFINITIONS } from '@/data/conditions'
 import { SKILL_NAMES, ABILITY_NAMES } from '@/types/core'
 import { getModifier } from '@/utils/calculations/ability'
+import { LevelProgressBar } from '@/components/dm/xp/LevelProgressBar'
 
 interface PartyStatsGridProps {
   characters: Character[]
+  /** Campaign XP tracking mode, defaults to 'xp' */
+  xpTrackingMode?: 'xp' | 'milestone'
 }
 
 interface ColumnDef {
@@ -61,7 +64,7 @@ function formatModifier(mod: number): string {
   return mod >= 0 ? `+${mod}` : `${mod}`
 }
 
-export function PartyStatsGrid({ characters }: PartyStatsGridProps) {
+export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStatsGridProps) {
   const navigate = useNavigate()
   const [sortColumn, setSortColumn] = useState<SortColumn>('name')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
@@ -101,6 +104,9 @@ export function PartyStatsGrid({ characters }: PartyStatsGridProps) {
     )
   }
 
+  // Total column count: expand(1) + COLUMNS(9) + level progress(1) + conditions(1) = 12
+  const totalColSpan = COLUMNS.length + 3
+
   return (
     <div className="overflow-x-auto" data-testid="party-stats-grid">
       <table className="w-full text-sm rounded-lg border-2 border-parchment/20 bg-bg-secondary">
@@ -129,6 +135,10 @@ export function PartyStatsGrid({ characters }: PartyStatsGridProps) {
                 </div>
               </th>
             ))}
+            {/* Level Progress column */}
+            <th className="p-2 text-left text-parchment/80 font-medium">
+              Level Progress
+            </th>
             {/* Conditions column */}
             <th className="p-2 text-left text-parchment/80 font-medium">
               Conditions
@@ -271,6 +281,15 @@ export function PartyStatsGrid({ characters }: PartyStatsGridProps) {
                     {formatModifier(initiative)}
                   </td>
 
+                  {/* Level Progress */}
+                  <td className="p-2" data-testid={`level-progress-${character.id}`}>
+                    <LevelProgressBar
+                      currentXP={character.experiencePoints}
+                      currentLevel={character.level}
+                      mode={xpTrackingMode}
+                    />
+                  </td>
+
                   {/* Conditions */}
                   <td className="p-2">
                     <div className="flex flex-wrap gap-1">
@@ -300,7 +319,7 @@ export function PartyStatsGrid({ characters }: PartyStatsGridProps) {
                 {/* Expanded detail row */}
                 {isExpanded && (
                   <tr className="bg-parchment/5" data-testid={`expanded-row-${character.id}`}>
-                    <td colSpan={11} className="p-4">
+                    <td colSpan={totalColSpan} className="p-4">
                       <ExpandedDetails character={character} />
                     </td>
                   </tr>
