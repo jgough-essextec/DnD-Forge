@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 12
+## Current Round: 13
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -300,3 +300,52 @@
   - ExhaustionTracker: Level 1-6 visual bars, cumulative effects list, level 6 death banner
   - ConditionsPanel: Orchestrator wiring badges, modal, exhaustion tracker, condition history
 - Checkpoint: PASSED (3078 frontend + 105 backend = 3183 tests)
+
+### Round 13: Rest + Level Up + Compact View
+- [x] Agent E (frontend-dev): Epic 30 stories 30.1-30.3 (Rest Automation) — COMPLETE (78 tests)
+  - rest-recovery.ts: Feature recovery mapping for all SRD class features with scaling rules
+    - getCharacterFeatureUsages, getFeatureMaxUses (Rage scaling, Ki = level, CHA-based)
+    - getFeatureRecoveryType (Bardic Inspiration switches short/long at Bard 5)
+    - applyShortRestUI, applyLongRestUI with full RestResult summaries
+  - ShortRestModal: Multi-step modal (Hit Dice spending → Feature Recovery → Summary)
+    - Per-class hit dice selection, "Take Average" toggle, spending log
+    - Multiclass: distinct die types per class
+    - Wizard Arcane Recovery prompt if unused
+  - LongRestModal: Summary modal with automatic recovery
+    - HP → max, all spell slots restored, death saves reset, temp HP persists
+    - Hit dice: recover half total (min 1, round down)
+    - Exhaustion: reduce by 1 with food/water note
+    - Conditions checklist for selective clearing
+    - 24-hour repeat rest soft warning
+  - FeatureUsageCounter: Filled/empty circles (gold/gray), click to expend/recover, ARIA labels
+  - FeatureUsageList: Grouped by recovery type (short/long rest) with icons
+- [x] Agent F (frontend-dev): Epic 31 stories 31.1-31.7 (Level Up Flow) — COMPLETE (108 tests)
+  - levelup.ts: Core orchestration functions
+    - getLevelUpChanges for all 12 classes across levels 1-20
+    - getRequiredSteps (dynamic: HP always, features if any, subclass conditional, ASI conditional, spells conditional)
+    - getASILevels (all 12 classes including Fighter extra at 6/14, Rogue extra at 10)
+    - getSubclassLevel (all 12 classes), canLevelUp, applyLevelUp (with CON retroactive HP)
+  - LevelUpWizard: Modal multi-step wizard with dynamic step generation, Back/Next/Apply navigation
+  - LevelUpOverview: All gains summary with XP progress bar
+  - HPIncreaseStep: Roll (dice store + animation) or take average, CON mod, min 1 HP
+  - NewFeaturesStep: Feature list with "Choice" badges, proficiency bonus change, Extra Attack notification
+  - SubclassStep: Conditional subclass selection using SRD_SUBCLASSES data, skip if already chosen at L1
+  - ASIFeatStep: Two modes — ASI (+2 single / +1/+1 split, cap at 20) or Feat (42 feats with prerequisites)
+  - SpellProgressionStep: All spellcasting types — known/prepared/wizard/warlock, cantrip damage scaling at 5/11/17
+  - LevelUpReview: Before/after comparison, Apply with full recalculation
+  - LevelUpPage: Replaced placeholder with LevelUpWizard
+- [x] Agent G (frontend-dev): Epic 32 stories 32.1-32.2 (Session Compact View) — COMPLETE (50 tests)
+  - session-view.ts: SessionViewConfig with per-character localStorage persistence
+    - getDefaultPinnedSkills (class-primary + Perception/Athletics/Stealth/Investigation)
+    - getPinnableOptions (18 skills + 6 saves = 24 options)
+  - SessionView: Mobile-optimized single-screen with 8 sections
+    - Top strip (name/level/class/AC/speed), HP bar (4-tier color gradient + temp HP overlay)
+    - Quick actions row (d20/Short Rest/Long Rest/Conditions), attack cards
+    - Spell slots strip (casters only), pinned key abilities, condition badges, feature counters
+    - Auto-activates at <=640px in view mode, manual toggle via "Session Mode" button
+  - SessionAttackCard: Weapon/cantrip card with tap-to-roll attack + damage via dice store
+  - SessionAbilityRow: Pinned skills/saves wrapped in RollableValue for tap-to-roll
+  - SessionCustomizeModal: Per-character pin selection (max 8), grouped by ability score
+    - Checkbox list with live counter, toggles for spell slots/conditions/features visibility
+- Checkpoint: PASSED (3314 frontend + 105 backend = 3419 tests)
+- PHASE 4 GATE: Full session scenario: take damage → cast spell → gain condition → short rest → long rest → level up. Dice roller panel with animations + sheet integration. HP tracker with strict 5e rules. Spell slot management with Pact Magic + Arcane Recovery. Conditions with mechanical effects. Rest automation with feature recovery. Level up for all 12 classes. Mobile session compact view. TypeScript compiles, build succeeds, all tests pass.
