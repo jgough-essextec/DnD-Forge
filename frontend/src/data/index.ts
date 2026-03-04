@@ -72,3 +72,24 @@ export type {
   SkillData,
   LanguageData,
 } from './reference';
+
+export {
+  // Races (Story 3.1)
+  races,
+} from './races';
+
+export {
+  // Classes (Story 3.2)
+  CLASSES,
+  getClassById,
+  getClassIds,
+} from './classes';
+
+export {
+  // Spells (Story 3.3)
+  SPELLS,
+  getSpellById,
+  getSpellsByLevel,
+  getSpellsByClass,
+  getCantrips,
+} from './spells';
