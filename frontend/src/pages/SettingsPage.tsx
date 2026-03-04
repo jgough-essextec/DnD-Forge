@@ -8,10 +8,13 @@ import {
   Trash2,
   Download,
   Info,
+  Eye,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePreferences, useUpdatePreferences } from '@/hooks/usePreferences'
 import { useUIStore } from '@/stores/uiStore'
+import { useHighContrast } from '@/hooks/useHighContrast'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -205,6 +208,8 @@ export default function SettingsPage() {
   const { data: preferences, isLoading: prefsLoading } = usePreferences()
   const updatePrefs = useUpdatePreferences()
   const { theme, setTheme } = useUIStore()
+  const { highContrast, toggleHighContrast } = useHighContrast()
+  const { prefersReducedMotion, toggleAppOverride } = useReducedMotion()
 
   const [settings, setSettings] = useState<LocalSettings>(DEFAULT_SETTINGS)
   const [clearConfirmation, setClearConfirmation] = useState('')
@@ -344,6 +349,27 @@ export default function SettingsPage() {
             description="Disable all animations for accessibility"
             checked={settings.reducedMotion}
             onChange={(val) => updateSetting('reducedMotion', val)}
+          />
+        </div>
+      </SectionCard>
+
+      {/* ---- Accessibility Section (Story 41.3, 41.4) ---- */}
+      <SectionCard>
+        <SectionHeading icon={Eye} title="Accessibility" />
+        <div className="divide-y divide-parchment/5">
+          <ToggleSwitch
+            id="high-contrast-mode"
+            label="High Contrast Mode"
+            description="Increase borders, text contrast, and reduce transparency"
+            checked={highContrast}
+            onChange={toggleHighContrast}
+          />
+          <ToggleSwitch
+            id="reduce-motion-a11y"
+            label="Reduce Motion"
+            description="Disable animations and transitions throughout the app"
+            checked={prefersReducedMotion}
+            onChange={toggleAppOverride}
           />
         </div>
       </SectionCard>

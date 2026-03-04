@@ -10,6 +10,9 @@
   --color-spell-blue: #2980b9;
   --color-parchment: #eee8d5;
 
+  /* Muted text color — lightened from #657b83 to meet WCAG 4.5:1 on bg-primary */
+  --color-text-muted: #7d9199;
+
   /* Typography */
   --font-heading: 'Cinzel', serif;
   --font-body: 'Inter', sans-serif;
@@ -28,4 +31,90 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
   }
+
+  /* ---- Story 41.1: Focus indicators ---- */
+  /* Visible focus ring for keyboard navigation (gold, 2px) */
+  *:focus-visible {
+    outline: 2px solid var(--color-accent-gold);
+    outline-offset: 2px;
+  }
+
+  /* Skip navigation link for keyboard users */
+  .skip-nav {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 100;
+  }
+
+  .skip-nav:focus {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    width: auto;
+    height: auto;
+    padding: 12px 24px;
+    background-color: var(--color-accent-gold);
+    color: var(--color-bg-primary);
+    font-weight: 700;
+    border-radius: 8px;
+    z-index: 100;
+    outline: none;
+  }
+}
+
+/* ---- Story 41.3: High Contrast Mode ---- */
+/* Applied via .high-contrast class on <html> element */
+.high-contrast {
+  --color-parchment: #ffffff;
+  --color-text-muted: #b0bec5;
+}
+
+.high-contrast * {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.high-contrast *:focus-visible {
+  outline-width: 3px;
+}
+
+/* Reduce transparency in high contrast mode */
+.high-contrast [class*="opacity-"],
+.high-contrast [class*="/5"],
+.high-contrast [class*="/10"],
+.high-contrast [class*="/20"],
+.high-contrast [class*="/30"] {
+  opacity: 1;
+}
+
+/* ---- Story 41.4: Reduced Motion ---- */
+/* Respect system preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* In-app toggle via .reduce-motion class on <html> */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---- Story 41.5: Touch target minimum size utility ---- */
+.touch-target-44 {
+  min-width: 44px;
+  min-height: 44px;
 }

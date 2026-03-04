@@ -7,6 +7,10 @@ export interface UserPreferences {
   theme: 'dark' | 'light'
   autoSaveEnabled: boolean
   lastActiveCharacterId: string | null
+  /** High contrast mode for visual accessibility (Story 41.3) */
+  highContrast?: boolean
+  /** Reduced motion preference override (Story 41.4) */
+  reducedMotion?: boolean
 }
 
 /**

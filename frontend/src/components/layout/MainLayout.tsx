@@ -45,6 +45,11 @@ export function MainLayout() {
 
   return (
     <div className="min-h-screen bg-bg-primary">
+      {/* Skip navigation link for keyboard users (Story 41.1) */}
+      <a href="#main-content" className="skip-nav">
+        Skip to main content
+      </a>
+
       {/* Desktop top nav */}
       <nav
         className="hidden sm:flex items-center gap-1 border-b border-parchment/10 bg-bg-secondary px-6 py-3"
@@ -104,7 +109,7 @@ export function MainLayout() {
       </div>
 
       {/* Main content with page transitions */}
-      <main className="pb-20 sm:pb-0">
+      <main id="main-content" className="pb-20 sm:pb-0">
         <PageTransition>
           <Outlet />
         </PageTransition>
