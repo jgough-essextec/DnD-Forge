@@ -651,6 +651,19 @@ export const handlers = [
     }
   ),
 
+  // Campaign lookup by join code
+  http.get(`${BASE_URL}/campaigns/join/:code/`, ({ params }) => {
+    const { code } = params
+    const campaign = mockCampaigns.find((c) => c.joinCode === code)
+    if (campaign) {
+      return HttpResponse.json(campaign)
+    }
+    return HttpResponse.json(
+      { detail: 'Campaign not found. Please check the code and try again.' },
+      { status: 404 }
+    )
+  }),
+
   http.post(`${BASE_URL}/campaigns/:id/join/`, async ({ params, request }) => {
     const { id } = params
     const campaign = mockCampaigns.find((c) => c.id === id)

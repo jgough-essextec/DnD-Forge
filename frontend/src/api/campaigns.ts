@@ -76,3 +76,12 @@ export async function removeCharacterFromCampaign(
 ): Promise<void> {
   await api.post(`/campaigns/${campaignId}/remove-character/`, { character_id: characterId })
 }
+
+/**
+ * Look up a campaign by join code.
+ * Returns the campaign if the code matches, or throws a 404 error.
+ */
+export async function lookupCampaignByCode(code: string): Promise<Campaign> {
+  const response = await api.get<Campaign>(`/campaigns/join/${code}/`)
+  return response.data
+}

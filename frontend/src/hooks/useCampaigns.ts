@@ -9,6 +9,7 @@ import {
   archiveCampaign,
   regenerateCode,
   removeCharacterFromCampaign,
+  lookupCampaignByCode,
 } from '@/api/campaigns'
 import type { Campaign, CreateCampaignData } from '@/types/campaign'
 
@@ -130,6 +131,19 @@ export function useRegenerateCode() {
       void queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY })
       void queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY(id) })
     },
+  })
+}
+
+/**
+ * Query hook for looking up a campaign by join code.
+ * Disabled when code is null, empty, or less than 6 characters.
+ */
+export function useLookupCampaignByCode(code: string | null) {
+  return useQuery({
+    queryKey: ['campaign-lookup', code],
+    queryFn: () => lookupCampaignByCode(code!),
+    enabled: !!code && code.length === 6,
+    retry: false,
   })
 }
 
