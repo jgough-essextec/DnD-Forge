@@ -16,6 +16,7 @@ from .permissions import IsOwner
 from .serializers import (
     CharacterExportSerializer,
     CharacterImportSerializer,
+    CharacterListSerializer,
     CharacterSerializer,
 )
 
@@ -28,6 +29,11 @@ class CharacterViewSet(ModelViewSet):
 
     serializer_class = CharacterSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return CharacterListSerializer
+        return CharacterSerializer
 
     def get_queryset(self):
         qs = Character.objects.filter(owner=self.request.user)

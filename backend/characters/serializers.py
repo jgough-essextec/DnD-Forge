@@ -8,7 +8,16 @@ from .models import Character
 
 
 class CharacterSerializer(serializers.ModelSerializer):
-    """Serializer for Character CRUD operations."""
+    """
+    Serializer for Character CRUD operations.
+
+    The frontend sends a rich nested object (race as object, classes as array,
+    background as object, etc.). We extract flat indexed fields for the model
+    columns and store the entire payload in ``character_data``.
+
+    On read, we return the stored ``character_data`` enriched with server-side
+    fields (id, owner, created_at, updated_at, is_archived, campaign).
+    """
 
     class Meta:
         model = Character
@@ -33,15 +42,154 @@ class CharacterSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at", "updated_at", "owner"]
 
-    def validate_level(self, value):
-        if value < 1 or value > 20:
-            raise serializers.ValidationError("Level must be between 1 and 20.")
-        return value
+    def to_internal_value(self, data):
+        """
+        Accept the frontend's rich character payload and map it to model fields.
+
+        Extracts flat string values for indexed model columns while preserving
+        the full payload in character_data.
+        """
+        # Extract flat fields from the rich nested payload
+        name = data.get("name", "")
+
+        # race: may be a string or {raceId: "dwarf", subraceId: "mountain-dwarf"}
+        race_raw = data.get("race", "")
+        if isinstance(race_raw, dict):
+            race = race_raw.get("raceId", "")
+        else:
+            race = str(race_raw)
+
+        # classes: may be an array [{classId: "fighter", level: 1, ...}]
+        classes_raw = data.get("classes", [])
+        if isinstance(classes_raw, list) and classes_raw:
+            class_name = classes_raw[0].get("classId", "") if isinstance(classes_raw[0], dict) else str(classes_raw[0])
+            level = sum(
+                (cls.get("level", 1) if isinstance(cls, dict) else 1)
+                for cls in classes_raw
+            )
+        else:
+            class_name = data.get("class_name", "")
+            level = data.get("level", 1)
+
+        # background: may be a string or {backgroundId: "hermit", ...}
+        bg_raw = data.get("background", "")
+        if isinstance(bg_raw, dict):
+            background = bg_raw.get("backgroundId", "")
+        else:
+            background = str(bg_raw)
+
+        hp = data.get("hpMax", data.get("hp", 0))
+
+        # Build the flat model data
+        model_data = {
+            "name": name,
+            "race": race,
+            "class_name": class_name,
+            "level": level,
+            "background": background,
+            "hp": hp if isinstance(hp, int) else 0,
+            "ability_scores": data.get("baseAbilityScores", data.get("ability_scores", {})),
+            "skills": data.get("skills", []),
+            "equipment": data.get("inventory", data.get("equipment", [])),
+            "spells": data.get("spells", []),
+            "character_data": data,
+            "is_archived": data.get("isArchived", data.get("is_archived", False)),
+            "campaign": data.get("campaignId", data.get("campaign", None)),
+        }
+
+        return super().to_internal_value(model_data)
+
+    def to_representation(self, instance):
+        """
+        On read, return the stored character_data enriched with server-side fields.
+        If character_data is empty (legacy record), fall back to flat model fields.
+        """
+        char_data = instance.character_data or {}
+
+        if char_data:
+            # Return the rich character data with server-managed fields injected
+            result = dict(char_data)
+            result["id"] = str(instance.id)
+            result["owner"] = instance.owner_id
+            result["createdAt"] = instance.created_at.isoformat() if instance.created_at else None
+            result["updatedAt"] = instance.updated_at.isoformat() if instance.updated_at else None
+            result["isArchived"] = instance.is_archived
+            result["version"] = 1
+            if instance.campaign_id:
+                result["campaignId"] = str(instance.campaign_id)
+            return result
+
+        # Fallback for legacy flat records
+        return super().to_representation(instance)
 
     def validate_name(self, value):
         if not value or not value.strip():
             raise serializers.ValidationError("Name must not be empty.")
         return value
+
+
+class CharacterListSerializer(serializers.ModelSerializer):
+    """
+    Lightweight serializer for the character list (gallery) endpoint.
+    Returns the flat CharacterSummary / GalleryCharacter shape expected
+    by the frontend gallery.
+    """
+
+    class Meta:
+        model = Character
+        fields = ["id", "name", "race", "class_name", "level", "hp", "is_archived", "updated_at", "created_at"]
+
+    def to_representation(self, instance):
+        cd = instance.character_data or {}
+
+        # Extract race display name
+        race_raw = cd.get("race", instance.race)
+        if isinstance(race_raw, dict):
+            subrace_id = race_raw.get("subraceId", "")
+            race_id = race_raw.get("raceId", "")
+            race = (subrace_id or race_id).replace("-", " ").title()
+        else:
+            race = str(race_raw).replace("-", " ").title() if race_raw else instance.race
+
+        # Extract class display name
+        classes_raw = cd.get("classes", [])
+        if isinstance(classes_raw, list) and classes_raw:
+            parts = []
+            for cls in classes_raw:
+                if isinstance(cls, dict):
+                    cid = cls.get("classId", "unknown")
+                    parts.append(cid.replace("-", " ").title())
+                else:
+                    parts.append(str(cls))
+            class_display = " / ".join(parts)
+        else:
+            class_display = instance.class_name.replace("-", " ").title() if instance.class_name else "Unknown"
+
+        # Compute level
+        level = instance.level
+
+        # HP
+        hp_max = cd.get("hpMax", instance.hp) or 0
+        hp_current = cd.get("hpCurrent", hp_max) or 0
+
+        # AC — try combatStats first, fall back to 10
+        combat = cd.get("combatStats", {})
+        ac_obj = combat.get("armorClass", {}) if isinstance(combat, dict) else {}
+        ac = ac_obj.get("base", 10) if isinstance(ac_obj, dict) else 10
+
+        return {
+            "id": str(instance.id),
+            "name": instance.name,
+            "race": race,
+            "class": class_display,
+            "level": level,
+            "hp": {"current": hp_current, "max": hp_max},
+            "ac": ac,
+            "updatedAt": instance.updated_at.isoformat() if instance.updated_at else None,
+            "createdAt": instance.created_at.isoformat() if instance.created_at else None,
+            "isArchived": instance.is_archived,
+            "campaignId": str(instance.campaign_id) if instance.campaign_id else None,
+        }
 
 
 class CharacterExportSerializer(serializers.ModelSerializer):
@@ -69,7 +217,11 @@ class CharacterExportSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        character_data = super().to_representation(instance)
+        # Prefer rich character_data if available
+        if instance.character_data:
+            character_data = dict(instance.character_data)
+        else:
+            character_data = super().to_representation(instance)
         return {
             "formatVersion": "1.0",
             "appVersion": "1.0.0",
@@ -137,12 +289,10 @@ class CharacterImportSerializer(serializers.Serializer):
                 {"file": "Expected a JSON object for character data."}
             )
 
-        # Stage 2: Schema validation (required fields)
-        required_fields = ["name", "race", "class_name", "level", "ability_scores"]
-        missing = [f for f in required_fields if f not in character_data]
-        if missing:
+        # Stage 2: Schema validation -- require at minimum a name
+        if "name" not in character_data:
             raise serializers.ValidationError(
-                {"file": f"Missing required fields: {', '.join(missing)}"}
+                {"file": "Missing required field: name"}
             )
 
         # Stage 3: Type validation
@@ -154,52 +304,57 @@ class CharacterImportSerializer(serializers.Serializer):
         elif not character_data["name"].strip():
             errors["name"] = "Must not be empty."
 
-        if not isinstance(character_data.get("race"), str):
-            errors["race"] = "Must be a string."
-
-        if not isinstance(character_data.get("class_name"), str):
-            errors["class_name"] = "Must be a string."
-
-        if not isinstance(character_data.get("level"), (int, float)):
-            errors["level"] = "Must be a number."
-
-        if not isinstance(character_data.get("ability_scores"), dict):
-            errors["ability_scores"] = "Must be an object."
-
         if errors:
             raise serializers.ValidationError(errors)
 
-        # Stage 4: Business rule validation
-        level = int(character_data["level"])
-        if level < 1 or level > 20:
-            errors["level"] = "Level must be between 1 and 20."
+        # Extract flat fields for the model
+        name = character_data["name"].strip()
 
-        ability_scores = character_data["ability_scores"]
-        for key, value in ability_scores.items():
-            if not isinstance(value, (int, float)):
-                errors[f"ability_scores.{key}"] = f"Score '{key}' must be a number."
-            elif int(value) < 3 or int(value) > 30:
-                warnings.append(
-                    f"Ability score '{key}' value {value} is outside normal range (3-30)."
-                )
+        race_raw = character_data.get("race", "")
+        if isinstance(race_raw, dict):
+            race = race_raw.get("raceId", "unknown")
+        else:
+            race = str(race_raw) if race_raw else "unknown"
 
-        if errors:
-            raise serializers.ValidationError(errors)
+        classes_raw = character_data.get("classes", [])
+        if isinstance(classes_raw, list) and classes_raw:
+            class_name = classes_raw[0].get("classId", "unknown") if isinstance(classes_raw[0], dict) else str(classes_raw[0])
+            level = sum(
+                (cls.get("level", 1) if isinstance(cls, dict) else 1)
+                for cls in classes_raw
+            )
+        else:
+            class_name = character_data.get("class_name", "unknown")
+            level = character_data.get("level", 1)
 
-        # Build validated character data
+        if isinstance(level, (int, float)):
+            level = max(1, min(20, int(level)))
+        else:
+            level = 1
+
+        bg_raw = character_data.get("background", "")
+        if isinstance(bg_raw, dict):
+            background = bg_raw.get("backgroundId", "")
+        else:
+            background = str(bg_raw) if bg_raw else ""
+
+        hp = character_data.get("hpMax", character_data.get("hp", 0))
+        if not isinstance(hp, int):
+            hp = 0
+
         validated = {
-            "name": character_data["name"].strip(),
-            "race": character_data["race"],
-            "class_name": character_data["class_name"],
+            "name": name,
+            "race": race,
+            "class_name": class_name,
             "level": level,
-            "ability_scores": ability_scores,
+            "ability_scores": character_data.get("baseAbilityScores", character_data.get("ability_scores", {})),
             "skills": character_data.get("skills", []),
-            "equipment": character_data.get("equipment", []),
+            "equipment": character_data.get("inventory", character_data.get("equipment", [])),
             "spells": character_data.get("spells", []),
-            "background": character_data.get("background", ""),
-            "hp": character_data.get("hp", 0),
-            "character_data": character_data.get("character_data", {}),
-            "is_archived": character_data.get("is_archived", False),
+            "background": background,
+            "hp": hp,
+            "character_data": character_data,
+            "is_archived": character_data.get("isArchived", character_data.get("is_archived", False)),
         }
 
         attrs["character_data_parsed"] = validated
