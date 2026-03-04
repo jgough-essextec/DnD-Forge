@@ -4,6 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from '@/lib/queryClient'
 import '@/styles/globals.css'
+import '@/styles/character-sheet-print.css'
+import '@/styles/print-layouts.css'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(

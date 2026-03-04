@@ -1,18 +1,34 @@
 /**
- * Character Sheet Print Styles (Story 24.4)
+ * Character Sheet Print Styles (Story 24.4, Epic 40)
  *
  * @media print rules for rendering the character sheet on paper.
- * - Removes all UI chrome (nav, buttons, toggles, hover states)
+ * Enhanced in Epic 40 to cover all Phase 4-5 UI elements.
+ *
+ * Features:
+ * - Removes ALL UI chrome (nav, sidebar, buttons, toggles, hover states,
+ *   floating action bar, dice roller, session widgets, combat tracker,
+ *   DM notes, toast notifications, breadcrumbs, scroll-to-top, modals)
  * - Forces white background with dark text
  * - Forces 3-column Page 1 layout
  * - Each page on new printed page (page-break-before: always)
- * - pt-based font sizes
- * - Hides parchment textures
+ * - pt-based font sizes (10pt body, 14pt headings, 8pt labels)
+ * - Cinzel headings with serif fallback
+ * - Hides parchment textures/gradients/shadows
  * - No orphaned headers
+ * - Table rows do not break across pages
+ * - Ink-saving mode via .ink-saving class
+ * - Condition badges render as text labels
+ * - Cross-browser page break compatibility (both legacy and modern properties)
  */
 
+/* ===================================================================
+ * PRINT MEDIA QUERY
+ * =================================================================== */
+
 @media print {
-  /* === Global print reset === */
+  /* -----------------------------------------------------------------
+   * Global print reset
+   * ----------------------------------------------------------------- */
   *,
   *::before,
   *::after {
@@ -30,62 +46,256 @@
     padding: 0;
     font-size: 10pt;
     line-height: 1.4;
+    font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
     background: white !important;
     color: #1a1a1a !important;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible !important;
   }
 
-  /* === Hide UI chrome === */
+  /* -----------------------------------------------------------------
+   * Page margins and paper size
+   * ----------------------------------------------------------------- */
+  @page {
+    margin: 0.5in;
+    size: letter portrait;
+  }
+
+  /* -----------------------------------------------------------------
+   * Hide ALL UI chrome
+   *
+   * Comprehensive selectors for every interactive/navigation element
+   * across all application phases (1-5).
+   * ----------------------------------------------------------------- */
+
+  /* Utility class for hiding in print */
   .print\:hidden,
-  nav,
-  header,
-  footer,
-  [data-testid="floating-action-bar"],
-  [data-testid="sheet-tabs"],
-  [data-testid="print-button"],
-  .fixed,
-  button,
-  .cursor-pointer {
+  [data-print-hide] {
     display: none !important;
   }
 
   /* Re-show the print blocks */
-  .print\:block {
+  .print\:block,
+  [data-print-show] {
     display: block !important;
   }
 
-  /* === Typography === */
+  /* Navigation elements */
+  nav,
+  nav[aria-label="Main navigation"],
+  nav[aria-label="Mobile navigation"] {
+    display: none !important;
+  }
+
+  /* Header and footer chrome */
+  header,
+  footer {
+    display: none !important;
+  }
+
+  /* Breadcrumbs */
+  [data-testid="breadcrumbs"],
+  .breadcrumbs {
+    display: none !important;
+  }
+
+  /* Sheet tabs */
+  [data-testid="sheet-tabs"] {
+    display: none !important;
+  }
+
+  /* Print button */
+  [data-testid="print-button"] {
+    display: none !important;
+  }
+
+  /* Floating action bar */
+  [data-testid="floating-action-bar"] {
+    display: none !important;
+  }
+
+  /* Dice roller panel (Phase 4) */
+  [data-testid="dice-roller-panel"],
+  [data-testid="dice-roller"],
+  [data-testid="dice-history"],
+  [data-testid="roll-history"] {
+    display: none !important;
+  }
+
+  /* Session play widgets (Phase 4) */
+  [data-testid="hp-session-tracker"],
+  [data-testid="compact-hp-widget"],
+  [data-testid="damage-heal-modal"],
+  [data-testid="temp-hp-manager"],
+  [data-testid="death-save-tracker"],
+  [data-testid="spell-slot-tracker-session"],
+  [data-testid="cast-spell-prompt"],
+  [data-testid="pact-magic-tracker"],
+  [data-testid="arcane-recovery-modal"],
+  [data-testid="short-rest-modal"],
+  [data-testid="long-rest-modal"],
+  [data-testid="session-customize-modal"],
+  [data-testid="feature-usage-counter"],
+  [data-testid="feature-usage-list"] {
+    display: none !important;
+  }
+
+  /* Conditions panel and add button (Phase 4) -- badges stay as text */
+  [data-testid="conditions-panel"],
+  [data-testid="add-condition-modal"],
+  [data-testid="add-condition-button"],
+  [data-testid="exhaustion-tracker"] {
+    display: none !important;
+  }
+
+  /* Combat tracker (Phase 5) */
+  [data-testid="combat-tracker"],
+  [data-testid="combatant-card"],
+  [data-testid="encounter-setup"],
+  [data-testid="initiative-roller"],
+  [data-testid="add-combatant-form"],
+  [data-testid="end-encounter-modal"],
+  [data-testid="combatant-hp-editor"] {
+    display: none !important;
+  }
+
+  /* DM notes panel (Phase 5) */
+  [data-testid="dm-notes-panel"],
+  [data-testid="session-log"],
+  [data-testid="npc-tracker"],
+  [data-testid="loot-tracker"] {
+    display: none !important;
+  }
+
+  /* DM context actions and badges */
+  [data-testid="dm-context-actions"],
+  [data-testid="dm-view-badge"] {
+    display: none !important;
+  }
+
+  /* Toast notifications */
+  [data-testid="toast-container"],
+  [role="alert"][data-testid],
+  .toast-container {
+    display: none !important;
+  }
+
+  /* Modals and overlays */
+  [role="dialog"],
+  .modal-overlay,
+  .fixed.inset-0,
+  [data-testid="campaign-export-modal"],
+  [data-testid="campaign-import-modal"] {
+    display: none !important;
+  }
+
+  /* Edit mode controls */
+  [data-testid="edit-mode-toggle"],
+  [data-testid="edit-mode-banner"],
+  [data-testid="mode-toggle"],
+  [data-testid="inspiration-toggle"] {
+    display: none !important;
+  }
+
+  /* Generic button hiding (edit, toggle, interactive buttons) */
+  button:not([data-print-keep]) {
+    display: none !important;
+  }
+
+  /* Scroll-to-top */
+  [data-testid="scroll-to-top"],
+  .scroll-to-top {
+    display: none !important;
+  }
+
+  /* Fixed elements (sidebars, overlays, sticky headers) */
+  .fixed:not([data-print-keep]),
+  .sticky:not([data-print-keep]) {
+    position: static !important;
+    display: none !important;
+  }
+
+  /* React Query Devtools */
+  .ReactQueryDevtools,
+  [class*="ReactQueryDevtools"] {
+    display: none !important;
+  }
+
+  /* -----------------------------------------------------------------
+   * Typography — print-optimized pt-based sizes
+   *
+   * Body: 10pt, Headings: 14pt, Labels: 8pt
+   * Cinzel for headings with serif fallback
+   * ----------------------------------------------------------------- */
   h1 {
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
     font-size: 16pt;
     font-weight: bold;
+    margin-bottom: 6pt;
   }
 
   h2 {
-    font-size: 13pt;
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
+    font-size: 14pt;
     font-weight: bold;
+    margin-bottom: 4pt;
   }
 
   h3 {
-    font-size: 11pt;
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
+    font-size: 12pt;
     font-weight: bold;
+    margin-bottom: 3pt;
   }
 
+  h4, h5, h6 {
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 2pt;
+  }
+
+  /* Body text */
   p,
   span,
   div,
-  li {
-    font-size: 9pt;
+  li,
+  td,
+  th {
+    font-size: 10pt;
   }
 
-  /* === Layout overrides === */
+  /* Labels and small text */
+  .text-xs,
+  .text-\[10px\],
+  label,
+  small,
+  .label,
+  [class*="tracking-wider"] {
+    font-size: 8pt;
+  }
+
+  .font-heading,
+  [class*="font-heading"],
+  .font-serif,
+  [class*="font-serif"] {
+    font-family: 'Cinzel', Georgia, 'Times New Roman', serif !important;
+  }
+
+  /* -----------------------------------------------------------------
+   * Layout overrides
+   * ----------------------------------------------------------------- */
   .character-sheet {
     padding: 0;
     margin: 0;
+    width: 100%;
   }
 
   /* Force 3-column layout on Page 1 */
   [data-testid="page1-grid"] {
     display: grid !important;
-    grid-template-columns: 4fr 4fr 4fr !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
     gap: 12pt !important;
   }
 
@@ -105,7 +315,9 @@
   }
 
   /* Force mobile-hidden elements to be visible in print */
-  .hidden.sm\:block {
+  .hidden.sm\:block,
+  .hidden.md\:block,
+  .hidden.lg\:block {
     display: block !important;
   }
 
@@ -114,8 +326,16 @@
     display: none !important;
   }
 
-  /* === Page breaks === */
-  .break-before-page {
+  /* -----------------------------------------------------------------
+   * Page break control
+   *
+   * Uses both legacy (page-break-*) and modern (break-*) properties
+   * for maximum cross-browser compatibility.
+   * ----------------------------------------------------------------- */
+
+  /* Each character sheet page starts on a new printed page */
+  .break-before-page,
+  [data-print-page] {
     page-break-before: always;
     break-before: page;
   }
@@ -128,6 +348,11 @@
   .print-page-2 {
     page-break-after: always;
     break-after: page;
+  }
+
+  .print-page-3 {
+    page-break-after: auto;
+    break-after: auto;
   }
 
   /* Prevent orphaned headers */
@@ -143,19 +368,106 @@
     widows: 3;
   }
 
-  /* Keep sections together */
+  /* Keep component sections together */
   [data-testid="ability-scores-panel"],
   [data-testid="saving-throws-list"],
   [data-testid="combat-stats-block"],
   [data-testid="hit-points-block"],
   [data-testid="attacks-section"],
   [data-testid="personality-features"],
-  [data-testid="hit-dice-death-saves"] {
+  [data-testid="hit-dice-death-saves"],
+  [data-testid="proficiency-bonus-display"],
+  [data-testid="appearance-section"],
+  [data-testid="backstory-section"],
+  [data-testid="equipment-section"],
+  [data-testid="currency-section"],
+  [data-testid="treasure-section"],
+  [data-testid="spellcasting-header"],
+  [data-testid="cantrips-section"],
+  [data-testid="domain-spells"] {
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
-  /* === Borders and backgrounds for print === */
+  /* -----------------------------------------------------------------
+   * Table printing — prevent mid-row breaks
+   *
+   * Attacks table, equipment list, and spell lists must not break
+   * mid-row across page boundaries.
+   * ----------------------------------------------------------------- */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  /* Specific table sections */
+  [data-testid="attacks-section"] tr,
+  [data-testid="equipment-section"] tr,
+  [data-testid="spell-slots-section"] tr,
+  [data-testid="party-stats-grid"] tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Spell rows should not break */
+  [data-testid^="spell-"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Equipment item rows */
+  [data-testid^="equipment-item-"],
+  [data-testid^="attack-row-"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* -----------------------------------------------------------------
+   * Condition badges — render as text labels in print
+   *
+   * Override color-coded badge styling with simple text labels.
+   * ----------------------------------------------------------------- */
+  [data-testid="condition-badges"] {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 4pt;
+  }
+
+  [data-testid^="condition-card-"] {
+    display: inline !important;
+  }
+
+  [data-testid^="condition-card-"] button {
+    display: inline !important;
+    background: transparent !important;
+    border: 1pt solid #999 !important;
+    border-radius: 2pt;
+    padding: 1pt 4pt;
+    font-size: 8pt;
+    color: #1a1a1a !important;
+  }
+
+  /* Hide condition popover in print */
+  [data-testid^="condition-popover-"] {
+    display: none !important;
+  }
+
+  /* -----------------------------------------------------------------
+   * Borders and backgrounds for print
+   * ----------------------------------------------------------------- */
   .rounded-lg,
   .rounded-xl {
     border-radius: 4pt;
@@ -163,12 +475,17 @@
 
   /* Make borders visible in print */
   [data-testid="page1-layout"] .border-2,
+  [data-testid="page1-layout"] .border,
   [data-testid="page2-layout"] .border,
-  [data-testid="page3-spellcasting"] .border {
+  [data-testid="page2-layout"] .border-2,
+  [data-testid="page3-spellcasting"] .border,
+  [data-testid="page3-spellcasting"] .border-2 {
     border: 1pt solid #ccc !important;
   }
 
-  /* === Remove interactive states === */
+  /* -----------------------------------------------------------------
+   * Remove interactive states and animations
+   * ----------------------------------------------------------------- */
   .hover\:bg-parchment\/10,
   .hover\:bg-bg-secondary\/50,
   .hover\:border-accent-gold\/50,
@@ -178,38 +495,172 @@
     color: inherit !important;
   }
 
-  /* Remove animations */
   *,
   *::before,
   *::after {
     animation-duration: 0s !important;
     transition-duration: 0s !important;
+    animation-iteration-count: 0 !important;
   }
 
-  /* === Page margins === */
-  @page {
-    margin: 0.5in;
-    size: letter portrait;
-  }
-
-  /* === Parchment texture removal === */
+  /* -----------------------------------------------------------------
+   * Background and texture removal
+   * ----------------------------------------------------------------- */
   .bg-parchment,
   .bg-bg-primary,
-  .bg-bg-secondary {
+  .bg-bg-secondary,
+  .bg-bg-primary\/95,
+  [class*="bg-bg-"],
+  [class*="bg-parchment"],
+  [class*="bg-purple-950"],
+  [class*="bg-emerald-500"],
+  [class*="bg-accent-gold"],
+  [class*="bg-damage-red"],
+  [class*="bg-healing-green"],
+  [class*="bg-spell-blue"],
+  [class*="bg-surface-dark"] {
     background: white !important;
   }
 
-  /* === Accent gold becomes dark in print === */
-  .text-accent-gold {
+  /* Accent gold becomes dark in print */
+  .text-accent-gold,
+  [class*="text-accent-gold"] {
     color: #333 !important;
     font-weight: bold;
   }
 
-  /* === Scroll containers === */
+  /* -----------------------------------------------------------------
+   * Scroll containers — make visible
+   * ----------------------------------------------------------------- */
   .overflow-auto,
   .overflow-hidden,
-  .overflow-scroll {
+  .overflow-scroll,
+  .overflow-x-auto,
+  .overflow-y-auto {
     overflow: visible !important;
     max-height: none !important;
+    max-width: none !important;
+  }
+
+  /* -----------------------------------------------------------------
+   * Spell slot circles — render as printable outlines
+   *
+   * Convert filled/interactive circles to simple outlined circles
+   * that users can mark with a pencil.
+   * ----------------------------------------------------------------- */
+  [data-testid="spell-slot-tracker"] .rounded-full,
+  [data-testid^="slot-circle-"] ,
+  [data-testid^="slot-"] {
+    background: white !important;
+    border: 1.5pt solid #333 !important;
+    width: 10pt;
+    height: 10pt;
+    display: inline-block !important;
+    border-radius: 50%;
+  }
+
+  /* Used/expended slots get a lighter border */
+  [data-testid="spell-slot-tracker"] .bg-parchment\/20 {
+    border-style: dashed !important;
+    border-color: #999 !important;
+  }
+
+  /* -----------------------------------------------------------------
+   * Collapsible sections — force open in print
+   * ----------------------------------------------------------------- */
+  [data-testid="collapsible-skills"],
+  [data-testid="collapsible-personality"] {
+    display: block !important;
+  }
+
+  [id="skills-collapsible-content"],
+  [id="personality-collapsible-content"] {
+    display: block !important;
+  }
+
+  /* Bottom padding spacer for floating bar — hide */
+  .h-16.sm\:hidden {
+    display: none !important;
+  }
+}
+
+/* ===================================================================
+ * INK-SAVING MODE
+ *
+ * Applied via the .ink-saving class on <body>.
+ * Reduces border weights, removes decorative elements,
+ * and uses lighter grays instead of solid blacks.
+ * Active both in print and on screen for preview.
+ * =================================================================== */
+
+@media print {
+  body.ink-saving *,
+  body.ink-saving *::before,
+  body.ink-saving *::after {
+    color: #444 !important;
+  }
+
+  body.ink-saving h1,
+  body.ink-saving h2,
+  body.ink-saving h3,
+  body.ink-saving h4,
+  body.ink-saving h5,
+  body.ink-saving h6 {
+    color: #333 !important;
+  }
+
+  /* Lighter borders */
+  body.ink-saving [data-testid="page1-layout"] .border-2,
+  body.ink-saving [data-testid="page1-layout"] .border,
+  body.ink-saving [data-testid="page2-layout"] .border,
+  body.ink-saving [data-testid="page2-layout"] .border-2,
+  body.ink-saving [data-testid="page3-spellcasting"] .border,
+  body.ink-saving [data-testid="page3-spellcasting"] .border-2,
+  body.ink-saving table,
+  body.ink-saving tr,
+  body.ink-saving td,
+  body.ink-saving th {
+    border-color: #ddd !important;
+    border-width: 0.5pt !important;
+  }
+
+  /* Remove all decorative borders */
+  body.ink-saving .rounded-lg,
+  body.ink-saving .rounded-xl,
+  body.ink-saving .rounded-full {
+    border-color: #ddd !important;
+  }
+
+  /* Lighter spell slot outlines */
+  body.ink-saving [data-testid="spell-slot-tracker"] .rounded-full,
+  body.ink-saving [data-testid^="slot-circle-"],
+  body.ink-saving [data-testid^="slot-"] {
+    border: 1pt solid #bbb !important;
+  }
+
+  /* Lighter text for non-essential fields */
+  body.ink-saving .text-xs,
+  body.ink-saving label,
+  body.ink-saving small {
+    color: #666 !important;
+  }
+
+  /* Remove all background fills that might use ink */
+  body.ink-saving [class*="bg-"] {
+    background: white !important;
+  }
+
+  /* Condition badges even simpler in ink-saving */
+  body.ink-saving [data-testid^="condition-card-"] button {
+    border: 0.5pt solid #bbb !important;
+    color: #666 !important;
+  }
+
+  /* Reduce HR and divider line weights */
+  body.ink-saving hr,
+  body.ink-saving .border-t,
+  body.ink-saving .border-b {
+    border-color: #eee !important;
+    border-width: 0.5pt !important;
   }
 }

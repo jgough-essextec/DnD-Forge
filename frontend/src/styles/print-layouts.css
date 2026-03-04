@@ -1,0 +1,331 @@
+/**
+ * Print-Specific Layouts (Story 40.2)
+ *
+ * Defines print-optimized column layouts that differ from screen layouts
+ * to maximize paper real estate.
+ *
+ * - Page 1: Three-column desktop layout forced regardless of screen size
+ * - Page 2: Two-column layout with portrait in top-right
+ * - Page 3: Multi-column spell list (2-3 columns) with slot circles as outlines
+ * - Gallery: Compact roster — 3 characters per printed page
+ * - Campaign dashboard: Clean data table with all party stats
+ */
+
+@media print {
+  /* ===================================================================
+   * PAGE 1 — THREE-COLUMN LAYOUT
+   *
+   * Force the desktop three-column grid regardless of the user's screen
+   * size. Left: ability scores/saves/skills. Center: combat/HP/attacks.
+   * Right: personality/features.
+   * =================================================================== */
+
+  [data-testid="core-stats-page"],
+  [data-testid="page1-layout"] {
+    width: 100%;
+  }
+
+  /* Override Tailwind responsive grid to always show 3 columns */
+  [data-testid="page1-grid"] {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 10pt !important;
+    width: 100% !important;
+  }
+
+  /* Force all three columns to span exactly 1 grid column */
+  [data-testid="left-column"],
+  [data-testid="center-column"],
+  [data-testid="right-column"] {
+    grid-column: span 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Desktop ability scores panel visible, mobile compact hidden */
+  [data-testid="mobile-ability-scores"] {
+    display: none !important;
+  }
+
+  /* Desktop skills and personality always visible */
+  [data-testid="collapsible-skills"],
+  [data-testid="collapsible-personality"] {
+    display: none !important;
+  }
+
+  /* Ensure Page 1 ends with a page break */
+  [data-testid="core-stats-page"] {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* ===================================================================
+   * PAGE 2 — TWO-COLUMN LAYOUT WITH PORTRAIT
+   *
+   * Left column: appearance fields + backstory
+   * Right column: allies/orgs + equipment + treasure
+   * Portrait positioned in the top-right corner.
+   * =================================================================== */
+
+  [data-testid="backstory-page"],
+  [data-testid="page2-layout"] {
+    width: 100%;
+  }
+
+  /* Force two-column grid for Page 2 */
+  [data-testid="page2-layout"] > .grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12pt !important;
+  }
+
+  /* Portrait placement in top-right of Page 2 */
+  [data-testid="page2-layout"] [data-testid="character-portrait"] {
+    float: right;
+    width: 120pt;
+    height: auto;
+    margin: 0 0 8pt 8pt;
+    border: 1pt solid #ccc;
+  }
+
+  /* Ensure Page 2 ends with a page break */
+  [data-testid="backstory-page"] {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* ===================================================================
+   * PAGE 3 — MULTI-COLUMN SPELL LIST
+   *
+   * Spell lists rendered in 2-3 columns to maximize density.
+   * Spell slot circles rendered as printable outlined circles.
+   * =================================================================== */
+
+  [data-testid="spellcasting-page"],
+  [data-testid="page3-spellcasting"] {
+    width: 100%;
+  }
+
+  /* Spell slots section — compact horizontal layout */
+  [data-testid="spell-slots-section"] {
+    column-count: 2;
+    column-gap: 12pt;
+    column-fill: balance;
+  }
+
+  /* Each spell level section stays together */
+  [data-testid^="spell-level-"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 8pt;
+  }
+
+  /* Spell row cards in print — compact, no decoration */
+  [data-testid^="spell-"] .border {
+    border: 0.5pt solid #ccc !important;
+    padding: 3pt 6pt;
+    margin-bottom: 2pt;
+  }
+
+  /* Cantrips section in columns */
+  [data-testid="cantrips-section"] .grid,
+  [data-testid="cantrips-section"] .flex {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 4pt !important;
+  }
+
+  /* Domain spells compact */
+  [data-testid="domain-spells"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Spell slot tracker circles — outlined for pencil marking */
+  [data-testid="spell-slot-tracker"] {
+    display: flex !important;
+    align-items: center;
+    gap: 3pt;
+  }
+
+  [data-testid="spell-slot-tracker"] button {
+    display: inline-block !important;
+    background: white !important;
+    border: 1.5pt solid #333 !important;
+    width: 10pt !important;
+    height: 10pt !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 1pt !important;
+  }
+
+  /* Slot circle rows for session tracker */
+  [data-testid^="slot-row-level-"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  [data-testid^="slot-circle-"] {
+    display: inline-block !important;
+    background: white !important;
+    border: 1.5pt solid #333 !important;
+    width: 10pt !important;
+    height: 10pt !important;
+    border-radius: 50% !important;
+  }
+
+  /* ===================================================================
+   * GALLERY PRINT — COMPACT ROSTER
+   *
+   * Printing from the gallery page produces a compact roster:
+   * 3 character summaries per printed page (one per third-page).
+   * Shows name, race, class, level, AC, HP, key stats.
+   * =================================================================== */
+
+  /* Gallery page container */
+  [data-testid="character-gallery"],
+  [data-testid="home-page"] {
+    width: 100%;
+    padding: 0 !important;
+  }
+
+  /* Gallery heading */
+  [data-testid="character-gallery"] h1,
+  [data-testid="home-page"] h1 {
+    font-size: 14pt;
+    margin-bottom: 8pt;
+  }
+
+  /* Character card grid — stack vertically for print */
+  [data-testid="character-gallery"] .grid,
+  [data-testid="character-card-list"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  /* Each character card — compact summary */
+  [data-testid^="character-card-"] {
+    display: block !important;
+    border: 1pt solid #ccc;
+    border-radius: 4pt;
+    padding: 8pt 12pt;
+    margin-bottom: 4pt;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    background: white !important;
+  }
+
+  /* 3 cards per page — after every 3rd card, force page break */
+  [data-testid^="character-card-"]:nth-child(3n) {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Ensure card content is compact */
+  [data-testid^="character-card-"] .text-sm {
+    font-size: 9pt;
+  }
+
+  /* Hide gallery create/delete buttons */
+  [data-testid="create-character-button"],
+  [data-testid="delete-character-button"],
+  [data-testid="gallery-search"],
+  [data-testid="gallery-filters"],
+  [data-testid="gallery-sort"] {
+    display: none !important;
+  }
+
+  /* ===================================================================
+   * CAMPAIGN DASHBOARD PRINT — CLEAN DATA TABLE
+   *
+   * Party stats grid prints as a clean, readable data table
+   * suitable as a DM reference sheet.
+   * =================================================================== */
+
+  /* Dashboard container */
+  [data-testid="campaign-dashboard"],
+  [data-testid="dashboard-tabs"] {
+    width: 100%;
+    padding: 0 !important;
+  }
+
+  /* Hide dashboard tab navigation in print */
+  [data-testid="dashboard-tabs"] nav,
+  [data-testid="dashboard-tabs"] [role="tablist"] {
+    display: none !important;
+  }
+
+  /* Party stats grid table — clean print layout */
+  [data-testid="party-stats-grid"] {
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  [data-testid="party-stats-grid"] table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+
+  [data-testid="party-stats-grid"] th {
+    font-size: 8pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    padding: 4pt 6pt;
+    border-bottom: 1.5pt solid #333;
+    text-align: left;
+    color: #333 !important;
+  }
+
+  [data-testid="party-stats-grid"] td {
+    padding: 4pt 6pt;
+    border-bottom: 0.5pt solid #ddd;
+    color: #1a1a1a !important;
+  }
+
+  /* HP bar — simplify for print */
+  [data-testid="party-stats-grid"] [role="progressbar"] {
+    display: none !important;
+  }
+
+  /* Expanded detail rows */
+  [data-testid^="expanded-row-"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Sort icons — hide in print */
+  [data-testid="party-stats-grid"] th button,
+  [data-testid="party-stats-grid"] th svg {
+    display: none !important;
+  }
+
+  /* Row expand buttons — hide in print */
+  [data-testid="party-stats-grid"] td button {
+    display: none !important;
+  }
+
+  /* Skill matrix print */
+  [data-testid="skill-matrix"] {
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  [data-testid="skill-matrix"] table {
+    font-size: 8pt;
+  }
+
+  /* Party composition chart — hide (not useful in print) */
+  [data-testid="party-composition"] canvas,
+  [data-testid="party-composition"] svg {
+    display: none !important;
+  }
+
+  /* Language coverage — compact */
+  [data-testid="language-coverage"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

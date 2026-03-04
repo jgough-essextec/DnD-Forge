@@ -9,7 +9,6 @@ import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { CharacterSheet } from '@/components/character/sheet/CharacterSheet'
-import '@/styles/character-sheet-print.css'
 
 export default function CharacterSheetPage() {
   const { id } = useParams<{ id: string }>()
