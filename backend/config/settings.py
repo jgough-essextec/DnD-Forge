@@ -123,7 +123,24 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
+# Custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
+
 # CSRF trusted origins for session auth
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+# CSRF cookie settings - allow the frontend to read the CSRF token from the cookie
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Session settings
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_HTTPONLY = True
+
+# Email backend (console for development)
+EMAIL_BACKEND = os.getenv(
+    'DJANGO_EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend',
+)

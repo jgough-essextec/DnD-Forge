@@ -1,6 +1,7 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
-import { Home, PlusCircle, Dice5, Map, Settings } from 'lucide-react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Home, PlusCircle, Dice5, Map, Settings, LogOut, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/hooks/AuthContext'
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
@@ -12,6 +13,13 @@ const navItems = [
 
 export function MainLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, isAuthenticated, logout } = useAuth()
+
+  async function handleLogout() {
+    await logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -35,6 +43,34 @@ export function MainLayout() {
             {item.label}
           </Link>
         ))}
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* User section */}
+        {isAuthenticated && user ? (
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-2 text-sm text-parchment/70">
+              <User className="h-4 w-4" />
+              {user.displayName || user.username}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-parchment/60 transition-colors hover:text-parchment"
+              aria-label="Log out"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link
+            to="/login"
+            className="rounded-lg px-3 py-2 text-sm text-accent-gold transition-colors hover:bg-accent-gold/10"
+          >
+            Sign In
+          </Link>
+        )}
       </nav>
 
       {/* Main content */}
