@@ -17,6 +17,7 @@ const CampaignDashboardPage = lazy(
   () => import('@/pages/CampaignDashboardPage')
 )
 const EncounterPage = lazy(() => import('@/pages/EncounterPage'))
+const SessionNotePage = lazy(() => import('@/pages/SessionNotePage'))
 const JoinCampaignPage = lazy(() => import('@/pages/JoinCampaignPage'))
 const DiceRollerPage = lazy(() => import('@/pages/DiceRollerPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
@@ -110,6 +111,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <EncounterPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/campaign/:id/session/:sessionId"
+                element={
+                  <ProtectedRoute>
+                    <SessionNotePage />
                   </ProtectedRoute>
                 }
               />

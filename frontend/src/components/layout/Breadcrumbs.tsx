@@ -1,21 +1,34 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ChevronRight, Home } from 'lucide-react'
 import { useCharacter } from '@/hooks/useCharacters'
+import { useCampaign } from '@/hooks/useCampaigns'
 import { cn } from '@/lib/utils'
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
   label: string
   to?: string
 }
 
 /**
- * Builds breadcrumb items based on the current route pathname.
- * Character name is resolved asynchronously via the characterName param.
+ * Extracts a campaign ID from a pathname that starts with /campaign/:id.
+ * Returns undefined if the path does not match a campaign route.
  */
-function buildBreadcrumbs(
+export function extractCampaignId(pathname: string): string | undefined {
+  const match = pathname.match(/^\/campaign\/([^/]+)/)
+  return match?.[1]
+}
+
+/**
+ * Builds breadcrumb items based on the current route pathname.
+ * Character name and campaign name are resolved asynchronously via hooks.
+ */
+export function buildBreadcrumbs(
   pathname: string,
   characterId: string | undefined,
-  characterName: string | undefined
+  characterName: string | undefined,
+  campaignId: string | undefined,
+  campaignName: string | undefined,
+  sessionId: string | undefined
 ): BreadcrumbItem[] {
   const crumbs: BreadcrumbItem[] = [{ label: 'Characters', to: '/' }]
 
@@ -49,18 +62,55 @@ function buildBreadcrumbs(
     return crumbs
   }
 
+  // --- Campaign routes ---
+
   if (pathname === '/campaigns') {
     crumbs.length = 0
     crumbs.push({ label: 'Campaigns' })
     return crumbs
   }
 
-  if (pathname.startsWith('/campaign/')) {
+  if (pathname.startsWith('/join/')) {
     crumbs.length = 0
-    crumbs.push({ label: 'Campaigns', to: '/campaigns' })
-    crumbs.push({ label: 'Campaign' })
+    crumbs.push({ label: 'Join Campaign' })
     return crumbs
   }
+
+  if (campaignId && pathname.startsWith(`/campaign/${campaignId}`)) {
+    crumbs.length = 0
+    const name = campaignName ?? 'Loading...'
+
+    // /campaign/:id (dashboard)
+    if (pathname === `/campaign/${campaignId}`) {
+      crumbs.push({ label: 'Campaigns', to: '/campaigns' })
+      crumbs.push({ label: name })
+      return crumbs
+    }
+
+    // /campaign/:id/encounter/:eid
+    if (pathname.match(/^\/campaign\/[^/]+\/encounter\/[^/]+$/)) {
+      crumbs.push({ label: 'Campaigns', to: '/campaigns' })
+      crumbs.push({ label: name, to: `/campaign/${campaignId}` })
+      crumbs.push({ label: 'Encounter' })
+      return crumbs
+    }
+
+    // /campaign/:id/session/:sessionId
+    if (pathname.match(/^\/campaign\/[^/]+\/session\/[^/]+$/)) {
+      crumbs.push({ label: 'Campaigns', to: '/campaigns' })
+      crumbs.push({ label: name, to: `/campaign/${campaignId}` })
+      const sessionLabel = sessionId ? `Session ${sessionId}` : 'Session'
+      crumbs.push({ label: sessionLabel })
+      return crumbs
+    }
+
+    // Fallback for any other /campaign/:id/* sub-route
+    crumbs.push({ label: 'Campaigns', to: '/campaigns' })
+    crumbs.push({ label: name })
+    return crumbs
+  }
+
+  // --- Other routes ---
 
   if (pathname === '/dice') {
     crumbs.length = 0
@@ -80,11 +130,14 @@ function buildBreadcrumbs(
 /**
  * Breadcrumbs component that renders a navigable breadcrumb trail
  * based on the current route. Automatically resolves character names
- * when on character-related routes.
+ * and campaign names when on the corresponding routes.
  */
 export function Breadcrumbs() {
   const location = useLocation()
-  const { id: characterId } = useParams<{ id: string }>()
+  const { id: characterId, sessionId } = useParams<{
+    id: string
+    sessionId: string
+  }>()
 
   // Only fetch character data when on a character route
   const isCharacterRoute =
@@ -93,10 +146,17 @@ export function Breadcrumbs() {
     isCharacterRoute ? characterId : null
   )
 
+  // Only fetch campaign data when on a campaign route
+  const campaignId = extractCampaignId(location.pathname)
+  const { data: campaign } = useCampaign(campaignId ?? null)
+
   const crumbs = buildBreadcrumbs(
     location.pathname,
     characterId,
-    character?.name
+    character?.name,
+    campaignId,
+    campaign?.name,
+    sessionId
   )
 
   if (crumbs.length === 0) {

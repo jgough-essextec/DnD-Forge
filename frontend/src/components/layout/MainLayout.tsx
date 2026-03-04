@@ -3,6 +3,7 @@ import { Home, PlusCircle, Dice5, Map, Settings, LogOut, User } from 'lucide-rea
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/AuthContext'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
+import { PageTransition } from '@/components/layout/PageTransition'
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
@@ -11,6 +12,26 @@ const navItems = [
   { to: '/campaigns', icon: Map, label: 'Campaigns' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
+
+/**
+ * Determines whether a navigation item should be highlighted as active.
+ *
+ * - Home ("/") highlights only on exact match.
+ * - Campaigns ("/campaigns") highlights on any campaign-related route
+ *   (e.g. /campaigns, /campaign/:id, /campaign/:id/encounter/:eid).
+ * - All other items use exact pathname matching.
+ */
+export function isNavActive(itemTo: string, pathname: string): boolean {
+  if (itemTo === '/') {
+    return pathname === '/'
+  }
+
+  if (itemTo === '/campaigns') {
+    return pathname === '/campaigns' || pathname.startsWith('/campaign/')
+  }
+
+  return pathname === itemTo
+}
 
 export function MainLayout() {
   const location = useLocation()
@@ -38,7 +59,7 @@ export function MainLayout() {
             to={item.to}
             className={cn(
               'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
-              location.pathname === item.to
+              isNavActive(item.to, location.pathname)
                 ? 'bg-accent-gold/10 text-accent-gold'
                 : 'text-parchment/60 hover:text-parchment'
             )}
@@ -82,9 +103,11 @@ export function MainLayout() {
         <Breadcrumbs />
       </div>
 
-      {/* Main content */}
+      {/* Main content with page transitions */}
       <main className="pb-20 sm:pb-0">
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
 
       {/* Mobile bottom nav */}
@@ -98,7 +121,7 @@ export function MainLayout() {
             to={item.to}
             className={cn(
               'flex flex-col items-center gap-1 px-3 py-1 text-xs transition-colors',
-              location.pathname === item.to
+              isNavActive(item.to, location.pathname)
                 ? 'text-accent-gold'
                 : 'text-parchment/60'
             )}

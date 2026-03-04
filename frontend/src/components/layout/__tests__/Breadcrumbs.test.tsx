@@ -1,8 +1,21 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from '@/test/utils/renderWithProviders'
-import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
+import { Breadcrumbs, buildBreadcrumbs, extractCampaignId } from '@/components/layout/Breadcrumbs'
 import { Route, Routes } from 'react-router-dom'
+
+// Mock the useCampaigns hook so we can control campaign data
+vi.mock('@/hooks/useCampaigns', () => ({
+  useCampaign: vi.fn((id: string | null) => {
+    if (id === 'camp-001') {
+      return { data: { id: 'camp-001', name: 'Lost Mine of Phandelver' } }
+    }
+    if (id === 'camp-404') {
+      return { data: undefined }
+    }
+    return { data: undefined }
+  }),
+}))
 
 /**
  * Helper to render Breadcrumbs within various route contexts.
@@ -18,6 +31,9 @@ function renderBreadcrumbs(route: string) {
       <Route path="/character/:id/levelup" element={<Breadcrumbs />} />
       <Route path="/campaigns" element={<Breadcrumbs />} />
       <Route path="/campaign/:id" element={<Breadcrumbs />} />
+      <Route path="/campaign/:id/encounter/:eid" element={<Breadcrumbs />} />
+      <Route path="/campaign/:id/session/:sessionId" element={<Breadcrumbs />} />
+      <Route path="/join/:code" element={<Breadcrumbs />} />
       <Route path="/dice" element={<Breadcrumbs />} />
       <Route path="/settings" element={<Breadcrumbs />} />
     </Routes>,
@@ -26,6 +42,10 @@ function renderBreadcrumbs(route: string) {
 }
 
 describe('Breadcrumbs', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   describe('Home / Gallery route', () => {
     it('should render "Characters" breadcrumb on the home page', () => {
       renderBreadcrumbs('/')
@@ -138,13 +158,116 @@ describe('Breadcrumbs', () => {
     })
   })
 
-  describe('Non-character routes', () => {
+  // --- Campaign routes ---
+
+  describe('Campaigns list route', () => {
     it('should render "Campaigns" breadcrumb on /campaigns', () => {
       renderBreadcrumbs('/campaigns')
 
       expect(screen.getByText('Campaigns')).toBeInTheDocument()
     })
 
+    it('should show "Campaigns" as the current page', () => {
+      renderBreadcrumbs('/campaigns')
+
+      const crumb = screen.getByText('Campaigns')
+      expect(crumb).toHaveAttribute('aria-current', 'page')
+    })
+  })
+
+  describe('Campaign dashboard route', () => {
+    it('should render "Campaigns > [Campaign Name]" on /campaign/:id', () => {
+      renderBreadcrumbs('/campaign/camp-001')
+
+      expect(screen.getByText('Campaigns')).toBeInTheDocument()
+      expect(screen.getByText('Lost Mine of Phandelver')).toBeInTheDocument()
+    })
+
+    it('should make "Campaigns" a clickable link to /campaigns', () => {
+      renderBreadcrumbs('/campaign/camp-001')
+
+      const link = screen.getByRole('link', { name: 'Campaigns' })
+      expect(link).toHaveAttribute('href', '/campaigns')
+    })
+
+    it('should mark campaign name as the current page', () => {
+      renderBreadcrumbs('/campaign/camp-001')
+
+      const crumb = screen.getByText('Lost Mine of Phandelver')
+      expect(crumb).toHaveAttribute('aria-current', 'page')
+    })
+
+    it('should show "Loading..." when campaign data is not yet available', () => {
+      renderBreadcrumbs('/campaign/camp-404')
+
+      expect(screen.getByText('Loading...')).toBeInTheDocument()
+    })
+  })
+
+  describe('Campaign encounter route', () => {
+    it('should render "Campaigns > [Campaign Name] > Encounter" on /campaign/:id/encounter/:eid', () => {
+      renderBreadcrumbs('/campaign/camp-001/encounter/enc-001')
+
+      expect(screen.getByText('Campaigns')).toBeInTheDocument()
+      expect(screen.getByText('Lost Mine of Phandelver')).toBeInTheDocument()
+      expect(screen.getByText('Encounter')).toBeInTheDocument()
+    })
+
+    it('should make campaign name a clickable link to campaign dashboard', () => {
+      renderBreadcrumbs('/campaign/camp-001/encounter/enc-001')
+
+      const link = screen.getByRole('link', { name: 'Lost Mine of Phandelver' })
+      expect(link).toHaveAttribute('href', '/campaign/camp-001')
+    })
+
+    it('should mark "Encounter" as the current page', () => {
+      renderBreadcrumbs('/campaign/camp-001/encounter/enc-001')
+
+      const crumb = screen.getByText('Encounter')
+      expect(crumb).toHaveAttribute('aria-current', 'page')
+    })
+  })
+
+  describe('Campaign session note route', () => {
+    it('should render "Campaigns > [Campaign Name] > Session [N]" on /campaign/:id/session/:sessionId', () => {
+      renderBreadcrumbs('/campaign/camp-001/session/5')
+
+      expect(screen.getByText('Campaigns')).toBeInTheDocument()
+      expect(screen.getByText('Lost Mine of Phandelver')).toBeInTheDocument()
+      expect(screen.getByText('Session 5')).toBeInTheDocument()
+    })
+
+    it('should make campaign name a clickable link to campaign dashboard', () => {
+      renderBreadcrumbs('/campaign/camp-001/session/5')
+
+      const link = screen.getByRole('link', { name: 'Lost Mine of Phandelver' })
+      expect(link).toHaveAttribute('href', '/campaign/camp-001')
+    })
+
+    it('should mark session label as the current page', () => {
+      renderBreadcrumbs('/campaign/camp-001/session/5')
+
+      const crumb = screen.getByText('Session 5')
+      expect(crumb).toHaveAttribute('aria-current', 'page')
+    })
+  })
+
+  describe('Join campaign route', () => {
+    it('should render "Join Campaign" on /join/:code', () => {
+      renderBreadcrumbs('/join/ABC123')
+
+      expect(screen.getByText('Join Campaign')).toBeInTheDocument()
+    })
+
+    it('should mark "Join Campaign" as the current page', () => {
+      renderBreadcrumbs('/join/ABC123')
+
+      const crumb = screen.getByText('Join Campaign')
+      expect(crumb).toHaveAttribute('aria-current', 'page')
+    })
+  })
+
+  describe('Non-character routes', () => {
     it('should render "Dice Roller" breadcrumb on /dice', () => {
       renderBreadcrumbs('/dice')
 
@@ -166,6 +289,13 @@ describe('Breadcrumbs', () => {
       const listItems = screen.getAllByRole('listitem')
       expect(listItems.length).toBe(2)
     })
+
+    it('should render two chevron separators for three-level campaign breadcrumbs', () => {
+      renderBreadcrumbs('/campaign/camp-001/encounter/enc-001')
+
+      const listItems = screen.getAllByRole('listitem')
+      expect(listItems.length).toBe(3)
+    })
   })
 
   describe('Loading state for character name', () => {
@@ -185,5 +315,102 @@ describe('Breadcrumbs', () => {
         expect(screen.getByText('Thorn Ironforge')).toBeInTheDocument()
       })
     })
+  })
+})
+
+describe('extractCampaignId', () => {
+  it('should extract campaign ID from /campaign/:id', () => {
+    expect(extractCampaignId('/campaign/camp-001')).toBe('camp-001')
+  })
+
+  it('should extract campaign ID from /campaign/:id/encounter/:eid', () => {
+    expect(extractCampaignId('/campaign/camp-001/encounter/enc-001')).toBe('camp-001')
+  })
+
+  it('should extract campaign ID from /campaign/:id/session/:sessionId', () => {
+    expect(extractCampaignId('/campaign/camp-001/session/5')).toBe('camp-001')
+  })
+
+  it('should return undefined for /campaigns', () => {
+    expect(extractCampaignId('/campaigns')).toBeUndefined()
+  })
+
+  it('should return undefined for non-campaign routes', () => {
+    expect(extractCampaignId('/dice')).toBeUndefined()
+    expect(extractCampaignId('/')).toBeUndefined()
+  })
+})
+
+describe('buildBreadcrumbs (unit)', () => {
+  it('should return Campaigns only for /campaigns', () => {
+    const crumbs = buildBreadcrumbs('/campaigns', undefined, undefined, undefined, undefined, undefined)
+    expect(crumbs).toEqual([{ label: 'Campaigns' }])
+  })
+
+  it('should return campaign name for /campaign/:id', () => {
+    const crumbs = buildBreadcrumbs(
+      '/campaign/camp-001',
+      undefined,
+      undefined,
+      'camp-001',
+      'Test Campaign',
+      undefined
+    )
+    expect(crumbs).toEqual([
+      { label: 'Campaigns', to: '/campaigns' },
+      { label: 'Test Campaign' },
+    ])
+  })
+
+  it('should return three-level breadcrumb for encounter route', () => {
+    const crumbs = buildBreadcrumbs(
+      '/campaign/camp-001/encounter/enc-001',
+      undefined,
+      undefined,
+      'camp-001',
+      'Test Campaign',
+      undefined
+    )
+    expect(crumbs).toEqual([
+      { label: 'Campaigns', to: '/campaigns' },
+      { label: 'Test Campaign', to: '/campaign/camp-001' },
+      { label: 'Encounter' },
+    ])
+  })
+
+  it('should return session label with sessionId for session route', () => {
+    const crumbs = buildBreadcrumbs(
+      '/campaign/camp-001/session/3',
+      undefined,
+      undefined,
+      'camp-001',
+      'Test Campaign',
+      '3'
+    )
+    expect(crumbs).toEqual([
+      { label: 'Campaigns', to: '/campaigns' },
+      { label: 'Test Campaign', to: '/campaign/camp-001' },
+      { label: 'Session 3' },
+    ])
+  })
+
+  it('should return "Join Campaign" for /join/:code', () => {
+    const crumbs = buildBreadcrumbs('/join/ABC123', undefined, undefined, undefined, undefined, undefined)
+    expect(crumbs).toEqual([{ label: 'Join Campaign' }])
+  })
+
+  it('should show "Loading..." when campaign name is undefined', () => {
+    const crumbs = buildBreadcrumbs(
+      '/campaign/camp-001',
+      undefined,
+      undefined,
+      'camp-001',
+      undefined,
+      undefined
+    )
+    expect(crumbs).toEqual([
+      { label: 'Campaigns', to: '/campaigns' },
+      { label: 'Loading...' },
+    ])
   })
 })

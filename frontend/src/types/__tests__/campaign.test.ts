@@ -195,6 +195,7 @@ describe('Campaign', () => {
       },
       sessions: [],
       npcs: [],
+      isArchived: false,
       createdAt: '2025-01-01T00:00:00Z',
       updatedAt: '2025-01-20T18:30:00Z',
     };
@@ -229,6 +230,7 @@ describe('Campaign', () => {
       },
       sessions: [],
       npcs: [],
+      isArchived: false,
       createdAt: '2025-02-01T00:00:00Z',
       updatedAt: '2025-02-01T00:00:00Z',
     };
