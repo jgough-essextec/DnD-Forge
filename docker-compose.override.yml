@@ -1,0 +1,21 @@
+# Development-specific overrides (loaded automatically by docker compose)
+services:
+  django:
+    volumes:
+      - ./backend:/app
+    environment:
+      DJANGO_DEBUG: 'True'
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  react:
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: 'http://localhost/api'
+
+  postgres:
+    ports:
+      - '5432:5432'

@@ -30,6 +30,9 @@ etl/source-data/
 # Docker
 postgres_data/
 
+# Django collected static files
+backend/staticfiles/
+
 # Coverage
 coverage/
 htmlcov/
