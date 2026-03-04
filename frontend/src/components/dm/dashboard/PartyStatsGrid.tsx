@@ -107,6 +107,9 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
   // Total column count: expand(1) + COLUMNS(9) + level progress(1) + conditions(1) = 12
   const totalColSpan = COLUMNS.length + 3
 
+  // Columns that can be hidden on narrower tablet widths to prevent horizontal scroll
+  const HIDEABLE_COLUMNS: Set<SortColumn> = new Set(['speed', 'spellSaveDC', 'initiative'])
+
   return (
     <div className="overflow-x-auto" data-testid="party-stats-grid">
       <table className="w-full text-sm rounded-lg border-2 border-parchment/20 bg-bg-secondary">
@@ -117,9 +120,9 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
             {COLUMNS.map((col) => (
               <th
                 key={col.id}
-                className={`p-2 text-left text-parchment/80 font-medium ${
+                className={`p-2 text-left text-parchment/80 font-medium whitespace-nowrap ${
                   col.sortable ? 'cursor-pointer select-none hover:text-accent-gold' : ''
-                }`}
+                } ${HIDEABLE_COLUMNS.has(col.id) ? 'hidden lg:table-cell' : ''}`}
                 onClick={() => col.sortable && handleSort(col.id)}
                 aria-sort={
                   sortColumn === col.id
@@ -136,11 +139,11 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
               </th>
             ))}
             {/* Level Progress column */}
-            <th className="p-2 text-left text-parchment/80 font-medium">
+            <th className="p-2 text-left text-parchment/80 font-medium whitespace-nowrap hidden md:table-cell">
               Level Progress
             </th>
-            {/* Conditions column */}
-            <th className="p-2 text-left text-parchment/80 font-medium">
+            {/* Conditions column — hidden at narrow tablet, visible at 1024px+ */}
+            <th className="p-2 text-left text-parchment/80 font-medium whitespace-nowrap hidden lg:table-cell">
               Conditions
             </th>
           </tr>
@@ -261,8 +264,8 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
                     </div>
                   </td>
 
-                  {/* Speed */}
-                  <td className="p-2 text-parchment/80 font-mono">
+                  {/* Speed — hidden on narrow tablet */}
+                  <td className="p-2 text-parchment/80 font-mono hidden lg:table-cell">
                     {character.speed?.walk ?? 30} ft
                   </td>
 
@@ -271,18 +274,18 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
                     {passivePerception}
                   </td>
 
-                  {/* Spell Save DC */}
-                  <td className="p-2 text-parchment/80 font-mono">
+                  {/* Spell Save DC — hidden on narrow tablet */}
+                  <td className="p-2 text-parchment/80 font-mono hidden lg:table-cell">
                     {spellDC !== null ? spellDC : '---'}
                   </td>
 
-                  {/* Initiative */}
-                  <td className="p-2 text-parchment/80 font-mono">
+                  {/* Initiative — hidden on narrow tablet */}
+                  <td className="p-2 text-parchment/80 font-mono hidden lg:table-cell">
                     {formatModifier(initiative)}
                   </td>
 
-                  {/* Level Progress */}
-                  <td className="p-2" data-testid={`level-progress-${character.id}`}>
+                  {/* Level Progress — hidden on narrow tablet */}
+                  <td className="p-2 hidden md:table-cell" data-testid={`level-progress-${character.id}`}>
                     <LevelProgressBar
                       currentXP={character.experiencePoints}
                       currentLevel={character.level}
@@ -290,8 +293,8 @@ export function PartyStatsGrid({ characters, xpTrackingMode = 'xp' }: PartyStats
                     />
                   </td>
 
-                  {/* Conditions */}
-                  <td className="p-2">
+                  {/* Conditions — hidden on narrow tablet, visible at 1024px+ */}
+                  <td className="p-2 hidden lg:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {character.conditions.length === 0 ? (
                         <span className="text-parchment/30 text-xs">None</span>

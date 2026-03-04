@@ -42,8 +42,8 @@ export function SlotCircleRow({
         </span>
       )}
 
-      {/* Slot circles */}
-      <div className="flex gap-1.5">
+      {/* Slot circles — padded for 44px touch targets */}
+      <div className="flex gap-0.5">
         {Array.from({ length: total }, (_, i) => {
           const isExpended = i < used
           return (
@@ -52,15 +52,22 @@ export function SlotCircleRow({
               type="button"
               onClick={() => onToggle(i)}
               className={cn(
-                'w-5 h-5 rounded-full border-2 transition-all',
-                'hover:scale-110 cursor-pointer',
-                isExpended
-                  ? 'bg-parchment/20 border-parchment/40'
-                  : 'bg-accent-gold/80 border-accent-gold',
+                'flex items-center justify-center',
+                'min-w-[44px] min-h-[44px] touch-manipulation',
               )}
               aria-label={`Level ${level} slot ${i + 1} (${isExpended ? 'expended' : 'available'})`}
               data-testid={`slot-circle-${level}-${i}`}
-            />
+            >
+              <span
+                className={cn(
+                  'w-5 h-5 rounded-full border-2 transition-all block',
+                  'hover:scale-110',
+                  isExpended
+                    ? 'bg-parchment/20 border-parchment/40'
+                    : 'bg-accent-gold/80 border-accent-gold',
+                )}
+              />
+            </button>
           )
         })}
       </div>

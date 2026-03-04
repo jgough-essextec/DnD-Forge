@@ -118,3 +118,44 @@
   min-width: 44px;
   min-height: 44px;
 }
+
+/* ---- Epic 44: Mobile responsive polish ---- */
+
+/* Prevent scroll-leak from nested scrollable areas (Story 44.3) */
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+/* Safe area inset support for notched devices (Story 44.1) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Scrollbar hiding utility for horizontal scroll areas */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Session view landscape layout (Story 44.4):
+   At landscape mobile (width 640px+, height < 500px), switch to 2-column grid */
+@media (orientation: landscape) and (min-width: 500px) and (max-width: 1024px) {
+  [data-testid="session-view"] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  /* Top strip spans full width */
+  [data-testid="session-top-strip"] {
+    grid-column: 1 / -1;
+  }
+  /* HP bar spans full width */
+  [data-testid="session-hp-bar"] {
+    grid-column: 1 / -1;
+  }
+}

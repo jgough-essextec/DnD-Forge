@@ -201,17 +201,17 @@ export default function CombatTracker({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Swords className="w-5 h-5 text-accent-gold" />
-            <h2 className="text-xl font-heading text-accent-gold">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <Swords className="w-5 h-5 text-accent-gold shrink-0" />
+            <h2 className="text-lg sm:text-xl font-heading text-accent-gold truncate">
               {encounter.name || 'Combat'}
             </h2>
           </div>
           {/* Round counter */}
-          <div className="px-4 py-1.5 bg-accent-gold/10 border border-accent-gold/30 rounded-lg">
-            <span className="text-sm text-accent-gold font-bold">
+          <div className="px-3 sm:px-4 py-1.5 bg-accent-gold/10 border border-accent-gold/30 rounded-lg shrink-0">
+            <span className="text-xs sm:text-sm text-accent-gold font-bold">
               Round {encounter.round}
             </span>
           </div>
@@ -220,17 +220,19 @@ export default function CombatTracker({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-parchment/60 bg-primary-light/20 rounded hover:bg-primary-light/40 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-parchment/60 bg-primary-light/20 rounded hover:bg-primary-light/40 transition-colors min-h-[44px]"
           >
             <Plus className="w-4 h-4" />
-            Add Combatant
+            <span className="hidden sm:inline">Add Combatant</span>
+            <span className="sm:hidden">Add</span>
           </button>
           <button
             onClick={onEndEncounter}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-400 bg-red-900/20 border border-red-500/30 rounded hover:bg-red-900/30 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-red-400 bg-red-900/20 border border-red-500/30 rounded hover:bg-red-900/30 transition-colors min-h-[44px]"
           >
             <Flag className="w-4 h-4" />
-            End Encounter
+            <span className="hidden sm:inline">End Encounter</span>
+            <span className="sm:hidden">End</span>
           </button>
         </div>
       </div>
@@ -262,18 +264,19 @@ export default function CombatTracker({
         </div>
       )}
 
-      {/* Turn controls */}
-      <div className="flex items-center justify-center gap-3 mb-4">
+      {/* Turn controls — desktop: centered; mobile: full-width sticky bottom */}
+      <div className="hidden sm:flex items-center justify-center gap-3 mb-4" data-testid="turn-controls-desktop">
         <button
           onClick={handlePrevTurn}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm text-parchment/60 bg-primary-light/20 rounded-lg hover:bg-primary-light/40 transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm text-parchment/60 bg-primary-light/20 rounded-lg hover:bg-primary-light/40 transition-colors min-h-[44px]"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous Turn
         </button>
         <button
           onClick={handleNextTurn}
-          className="flex items-center gap-1.5 px-6 py-2.5 text-sm bg-accent-gold text-primary font-bold rounded-lg hover:bg-accent-gold/90 transition-colors"
+          className="flex items-center gap-1.5 px-6 py-2.5 text-sm bg-accent-gold text-primary font-bold rounded-lg hover:bg-accent-gold/90 transition-colors min-h-[44px]"
+          data-testid="next-turn-btn"
         >
           Next Turn
           <ChevronRight className="w-4 h-4" />
@@ -281,7 +284,7 @@ export default function CombatTracker({
       </div>
 
       {/* Initiative order list */}
-      <div className="flex-1 overflow-y-auto space-y-2" data-testid="initiative-order">
+      <div className="flex-1 overflow-y-auto overscroll-contain space-y-2 pb-20 sm:pb-0" data-testid="initiative-order">
         {sorted.map((combatant, index) => (
           <CombatantCard
             key={combatant.id}
@@ -300,6 +303,30 @@ export default function CombatTracker({
             onDeathSave={handleDeathSave}
           />
         ))}
+      </div>
+
+      {/* Mobile: Fixed full-width Next Turn button at bottom */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 sm:hidden p-3 bg-bg-secondary/95 backdrop-blur-sm border-t border-parchment/10 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        data-testid="turn-controls-mobile"
+      >
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrevTurn}
+            className="flex items-center justify-center gap-1 px-3 py-3 text-sm text-parchment/60 bg-primary-light/20 rounded-lg hover:bg-primary-light/40 transition-colors min-h-[48px]"
+            aria-label="Previous turn"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleNextTurn}
+            className="flex-1 flex items-center justify-center gap-2 py-3 text-base bg-accent-gold text-primary font-bold rounded-lg hover:bg-accent-gold/90 transition-colors min-h-[48px]"
+            data-testid="next-turn-btn-mobile"
+          >
+            Next Turn
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   )

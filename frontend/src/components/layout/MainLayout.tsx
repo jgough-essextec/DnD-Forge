@@ -117,7 +117,7 @@ export function MainLayout() {
 
       {/* Mobile bottom nav */}
       <nav
-        className="fixed bottom-0 left-0 right-0 flex items-center justify-around border-t border-parchment/10 bg-bg-secondary py-2 sm:hidden"
+        className="fixed bottom-0 left-0 right-0 flex items-center justify-around border-t border-parchment/10 bg-bg-secondary py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:hidden"
         aria-label="Mobile navigation"
       >
         {navItems.map((item) => (

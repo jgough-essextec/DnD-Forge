@@ -196,8 +196,10 @@ export function DiceRollerPanel() {
         className={cn(
           'fixed z-50 transition-transform duration-300 ease-in-out',
           'flex flex-col bg-bg-secondary border-parchment/10',
-          // Desktop: right slide-out
-          'sm:top-0 sm:right-0 sm:h-full sm:w-80 sm:border-l',
+          // Tablet+: right slide-out panel (30% width on tablet, fixed 320px on desktop)
+          'sm:top-0 sm:right-0 sm:h-full sm:border-l',
+          'sm:w-[30vw] sm:min-w-[280px] sm:max-w-[380px]',
+          'lg:w-80 lg:min-w-0 lg:max-w-none',
           diceRollerOpen ? 'sm:translate-x-0' : 'sm:translate-x-full',
           // Mobile: bottom sheet
           'bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto',
@@ -276,6 +278,7 @@ export function DiceRollerPanel() {
             </button>
             <input
               type="number"
+              inputMode="numeric"
               value={modifier}
               onChange={handleModifierChange}
               aria-label="Modifier value"

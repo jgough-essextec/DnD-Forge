@@ -63,7 +63,7 @@ export function FloatingActionBar() {
     <>
       {/* Floating bar - mobile only */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 sm:hidden print:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 sm:hidden print:hidden pb-[env(safe-area-inset-bottom)]"
         data-testid="floating-action-bar"
       >
         <div className="flex items-stretch border-t border-parchment/20 bg-bg-primary/95 backdrop-blur-sm">
@@ -147,10 +147,11 @@ export function FloatingActionBar() {
             </div>
             <input
               type="number"
+              inputMode="numeric"
               value={hpDelta}
               onChange={(e) => setHpDelta(e.target.value)}
               placeholder="Amount"
-              className="w-full rounded border border-parchment/30 bg-bg-primary px-3 py-2 text-parchment focus:border-accent-gold focus:outline-none"
+              className="w-full rounded border border-parchment/30 bg-bg-primary px-3 py-2.5 text-parchment focus:border-accent-gold focus:outline-none min-h-[44px]"
               autoFocus
               data-testid="hp-delta-input"
             />

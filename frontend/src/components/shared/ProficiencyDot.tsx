@@ -39,7 +39,7 @@ export function ProficiencyDot({
       role="img"
       aria-label={ariaLabel}
       data-testid={`proficiency-dot-${level}`}
-      className="inline-flex items-center justify-center"
+      className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] touch-manipulation"
     >
       {level === 'none' && (
         <span

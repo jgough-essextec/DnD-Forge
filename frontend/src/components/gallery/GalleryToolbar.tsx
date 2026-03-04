@@ -16,6 +16,7 @@ import {
   ChevronDown,
   LayoutGrid,
   List,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
@@ -139,6 +140,14 @@ export function GalleryToolbar({
     });
   }, [onFiltersChange]);
 
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  const activeFilterCount =
+    filters.classes.length +
+    filters.races.length +
+    filters.levelRanges.length +
+    (filters.showArchived ? 1 : 0);
+
   return (
     <div className="space-y-3" data-testid="gallery-toolbar">
       {/* Top row: search, sort, view toggle */}
@@ -227,8 +236,36 @@ export function GalleryToolbar({
         </div>
       </div>
 
-      {/* Filter chips row */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Mobile: Collapsible filter button */}
+      <div className="sm:hidden">
+        <button
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+          className={cn(
+            'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors min-h-[44px] w-full',
+            activeFilterCount > 0
+              ? 'border-accent-gold/40 text-accent-gold bg-accent-gold/10'
+              : 'border-parchment/20 text-parchment/60',
+          )}
+          aria-expanded={filtersExpanded}
+          data-testid="mobile-filter-toggle"
+        >
+          <SlidersHorizontal className="w-4 h-4" />
+          <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="ml-1 bg-accent-gold text-bg-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronDown className={cn('w-4 h-4 ml-auto transition-transform', filtersExpanded && 'rotate-180')} />
+        </button>
+      </div>
+
+      {/* Filter chips row — always visible on desktop, collapsible on mobile */}
+      <div className={cn(
+        'flex-wrap items-center gap-2',
+        'sm:flex',
+        filtersExpanded ? 'flex' : 'hidden sm:flex',
+      )}>
         {/* Class chips */}
         {classOptions.length > 0 && (
           <FilterChipGroup
@@ -265,7 +302,7 @@ export function GalleryToolbar({
             aria-label="Show Archived"
             onClick={toggleArchived}
             className={cn(
-              'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
+              'relative inline-flex h-5 w-9 items-center rounded-full transition-colors min-h-[44px] min-w-[44px] touch-manipulation',
               filters.showArchived ? 'bg-accent-gold' : 'bg-parchment/20',
             )}
             data-testid="show-archived-toggle"

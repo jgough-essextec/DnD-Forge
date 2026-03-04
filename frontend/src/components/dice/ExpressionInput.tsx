@@ -81,6 +81,8 @@ export function ExpressionInput({ onRoll, recentExpressions }: ExpressionInputPr
       <div className="flex gap-2">
         <input
           type="text"
+          inputMode="text"
+          autoComplete="off"
           value={expression}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

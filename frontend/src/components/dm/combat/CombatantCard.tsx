@@ -184,22 +184,22 @@ export default function CombatantCard({
             </div>
           )}
 
-          {/* Conditions */}
+          {/* Conditions — touch-target-expanded remove buttons */}
           {combatant.conditions.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
               {combatant.conditions.map((condName) => {
                 const condDef = CONDITION_DEFINITIONS[condName as Condition]
                 return (
                   <button
                     key={condName}
                     onClick={() => onRemoveCondition(combatant.id, condName)}
-                    className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border min-h-[44px] min-w-[44px] touch-manipulation ${
                       condDef ? condDef.color : 'text-gray-400 bg-gray-500/15 border-gray-500/30'
                     } hover:opacity-70 transition-opacity`}
                     title={`Remove ${condName}`}
                   >
                     {condName}
-                    <X className="w-2.5 h-2.5" />
+                    <X className="w-3 h-3" />
                   </button>
                 )
               })}
@@ -246,11 +246,12 @@ export default function CombatantCard({
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className={`w-3 h-3 rounded-full border ${
+                      className={`w-4 h-4 rounded-full border-2 ${
                         i < combatant.deathSaves.successes
                           ? 'bg-green-500 border-green-400'
                           : 'bg-transparent border-parchment/30'
                       }`}
+                      data-testid={`death-save-success-${i}`}
                     />
                   ))}
                 </div>
@@ -259,11 +260,12 @@ export default function CombatantCard({
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className={`w-3 h-3 rounded-full border ${
+                      className={`w-4 h-4 rounded-full border-2 ${
                         i < combatant.deathSaves.failures
                           ? 'bg-red-500 border-red-400'
                           : 'bg-transparent border-parchment/30'
                       }`}
+                      data-testid={`death-save-failure-${i}`}
                     />
                   ))}
                 </div>
@@ -271,22 +273,22 @@ export default function CombatantCard({
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => onDeathSave(combatant.id, true)}
-                  className="flex-1 px-2 py-1 bg-green-800/40 text-green-300 border border-green-500/30 rounded text-[10px] font-medium hover:bg-green-800/60 transition-colors"
+                  className="flex-1 px-2 py-2 bg-green-800/40 text-green-300 border border-green-500/30 rounded text-xs font-medium hover:bg-green-800/60 transition-colors min-h-[44px] touch-manipulation"
                 >
                   Success
                 </button>
                 <button
                   onClick={() => onDeathSave(combatant.id, false)}
-                  className="flex-1 px-2 py-1 bg-red-800/40 text-red-300 border border-red-500/30 rounded text-[10px] font-medium hover:bg-red-800/60 transition-colors"
+                  className="flex-1 px-2 py-2 bg-red-800/40 text-red-300 border border-red-500/30 rounded text-xs font-medium hover:bg-red-800/60 transition-colors min-h-[44px] touch-manipulation"
                 >
                   Failure
                 </button>
                 <button
                   onClick={() => onDeathSave(combatant.id, true)}
-                  className="px-2 py-1 bg-primary-light/30 text-parchment/60 border border-parchment/20 rounded text-[10px] hover:bg-primary-light/50 transition-colors"
+                  className="px-3 py-2 bg-primary-light/30 text-parchment/60 border border-parchment/20 rounded hover:bg-primary-light/50 transition-colors min-h-[44px] min-w-[44px] touch-manipulation flex items-center justify-center"
                   title="Roll 1d20 death save"
                 >
-                  <Dices className="w-3 h-3" />
+                  <Dices className="w-4 h-4" />
                 </button>
               </div>
             </div>

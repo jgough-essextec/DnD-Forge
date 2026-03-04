@@ -121,7 +121,7 @@ describe('CombatTracker', () => {
         onEndEncounter={vi.fn()}
       />,
     )
-    fireEvent.click(screen.getByText('Next Turn'))
+    fireEvent.click(screen.getByTestId('next-turn-btn'))
     expect(onUpdate).toHaveBeenCalled()
     const updated = onUpdate.mock.calls[0][0] as EncounterState
     expect(updated.currentTurnIndex).toBe(1)
@@ -140,7 +140,7 @@ describe('CombatTracker', () => {
         onEndEncounter={vi.fn()}
       />,
     )
-    fireEvent.click(screen.getByText('Next Turn'))
+    fireEvent.click(screen.getByTestId('next-turn-btn'))
     expect(onUpdate).toHaveBeenCalled()
     const updated = onUpdate.mock.calls[0][0] as EncounterState
     expect(updated.round).toBe(2)
@@ -160,6 +160,7 @@ describe('CombatTracker', () => {
         onEndEncounter={vi.fn()}
       />,
     )
+    // Desktop "Previous Turn" text button
     fireEvent.click(screen.getByText('Previous Turn'))
     expect(onUpdate).toHaveBeenCalled()
   })
@@ -175,6 +176,7 @@ describe('CombatTracker', () => {
         onEndEncounter={vi.fn()}
       />,
     )
+    // Desktop text + mobile short text both present
     expect(screen.getByText('End Encounter')).toBeInTheDocument()
   })
 
@@ -205,6 +207,7 @@ describe('CombatTracker', () => {
         onEndEncounter={vi.fn()}
       />,
     )
+    // Desktop text + mobile short text both present
     expect(screen.getByText('Add Combatant')).toBeInTheDocument()
   })
 

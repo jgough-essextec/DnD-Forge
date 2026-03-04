@@ -115,11 +115,12 @@ export default function CombatantHPEditor({
       <div className="flex gap-2">
         <input
           type="number"
+          inputMode="numeric"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount"
           min={1}
-          className="flex-1 px-3 py-1.5 bg-primary-light/30 border border-parchment/20 rounded text-parchment text-center text-sm placeholder-parchment/40 focus:border-accent-gold focus:outline-none"
+          className="flex-1 px-3 py-2 bg-primary-light/30 border border-parchment/20 rounded text-parchment text-center text-sm placeholder-parchment/40 focus:border-accent-gold focus:outline-none min-h-[44px]"
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleApply()
           }}
