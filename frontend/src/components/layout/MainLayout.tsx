@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Home, PlusCircle, Dice5, Map, Settings, LogOut, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/AuthContext'
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
@@ -24,7 +25,10 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Desktop top nav */}
-      <nav className="hidden sm:flex items-center gap-1 border-b border-parchment/10 bg-bg-secondary px-6 py-3">
+      <nav
+        className="hidden sm:flex items-center gap-1 border-b border-parchment/10 bg-bg-secondary px-6 py-3"
+        aria-label="Main navigation"
+      >
         <Link to="/" className="font-heading text-xl text-accent-gold mr-8">
           D&D Forge
         </Link>
@@ -73,13 +77,21 @@ export function MainLayout() {
         )}
       </nav>
 
+      {/* Breadcrumbs bar */}
+      <div className="hidden sm:block border-b border-parchment/5 bg-bg-primary px-6 py-2">
+        <Breadcrumbs />
+      </div>
+
       {/* Main content */}
       <main className="pb-20 sm:pb-0">
         <Outlet />
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 flex items-center justify-around border-t border-parchment/10 bg-bg-secondary py-2 sm:hidden">
+      <nav
+        className="fixed bottom-0 left-0 right-0 flex items-center justify-around border-t border-parchment/10 bg-bg-secondary py-2 sm:hidden"
+        aria-label="Mobile navigation"
+      >
         {navItems.map((item) => (
           <Link
             key={item.to}
