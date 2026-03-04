@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 6
+## Current Round: 7
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -94,3 +94,49 @@
   - ModifierBadge (+N/-N with color gradient)
   - 50-entry game terms dictionary (data/game-terms.ts)
 - Checkpoint: PASSED (1375 frontend + 80 backend = 1455 tests)
+
+### Round 7: All Wizard Steps (Maximum Parallelism)
+- [x] Agent C (frontend-dev): Epic 9 stories 9.1-9.5 (race selection) — COMPLETE (75 tests)
+  - RaceStep with SelectableCardGrid, SearchFilterBar, DetailSlidePanel
+  - RaceCard (name, ability bonuses, traits, size/speed)
+  - RaceDetailPanel (full description, traits, languages, proficiencies)
+  - SubraceSelector (ChoiceGroup for subrace options)
+  - Racial choice pickers: HalfElfBonusPicker, VariantHumanPicker, HighElfCantripPicker, DragonbornAncestryPicker
+  - LanguagePicker, SkillPicker for additional racial choices
+  - Validation: race + subrace + all required choices
+- [x] Agent D (frontend-dev): Epic 10 stories 10.1-10.6 (class selection) — COMPLETE (68 tests)
+  - ClassStep with SelectableCardGrid, SearchFilterBar (role/ability/spellcasting filters)
+  - ClassCard (hit die, role tags, primary ability, proficiencies)
+  - ClassDetailPanel (features, spellcasting info, equipment preview)
+  - ClassSkillSelector (CountSelector, variable count: 2/3/4 per class)
+  - SubclassSelector (L1 for Cleric/Sorcerer/Warlock, info note for others)
+  - FightingStyleSelector (Fighter/Paladin/Ranger)
+  - Validation: class + skills + subclass (if L1) + fighting style (if martial)
+- [x] Agent E (frontend-dev): Epic 11 stories 11.1-11.6 (ability scores) — COMPLETE (61 tests)
+  - AbilityScoreStep with method selector (Standard Array/Point Buy/Rolling)
+  - StandardArrayAssigner (@dnd-kit drag-and-drop + click-to-assign fallback)
+  - PointBuyAllocator (27-point budget, 8-15 range, cost table, 3 presets)
+  - DiceRollingInterface (4d6-drop-lowest, individual/roll-all, reassignment)
+  - AbilityScoreSummary (base + racial = total, modifiers, gameplay implications)
+  - Method switch confirmation dialog, racial bonus integration
+- [x] Agent F (frontend-dev): Epic 12 stories 12.1-12.4 (background & personality) — COMPLETE (56 tests)
+  - BackgroundStep with background selection + personality + description sections
+  - BackgroundSelector (13 backgrounds, skill overlap detection with replacement)
+  - PersonalityEditor (traits/ideals/bonds/flaws from tables, random roll, custom text)
+  - CharacterDescription (3x3 alignment grid, physical details, backstory, appearance)
+  - Skill overlap warning with replacement skill pickers
+- [x] Agent G (frontend-dev): Epic 13 stories 13.1-13.3 (equipment selection) — COMPLETE (63 tests)
+  - EquipmentStep with Starting Equipment / Gold Buy mode toggle
+  - StartingEquipmentSelector (nested choice trees, pack contents, generic item resolution)
+  - GoldBuyMode (roll/manual gold, tabbed catalog, shopping cart, essentials kit)
+  - EquipmentSummary (AC preview, weight/encumbrance, weapons list, gold remaining)
+  - Weight tracking with STR-based carrying capacity and encumbrance thresholds
+- [x] Agent H (frontend-dev): Epic 14 stories 14.1-14.5 (spellcasting) — COMPLETE (65 tests)
+  - SpellStep with three casting systems (known/prepared/spellbook)
+  - CantripSelector (class-filtered, count-limited, racial cantrip locking)
+  - SpellSelector (known casters: exact N, prepared casters: up to N, wizard: 6 spellbook + prepare from those)
+  - SpellDetailCard (level, school, casting time, range, components, concentration, ritual, higher levels)
+  - SpellFilterBar (school, level, casting time, concentration/ritual/component toggles)
+  - Warlock Pact Magic support
+- CreationWizard.tsx updated: all PlaceholderStep references replaced with real step components (Review remains placeholder for Round 8)
+- Checkpoint: PASSED (1763 frontend + 80 backend = 1843 tests)

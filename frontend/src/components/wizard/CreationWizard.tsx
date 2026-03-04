@@ -6,7 +6,6 @@
  * AnimatePresence (slide-left when advancing, slide-right when going back).
  *
  * Includes the WizardProgress sidebar/bar and the WizardNavigation footer.
- * For unbuilt steps, renders a PlaceholderStep.
  */
 
 import { useCallback, useRef, useState } from 'react'
@@ -18,6 +17,12 @@ import { WizardNavigation } from '@/components/wizard/WizardNavigation'
 import { IntroStep } from '@/components/wizard/steps/IntroStep'
 import { PlaceholderStep } from '@/components/wizard/steps/PlaceholderStep'
 import { FreeformCreation } from '@/components/wizard/FreeformCreation'
+import { RaceStep } from '@/components/wizard/steps/race/RaceStep'
+import { ClassStep } from '@/components/wizard/steps/class'
+import { AbilityScoreStep } from '@/components/wizard/steps/abilities'
+import { BackgroundStep } from '@/components/wizard/steps/background/BackgroundStep'
+import { EquipmentStep } from '@/components/wizard/steps/equipment/EquipmentStep'
+import { SpellStep } from '@/components/wizard/steps/spells/SpellStep'
 import type { StepValidation } from '@/components/wizard/types'
 
 const slideVariants = {
@@ -84,43 +89,37 @@ export function CreationWizard() {
         )
       case 'race':
         return (
-          <PlaceholderStep
-            stepName="Race"
+          <RaceStep
             onValidationChange={handleValidationChange}
           />
         )
       case 'class':
         return (
-          <PlaceholderStep
-            stepName="Class"
+          <ClassStep
             onValidationChange={handleValidationChange}
           />
         )
       case 'abilities':
         return (
-          <PlaceholderStep
-            stepName="Abilities"
+          <AbilityScoreStep
             onValidationChange={handleValidationChange}
           />
         )
       case 'background':
         return (
-          <PlaceholderStep
-            stepName="Background"
+          <BackgroundStep
             onValidationChange={handleValidationChange}
           />
         )
       case 'equipment':
         return (
-          <PlaceholderStep
-            stepName="Equipment"
+          <EquipmentStep
             onValidationChange={handleValidationChange}
           />
         )
       case 'spells':
         return (
-          <PlaceholderStep
-            stepName="Spells"
+          <SpellStep
             onValidationChange={handleValidationChange}
           />
         )
