@@ -4,8 +4,8 @@ import { renderWithProviders } from '@/test/utils/renderWithProviders'
 import HomePage from '@/pages/HomePage'
 
 describe('App', () => {
-  it('renders the home page', () => {
+  it('renders the home page with loading state', () => {
     renderWithProviders(<HomePage />)
-    expect(screen.getByText('D&D Character Forge')).toBeInTheDocument()
+    expect(screen.getByText('Loading characters...')).toBeInTheDocument()
   })
 })
