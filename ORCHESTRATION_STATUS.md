@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 11
+## Current Round: 12
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -250,3 +250,53 @@
   - CharacterSheetPage updated to use CharacterSheet component with CharacterSheetProvider
 - Checkpoint: PASSED (2475 frontend + 105 backend = 2580 tests)
 - PHASE 3 GATE: Full lifecycle: create → view → edit → save → gallery. Character gallery with search/filter/sort/batch. JSON import/export roundtrip. Share via URL with token expiry. Responsive desktop/tablet/mobile. Print styles. All breakpoints. TypeScript compiles, build succeeds, all tests pass.
+
+### Round 12: Dice Roller + Session Trackers
+- [x] Agent A (frontend-dev): Epic 26 stories 26.1-26.5 (Dice Roller Panel) — COMPLETE (176 tests)
+  - DiceRollerPanel: Persistent toggleable panel (desktop right slide-out, mobile bottom sheet), FAB toggle button
+  - DiceButton: Quick-roll buttons per die type with distinct colors (d4 green, d6 white, d8 blue, d10 purple, d12 red, d20 gold)
+  - DiceAnimation: CSS 3D transform tumble/settle sequence, nat 20 gold glow, nat 1 red flash, prefers-reduced-motion
+  - AdvantageToggle: Tri-state ADV/DIS/Normal with lock button for persistent mode
+  - ExpressionInput: Custom dice notation with parseDiceNotation validation, recent suggestions
+  - RollResult: Prominent total display, modifier breakdown, advantage/disadvantage layout, critical/fumble banners, aria-live
+  - RollHistoryList + RollHistoryEntry: Scrollable history, color-coded (gold nat 20, red nat 1), click to re-roll, clear
+  - RollableValue: Wrapper for sheet values, d20 icon on hover, click triggers 1d20+modifier roll, opens dice panel
+  - DiceRollerPage: Replaced placeholder with full-page inline dice roller
+- [x] Agent B (frontend-dev): Epic 27 stories 27.1-27.3 (HP Tracker) — COMPLETE (182 tests)
+  - hp-tracker.ts: Pure utility functions implementing strict 5e rules
+    - applyDamage (temp HP first, floor at 0, resistance/vulnerability/immunity, massive damage instant death)
+    - applyHealing (cap at max, stabilization from 0 HP)
+    - setTempHP (non-stacking, keep higher), checkMassiveDamage, processDeathSaveDamage, processDeathSaveRoll
+    - Event helpers: createDamageEvent, createHealingEvent, formatHPEvent
+  - DamageHealModal: Tabbed modal (Take Damage/Heal), damage type selector, resistance/vulnerability display, preview
+  - DamageTypeSelector: 13 D&D 5e damage types with icons and RES/VUL/IMM badges
+  - TempHPManager: Non-stacking temp HP, blue shield overlay on HP bar, animated depletion
+  - HPSessionTracker: Orchestrator with damage/heal buttons, event history, death save integration
+  - DeathSaveTracker: Enhanced with dice engine rolling, nat 20/1 handling, stabilize, damage-at-zero
+  - CompactHPWidget: Sticky floating mobile widget (HP/AC display, collapse to pill, tap to damage/heal)
+- [x] Agent C (frontend-dev): Epic 28 stories 28.1-28.3 (Spell Slot Tracker) — COMPLETE (114 tests)
+  - spell-slots.ts: Pure utility functions for spell slot management
+    - expendSlot, restoreSlot, restoreAllSlots, getAvailableSlots, canCastAtLevel, getAvailableCastingLevels
+    - Pact Magic: expendPactSlot, restorePactSlots, canUsePactSlot
+    - Arcane Recovery: getArcaneRecoveryBudget, validateArcaneRecovery, applyArcaneRecovery
+    - Helpers: isRitualCastable, getSlotStatusColor, formatSpellLevel
+  - SpellSlotTracker: Main orchestrator with slot toggle, long rest recovery, arcane recovery, cast spell workflows
+  - SlotCircleRow: Clickable gold/gray circles per spell level
+  - SlotSummary: Compact color-coded availability summary (green/yellow/red)
+  - CastSpellPrompt: Cast-to-expend dialog with upcast level selection, ritual option, DM override
+  - PactMagicTracker: Warlock purple-accented section, short rest recovery, Mystic Arcanum display
+  - ArcaneRecoveryModal: Wizard slot recovery modal with budget display, level 1-5 selection, validation
+- [x] Agent D (frontend-dev): Epic 29 stories 29.1-29.3 (Conditions Tracker) — COMPLETE (97 tests)
+  - conditions.ts (data): All 15 SRD condition definitions with icons, severity categories (debilitating/moderate/mild/beneficial), descriptions, effects
+    - Helper functions: getConditionDisplayName, getConditionBadgeClasses, getConditionSeverity, getConditionsBySeverity
+  - conditions.ts (utils): Pure functions for condition management
+    - addCondition (no-stacking, exhaustion auto-increments), removeCondition (exhaustion decrements)
+    - hasCondition, getExhaustionLevel, setExhaustionLevel, incrementExhaustion, decrementExhaustion
+    - getConditionEffects, getExhaustionEffects (cumulative)
+    - getConditionModifiers: Returns structured ConditionModifiers (disadvantageOn, advantageOn, autoFailOn, speedOverride, hpMaxModifier, banners)
+  - ConditionBadges: Horizontal badge strip, color-coded by severity, click for effects popover
+  - ConditionCard: Individual condition with effects list, source, duration, remove button
+  - AddConditionModal: Search/filter, grouped by severity, toggle add/remove, source/duration fields, exhaustion stepper
+  - ExhaustionTracker: Level 1-6 visual bars, cumulative effects list, level 6 death banner
+  - ConditionsPanel: Orchestrator wiring badges, modal, exhaustion tracker, condition history
+- Checkpoint: PASSED (3078 frontend + 105 backend = 3183 tests)
