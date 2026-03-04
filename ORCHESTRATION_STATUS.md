@@ -1,6 +1,6 @@
 # D&D Character Forge — Orchestration Status
 
-## Current Round: 14
+## Current Round: 15
 
 ### Round 1: Project Bootstrap
 - [x] Agent A (tech-lead): Epic 1 scaffolding — COMPLETE
@@ -371,3 +371,43 @@
   - CampaignNotFound: reusable error component with "Go to Campaigns" link
   - 43 breadcrumb tests, 15 MainLayout nav tests, 4 CampaignNotFound tests, 5 route resolution tests
 - Checkpoint: PASSED (3442 frontend + 150 backend = 3592 tests)
+
+### Round 15: DM Feature Panels
+- [x] Agent C (frontend-dev): Epic 34 stories 34.1-34.5 (Campaign Dashboard & Party Overview) — COMPLETE (139 tests)
+  - DashboardTabs: Tab navigation (Party/Sessions/Encounters/Notes) with ARIA tablist
+  - PartyStatsGrid: Sortable 10-column data table (Name/Race/Class-Level/AC/HP/Speed/PP/Spell Save DC/Initiative/Conditions)
+    - HP bars color-coded (green >50%, yellow 25-50%, red <25%), expandable rows with abilities/skills/languages
+  - SkillMatrix: 18-skill x N-character grid, grouped by ability score, proficiency dots (none/proficient/expertise)
+    - Best-in-party gold highlight, text filter, "Show only proficient" checkbox
+  - LanguageCoverage: Common vs Exotic language categories, speaker counts, gap detection, tool proficiency aggregation
+  - PartyComposition: 7 archetypal roles (Tank/Melee Striker/Ranged Striker/Healer/Controller/Utility/Face)
+    - Coverage indicators (primary green/secondary amber/none empty), party callout badges (strengths/warnings/info)
+  - party-analysis.ts: Pure utility functions for all dashboard calculations
+  - useCampaignCharacters hook: Batch character fetching via useQueries
+  - CampaignDashboardPage: Full tabbed dashboard with campaign header, description toggle, info bar, character cap warning
+- [x] Agent D (frontend-dev): Epic 35 stories 35.1-35.6 (Initiative & Combat Tracker) — COMPLETE (168 tests)
+  - combat.ts: Pure combat utility functions
+    - CR_TO_XP mapping (CR 0-30), combatant creation (player/monster/lair action/duplicate/batch)
+    - Initiative sorting, tie detection/grouping, turn cycling (next/previous), combatant insert/remove
+    - HP in combat: damage/healing with concentration DC, XP calculation per character, level-up preview
+  - EncounterSetup: Auto-populate party from campaign characters, add monsters/NPCs with name/AC/HP/init-mod/CR/quantity
+  - InitiativeRoller: Roll All / Roll Monsters toggle, individual re-rolls, manual input, auto-sort, tie detection
+  - CombatTracker: Initiative order list with turn cycling, round counter, mid-combat additions, end encounter
+  - CombatantCard: Type icons, HP bar, conditions, death saves, concentration tracking, skip/ready/remove
+  - CombatantHPEditor: Inline damage/heal/temp-HP editor with quick buttons
+  - AddCombatantForm: Monster/NPC entry form with type selector, quantity, CR, lair action
+  - EndEncounterModal: Summary (rounds/defeated/survivors), XP distribution from CR table, level-up preview, milestone option
+  - EncounterPage: Replaced placeholder with full combat tracker orchestrating setup → initiative → combat → ended
+- [x] Agent E (frontend-dev): Epic 36 stories 36.1-36.4 (DM Notes System) — COMPLETE (158 tests)
+  - dm-notes.ts: Pure utility functions for markdown parsing, session/NPC/loot operations, currency aggregation, export helpers
+  - DMNotesPanel: Per-character private notes with markdown-lite editor, preview toggle, quick-note tags, DM-only visibility guard
+  - SessionLog: Chronological timeline with newest/oldest sort, text search, tag filtering, add session button
+  - SessionNoteCard: Timeline card with expandable content, structured fields (NPCs/locations/XP/loot), edit/delete confirmation
+  - SessionNoteForm: Add/edit with auto-incremented session number, date picker, markdown summary, NPC/location tags, XP
+  - SessionNotePage: Replaced placeholder with full session detail view at /campaign/:id/session/:sessionId
+  - NPCTracker: Searchable NPC grid, filters by role (6 types) and status (4 types), add NPC form
+  - NPCCard: Role/status badges, expandable detail with auto-save, role toggles, delete confirmation
+  - NPCForm: Compact add form (name required, all others optional), role multi-select, status selection
+  - LootTracker: Sortable loot ledger table, type icons, character assignment, Party Gold widget, total value summary
+  - LootEntryForm: Quick-add with item name, 5 loot types, value, quantity, character/session assignment
+- Checkpoint: PASSED (3907 frontend + 105 backend = 4012 tests)

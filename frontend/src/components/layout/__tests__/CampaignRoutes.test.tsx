@@ -68,7 +68,7 @@ describe('Campaign route resolution', () => {
     renderCampaignRoutes('/campaign/camp-001/encounter/enc-001')
 
     expect(
-      await screen.findByText('Combat tracker coming soon.')
+      await screen.findByText('Encounter Setup')
     ).toBeInTheDocument()
   })
 
