@@ -59,7 +59,7 @@ export function SaveActions({ data, onGoBack }: SaveActionsProps) {
     if (createAnotherAfterSave) {
       setStep(0)
     } else {
-      navigate('/characters')
+      navigate('/')
     }
   }, [reset, setStep, navigate, createAnotherAfterSave])
 
