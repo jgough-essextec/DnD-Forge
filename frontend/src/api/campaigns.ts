@@ -1,12 +1,23 @@
 import { api } from '@/lib/api'
 import type { Campaign, CreateCampaignData } from '@/types/campaign'
 
+/** DRF paginated response shape. */
+interface PaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
 /**
  * Fetch all campaigns for the current user.
  */
 export async function getCampaigns(): Promise<Campaign[]> {
-  const response = await api.get<Campaign[]>('/campaigns/')
-  return response.data
+  const response = await api.get<PaginatedResponse<Campaign> | Campaign[]>('/campaigns/')
+  if (Array.isArray(response.data)) {
+    return response.data
+  }
+  return response.data.results
 }
 
 /**
