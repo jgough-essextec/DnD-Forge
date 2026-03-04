@@ -4,30 +4,30 @@
 
 ## Description
 
-As a developer, I need the app to work on all target browsers. This story covers building a test matrix for core flows across 6 browsers, investigating and fixing Safari-specific issues (IndexedDB, CSS), Firefox-specific issues (print CSS, scrollbar styling), Edge-specific issues (PWA, PDF download), mobile browser testing, and CSS compatibility auditing with PostCSS autoprefixer.
+As a developer, I need the app to work on all target browsers. This story covers building a test matrix for core flows across 6 browsers, investigating and fixing Safari-specific issues (CSS), Firefox-specific issues (print CSS, scrollbar styling), Edge-specific issues (PDF download), mobile browser testing, and CSS compatibility auditing with PostCSS autoprefixer.
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
 - **Target Browsers**: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+, iOS Safari, Chrome Android
 - **Core Flows to Test**: Character creation, character sheet rendering, dice rolling, HP tracking, rest automation, level-up, campaign management, combat tracker, PDF export, import/export
-- **Safari Risk Areas**: IndexedDB reliability (historical bugs), `crypto.getRandomValues()` for dice, `backdrop-filter`, `gap` in flexbox, CSS custom properties, PWA installation on iOS
+- **Safari Risk Areas**: `crypto.getRandomValues()` for dice, `backdrop-filter`, `gap` in flexbox, CSS custom properties, API fetch behavior differences
 - **Firefox Risk Areas**: `@media print` rendering (page breaks differ), `overflow: auto` with nested flex, scrollbar styling
-- **Edge Risk Areas**: Chromium-based so mostly Chrome-compatible, test PWA installation and PDF download
+- **Edge Risk Areas**: Chromium-based so mostly Chrome-compatible, test PDF download behavior
 - **Mobile Risk Areas**: Touch interactions, viewport behavior, virtual keyboard handling
 - **CSS Risk Features**: Container queries, `:has()` selector, `@layer`, CSS nesting — may need vendor prefixes or fallbacks
 
 ## Tasks
 
 - [ ] **T45.1.1** — **Test matrix:** test core flows on each browser: character creation, character sheet rendering, dice rolling, HP tracking, rest automation, level-up, campaign management, combat tracker, PDF export, import/export
-- [ ] **T45.1.2** — **Safari-specific issues:** test IndexedDB reliability (Safari has historically had bugs with IndexedDB). Test `crypto.getRandomValues()` for dice. Test CSS: `backdrop-filter` (used for modals), `gap` in flexbox, CSS custom properties. Test PWA installation on iOS Safari
+- [ ] **T45.1.2** — **Safari-specific issues:** test `crypto.getRandomValues()` for dice. Test CSS: `backdrop-filter` (used for modals), `gap` in flexbox, CSS custom properties. Test API endpoint compatibility and fetch behavior
 - [ ] **T45.1.3** — **Firefox-specific issues:** test `@media print` rendering (Firefox handles page breaks differently). Test CSS: `overflow: auto` with nested flex containers, scrollbar styling
-- [ ] **T45.1.4** — **Edge-specific issues:** Edge uses Chromium so most things should work identically to Chrome. Test PWA installation. Test PDF download behavior
+- [ ] **T45.1.4** — **Edge-specific issues:** Edge uses Chromium so most things should work identically to Chrome. Test PDF download behavior
 - [ ] **T45.1.5** — **Mobile browser testing:** Chrome Android (primary), iOS Safari (critical), Samsung Internet. Test touch interactions, viewport behavior, virtual keyboard handling (numeric inputs shouldn't cause layout shifts)
 - [ ] **T45.1.6** — **CSS compatibility:** audit for any CSS features that need vendor prefixes or aren't supported in older targets: container queries, `has()` selector, `@layer`, nesting. Use PostCSS autoprefixer in the Vite build
 
@@ -39,11 +39,11 @@ As a developer, I need the app to work on all target browsers. This story covers
 - All 10 core flows tested and passing on Edge 90+
 - All 10 core flows tested and passing on iOS Safari
 - All 10 core flows tested and passing on Chrome Android
-- Safari IndexedDB reliability verified (data persists across sessions, no corruption)
+- Safari API endpoint compatibility verified (fetch, session cookies work correctly)
 - `crypto.getRandomValues()` works correctly for dice rolling in all browsers
 - `backdrop-filter` renders correctly in Safari (modals have proper blur effect)
 - Firefox @media print handles page breaks correctly (or documented workaround)
-- Edge PWA installation and PDF download work correctly
+- Edge PDF download works correctly
 - Virtual keyboard on mobile doesn't cause layout shifts
 - PostCSS autoprefixer is configured in Vite build for vendor prefixes
 - Known browser-specific discrepancies are documented with workarounds
@@ -59,7 +59,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should pass all 10 core flows on Edge 90+`
 - `should pass all 10 core flows on iOS Safari`
 - `should pass all 10 core flows on Chrome Android`
-- `should verify Safari IndexedDB data persistence across sessions without corruption`
+- `should verify Safari API endpoint compatibility and session cookie handling`
 - `should verify crypto.getRandomValues() works correctly for dice rolling in all browsers`
 - `should verify backdrop-filter renders correctly for modals in Safari`
 - `should verify PostCSS autoprefixer generates correct vendor prefixes for browserslist targets`

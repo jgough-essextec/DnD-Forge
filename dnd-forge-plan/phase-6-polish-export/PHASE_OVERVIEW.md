@@ -6,7 +6,7 @@
 
 Phase 6 transforms the feature-complete D&D Character Forge app into a production-quality product. This phase does not add new features — it hardens, optimizes, and perfects what exists. Every epic in Phase 6 cuts across the entire codebase.
 
-Key deliverables include pixel-accurate PDF character sheet export matching the official 5e three-page layout, an optimized print stylesheet, a full WCAG 2.1 AA accessibility pass across every interactive surface, performance optimization to meet all NFR targets (FCP <1.5s, TTI <3s, Lighthouse >90, bundle <500KB gzipped), PWA installation with complete offline functionality, and a final mobile responsive polish pass resolving every deferred UX issue from Phases 1-5.
+Key deliverables include pixel-accurate PDF character sheet export matching the official 5e three-page layout (via server-side WeasyPrint rendering), an optimized print stylesheet, a full WCAG 2.1 AA accessibility pass across every interactive surface, performance optimization to meet all NFR targets (FCP <1.5s, TTI <3s, Lighthouse >90, bundle <500KB gzipped, API p95 <200ms), Docker-based deployment infrastructure with CI/CD, and a final mobile responsive polish pass resolving every deferred UX issue from Phases 1-5.
 
 ## Phase 5 Dependencies
 
@@ -21,22 +21,22 @@ Phase 6 assumes ALL features from Phases 1-5 are complete and functional:
 
 | Epic | Name | Stories | Approx Tasks | Focus |
 |------|------|---------|-------------|-------|
-| 39 | PDF Character Sheet Export | 6 | ~30 | Client-side PDF generation matching official 5e layout |
+| 39 | PDF Character Sheet Export | 6 | ~30 | Server-side PDF generation (WeasyPrint) matching official 5e layout |
 | 40 | Print Stylesheet Optimization | 3 | ~14 | @media print CSS for clean browser printing |
 | 41 | Accessibility Audit & Remediation | 5 | ~25 | WCAG 2.1 AA compliance across entire app |
 | 42 | Performance Optimization | 5 | ~25 | Bundle size, lazy loading, rendering, Lighthouse |
-| 43 | Progressive Web App (PWA) | 3 | ~14 | Service worker, offline caching, installability |
+| 43 | Deployment & Infrastructure | 3 | ~14 | Docker Compose, production config, CI/CD pipeline |
 | 44 | Mobile Responsive Final Polish | 4 | ~17 | Every screen at every breakpoint |
 | 45 | Cross-Browser Testing & Bug Fixes | 2 | ~16 | Chrome, Firefox, Safari, Edge, mobile browsers + E2E |
 | 46 | Final Polish & UX Refinements | 6 | ~24 | Loading states, empty states, errors, micro-interactions |
 
 ## Key Deliverables (~155 tasks)
 
-- **PDF Export:** Three-page character sheet PDF, campaign summary PDF, export options UI
+- **PDF Export:** Three-page character sheet PDF (WeasyPrint), campaign summary PDF, export options UI
 - **Print Stylesheet:** Optimized @media print CSS, ink-saving mode, cross-browser print testing
 - **Accessibility:** Keyboard navigation, screen reader support, color contrast, reduced motion, form accessibility
-- **Performance:** Bundle <500KB, SRD lazy loading, rendering optimization, Lighthouse >90, stress testing
-- **PWA:** Service worker, offline caching, web app manifest, install prompt, offline UX indicators
+- **Performance:** Bundle <500KB, SRD lazy loading, rendering optimization, Lighthouse >90, API latency targets, stress testing
+- **Deployment:** Docker Compose setup, production Nginx/Gunicorn config, CI/CD pipeline, health checks
 - **Mobile Polish:** All screens at all breakpoints, touch interactions, landscape mode
 - **Cross-Browser:** Manual testing on 6 browsers, Playwright E2E test suite with 10 critical flows
 - **Final Polish:** Skeleton screens, empty states, error boundaries, micro-interactions, manual override system, settings
@@ -64,7 +64,8 @@ Phase 6 inherits a collection of "do it later" items explicitly deferred during 
 | First Contentful Paint | < 1.5s | Needs measurement and optimization |
 | Time to Interactive | < 3s | Needs measurement and optimization |
 | Lighthouse Score | > 90 (all categories) | Needs audit |
-| Offline Support | Full functionality (PWA) | Not yet implemented |
+| API Response Time (p95) | < 200ms | Needs measurement |
+| API Response Time (p99) | < 500ms | Needs measurement |
 | Bundle Size | < 500KB (gzipped, excluding SRD data) | Needs measurement |
 | SRD Data Size | Lazy-loaded, < 2MB total | Needs verification |
 | Browser Support | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+ | Needs cross-browser testing |
@@ -93,10 +94,10 @@ Epic 42 (Performance) <-- should follow feature work to measure accurately
   |   |-- Story 42.4 (Lighthouse) <-- measure after optimizations
   |   +-- Story 42.5 (Stress Test) <-- measure after optimizations
   |
-Epic 43 (PWA) <-- depends on performance work (don't cache bloated bundles)
-  |   |-- Story 43.1 (Service Worker) <-- core PWA
-  |   |-- Story 43.2 (Manifest) <-- core PWA
-  |   +-- Story 43.3 (Offline UX) <-- after service worker works
+Epic 43 (Deployment & Infrastructure) <-- depends on performance work (optimize before deploying)
+  |   |-- Story 43.1 (Docker Compose) <-- core infrastructure
+  |   |-- Story 43.2 (Production Config) <-- production readiness
+  |   +-- Story 43.3 (CI/CD Pipeline) <-- after Docker setup works
   |
 Epic 44 (Mobile Polish) <-- independent, can be done in parallel
   |
@@ -119,7 +120,7 @@ Epic 46 (Final Polish) <-- last, addresses all remaining rough edges
 2. **Week 11, Day 3:** Epic 39 Stories 39.5-39.6 (PDF export UI + campaign PDF) + Epic 40 (Print stylesheet)
 3. **Week 11, Day 4-5:** Epic 41 (Accessibility audit -- all 5 stories in parallel sweep)
 4. **Week 12, Day 1-2:** Epic 42 (Performance optimization -- bundle, lazy load, rendering, Lighthouse)
-5. **Week 12, Day 2-3:** Epic 43 (PWA -- service worker, manifest, offline UX)
+5. **Week 12, Day 2-3:** Epic 43 (Deployment & Infrastructure -- Docker Compose, production config, CI/CD)
 6. **Week 12, Day 3-4:** Epic 44 (Mobile responsive final polish) + Epic 45 Story 45.1 (Cross-browser manual testing)
 7. **Week 12, Day 5:** Epic 45 Story 45.2 (E2E tests) + Epic 46 (Final polish, loading/empty/error states, micro-interactions, settings)
 
@@ -127,20 +128,20 @@ Epic 46 (Final Polish) <-- last, addresses all remaining rough edges
 
 Before release, ALL of the following must be true:
 
-1. PDF Export: Three-page character sheet PDF matching the official 5e layout, all data populated, vector text, <500KB file size, paper size options, page selection, avatar embedding, offline-capable
+1. PDF Export: Three-page character sheet PDF matching the official 5e layout (via WeasyPrint), all data populated, vector text, <500KB file size, paper size options, page selection, avatar embedding
 2. Campaign PDF: Party summary with one-page-per-character condensed view, DM quick-reference table
 3. Print Stylesheet: Clean browser print output, no UI chrome, proper page breaks, ink-saving option, cross-browser
 4. Accessibility: Full WCAG 2.1 AA compliance -- keyboard navigation, screen reader support, color contrast, reduced motion, form accessibility, touch targets >=44x44px
-5. Performance: FCP <1.5s, TTI <3s, Lighthouse >90 all categories, bundle <500KB gzipped, SRD data <2MB lazy-loaded
-6. Stress Tested: 100+ characters, large campaigns, long combats, no memory leaks
-7. PWA: Installable, full offline functionality, service worker caching, update prompt, proper icons
+5. Performance: FCP <1.5s, TTI <3s, Lighthouse >90 all categories, bundle <500KB gzipped, SRD data <2MB lazy-loaded, API p95 <200ms
+6. Stress Tested: 100+ characters, large campaigns, long combats, no memory leaks, API load tested
+7. Deployment: Docker Compose running all services, production Nginx/Gunicorn config, CI/CD pipeline with automated tests, health check endpoints
 8. Mobile Polish: All screens at all breakpoints, touch interactions, landscape mode
 9. Cross-Browser: 6 browsers tested and functional, Playwright E2E suite with 10 critical flows
 10. Final Polish: Loading states, empty states, error boundaries, micro-interactions, manual overrides, settings complete
 
 ## Open Questions for Phase 6
 
-1. **PDF Library Choice:** jsPDF + html2canvas is specified in the tech spec, but `@react-pdf/renderer` offers a React-native PDF layout approach (JSX to PDF). It produces cleaner vector output but has a steeper learning curve and larger bundle (~250KB). **Recommendation:** Stick with jsPDF for Phase 6 using the hybrid approach (programmatic layout + html2canvas fallback). Evaluate @react-pdf/renderer for a future upgrade if PDF quality needs improvement.
+1. **PDF Rendering:** WeasyPrint is the chosen server-side PDF engine, rendering Django HTML/CSS templates to PDF. This avoids client-side bundle bloat entirely and produces clean vector output via the CSS paged media model. **Open question:** WeasyPrint has limited support for some CSS3 features (e.g., flexbox in paged context) -- complex layouts may require CSS Grid or absolute positioning in the PDF templates.
 
 ## Summary Statistics
 
@@ -155,7 +156,7 @@ Before release, ALL of the following must be true:
 | Browsers Tested | 6 (Chrome, Firefox, Safari, Edge, iOS Safari, Chrome Android) |
 | Breakpoints Verified | 7 (360px, 390px, 428px, 640px, 768px, 1024px, 1440px) |
 | E2E Test Scenarios | 10 critical flows |
-| PWA Icon Sizes | 6+ |
+| Docker Services | 4 (Django, PostgreSQL, Redis, Nginx) |
 | Empty States | 10+ |
 | Loading Skeletons | 5 major screens |
 | Keyboard Shortcuts | 9 |
@@ -168,16 +169,17 @@ Before release, ALL of the following must be true:
 | 40 — Print Stylesheet Optimization | 2 | 9 | 14 | 25 | 5 |
 | 41 — Accessibility Audit & Remediation | 8 | 41 | 18 | 67 | 6 |
 | 42 — Performance Optimization | 17 | 8 | 32 | 57 | 7 |
-| 43 — Progressive Web App (PWA) | 9 | 14 | 14 | 37 | 6 |
+| 43 — Deployment & Infrastructure | 7 | 14 | 10 | 31 | 6 |
 | 44 — Mobile Responsive Final Polish | 0 | 5 | 33 | 38 | 6 |
 | 45 — Cross-Browser Testing & Bug Fixes | 0 | 0 | 20 | 20 | 6 |
 | 46 — Final Polish & UX Refinements | 16 | 48 | 19 | 83 | 8 |
-| **Totals** | **89** | **136** | **169** | **394** | **49** |
+| **Totals** | **87** | **136** | **165** | **388** | **49** |
 
 ### Testing Infrastructure Needed
 - **Test Fixtures**: Pre-created Level 5 Fighter, Level 3 Wizard, Level 5 Cleric (domain spells), Warlock (Pact Magic), multiclass Warlock/Wizard, non-caster Fighter, high-level Wizard (50+ spells), campaign with 4 characters, campaign with 8 characters, 100+ character generation script
-- **Mock Data**: Empty IndexedDB state, corrupt/invalid import files, large backstory (10,000+ chars), large inventory (100+ items), characters with/without avatars
+- **Mock Data**: Empty database state, corrupt/invalid import files, large backstory (10,000+ chars), large inventory (100+ items), characters with/without avatars
 - **Test Utilities**: PDF header byte validator, PDF text extraction (pdf-parse), color contrast calculation utility, touch target measurement, animation fps profiler, bundle size measurement, Lighthouse CI integration
-- **Environment Mocks**: navigator.onLine, prefers-reduced-motion media query, beforeinstallprompt event, requestIdleCallback, navigator.vibrate, window.matchMedia, print media query emulation
-- **Playwright Configuration**: Multi-browser (chromium, firefox, webkit), viewport presets (360px, 390px, 428px, 640x360, 768px, 810px, 1024px, 1024x768, 1440px), offline mode emulation, network request monitoring, service worker verification
-- **Library Mocks**: jsPDF mock, html2canvas mock, JSZip mock, Dexie.js IndexedDB mock, framer-motion mock, @dnd-kit mock
+- **Environment Mocks**: prefers-reduced-motion media query, requestIdleCallback, navigator.vibrate, window.matchMedia, print media query emulation
+- **Playwright Configuration**: Multi-browser (chromium, firefox, webkit), viewport presets (360px, 390px, 428px, 640x360, 768px, 810px, 1024px, 1024x768, 1440px), network request monitoring, API response interception
+- **Library Mocks**: MSW (Mock Service Worker) for API mocking, JSZip mock, framer-motion mock, @dnd-kit mock
+- **Backend Testing**: pytest with Django test client, factory_boy for model fixtures, WeasyPrint output validation, Docker Compose integration tests

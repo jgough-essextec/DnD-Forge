@@ -12,7 +12,7 @@ Address all the small UX improvements deferred from earlier phases. This is the 
 |-------|-------|-------|-------|
 | 46.1 | Loading States & Skeleton Screens | 5 | Gallery skeleton, sheet skeleton, campaign skeleton, SRD loading, PDF generation loading |
 | 46.2 | Empty States | 1 (10 states) | Audit and implement helpful empty states with icons, messages, and CTAs for all zero-content views |
-| 46.3 | Error States & Recovery | 4 | Global error boundary, IndexedDB errors, import errors, network errors (future-proofing) |
+| 46.3 | Error States & Recovery | 4 | Global error boundary, API errors, import errors, network connectivity errors |
 | 46.4 | Micro-Interactions & Delight | 7 | Button feedback, toasts, HP animation, level-up celebration, nat-20, card hover, transition polish |
 | 46.5 | Manual Override System | 4 | Override indicator, override storage, reset to computed, override persistence across level-ups |
 | 46.6 | Settings & Preferences Polish | 3 | Settings page audit, preference persistence, first-run welcome experience |
@@ -21,10 +21,10 @@ Address all the small UX improvements deferred from earlier phases. This is the 
 
 - **Skeleton Screens:** Grey pulsing rectangle placeholders matching actual layouts, fade to real content
 - **Empty States:** Illustrative icon + descriptive message + primary action CTA for 10+ zero-content views
-- **Error Boundaries:** React error boundary with friendly UI, emergency data export, categorized error handling
+- **Error Boundaries:** React error boundary with friendly UI, API error handling (4xx/5xx), categorized error display with retry options
 - **Micro-Interactions:** 60fps animations using transform/opacity only, respecting reduced motion
-- **Manual Overrides:** Dual storage (override + computed), visual indicator (broken chain icon), reset action
-- **Settings:** All preferences in IndexedDB, immediate application, survive restarts
+- **Manual Overrides:** Dual storage (override + computed) via API, visual indicator (broken chain icon), reset action
+- **Settings:** User preferences stored via Django REST API, immediate application, persist across sessions
 
 ## Dependencies
 
@@ -57,7 +57,7 @@ Address all the small UX improvements deferred from earlier phases. This is the 
 - Skeleton screen accessibility (aria-busy, aria-label) not specified
 - Empty state race condition with skeleton screens (briefly showing empty before data loads) not addressed
 - React error boundary limitation (doesn't catch event handler or async errors) -- catch strategy needed
-- Emergency "Export All Data" failure scenario (completely corrupted IndexedDB) not addressed
+- API error classification (transient vs. permanent, retryable vs. non-retryable) not fully defined
 - Sound effects toggle needed in settings but not in acceptance criteria for Story 46.4
 - Screen-edge flash for nat-20 could be a vestibular trigger under reduced motion -- not explicitly addressed
 - "Clear All Data" double confirmation (type "DELETE") mentioned in notes but not in acceptance criteria

@@ -11,15 +11,15 @@ Verify the app works correctly on all supported browsers (Chrome 90+, Firefox 90
 | Story | Title | Tasks | Focus |
 |-------|-------|-------|-------|
 | 45.1 | Cross-Browser Functional Testing | 6 | Test matrix across 6 browsers, Safari/Firefox/Edge-specific issues, mobile browsers, CSS compatibility |
-| 45.2 | E2E Test Suite | 10 | Playwright setup, character creation, sheet rendering, dice rolling, session play, level-up, PDF export, campaign flow, import/export, offline |
+| 45.2 | E2E Test Suite | 10 | Playwright setup, character creation, sheet rendering, dice rolling, session play, level-up, PDF export, campaign flow, import/export, API error handling |
 
 ## Technical Approach
 
 - **Target Browsers:** Chrome 90+, Firefox 90+, Safari 15+, Edge 90+, iOS Safari, Chrome Android
-- **Known Risk Areas:** Safari IndexedDB reliability, Firefox @media print, CSS feature support (container queries, :has(), @layer)
+- **Known Risk Areas:** Firefox @media print, CSS feature support (container queries, :has(), @layer), API fetch/CORS behavior differences across browsers
 - **E2E Framework:** Playwright with pre-created fixtures (Level 5 Fighter, Level 3 Wizard, campaign with 4 characters)
 - **CSS Compatibility:** PostCSS autoprefixer in Vite build for vendor prefixes
-- **10 Critical E2E Flows:** Character creation (all 12 classes), sheet rendering, dice rolling, session play, level-up, PDF export, campaign flow, import/export, offline operation
+- **10 Critical E2E Flows:** Character creation (all 12 classes), sheet rendering, dice rolling, session play, level-up, PDF export, campaign flow, import/export, API error recovery, authentication flow
 
 ## Dependencies
 
@@ -46,5 +46,6 @@ Verify the app works correctly on all supported browsers (Chrome 90+, Firefox 90
 - Virtual keyboard handling on mobile difficult to test with Playwright alone
 - Story 40.3 print testing scope overlap with 45.1 cross-browser testing not resolved
 - Flaky test detection and retry strategy not specified
-- Test isolation with shared IndexedDB state between tests needs clarification
+- Test isolation with shared database state between tests needs clarification (test database per run vs. transaction rollback)
 - Character creation tests for all 12 classes parallelization strategy not defined
+- Cross-browser API fetch behavior (AbortController, streaming responses) not tested

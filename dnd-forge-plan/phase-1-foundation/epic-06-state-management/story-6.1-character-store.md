@@ -3,79 +3,81 @@
 > **Epic 6: Zustand State Management Stores** | **Phase 1: Foundation** (Weeks 1-2)
 
 ## Description
-As a developer, I need a Zustand store that manages the active character state and bridges to the database layer.
+As a developer, I need React Query hooks for character data (server state) and a minimal Zustand store for UI-only character selection state, so that all character data flows through the Django REST API with automatic caching, background refetching, and cache invalidation on mutations.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
-- **Zustand**: A lightweight state management library that works with React hooks. Stores are created with `create()` and consumed via `useStore()` hooks. No providers needed
-- **Store state shape**: `{ activeCharacter: Character | null; characters: CharacterSummary[]; loading: boolean; error: string | null }`
-  - `activeCharacter`: The currently loaded/editing character (full object). Null when no character is selected
-  - `characters`: Array of CharacterSummary objects for the gallery view. Lightweight projections, not full character data
-  - `loading`: True while async operations (database reads/writes) are in progress
-  - `error`: Error message from the last failed operation. Null when no error
-- **Database bridge**: The store's actions call the database layer functions (Story 5.2) for persistence. The store provides a reactive layer on top of the database
-- **Auto-recalculation**: When the active character changes (ability scores, equipment, level, etc.), the store should automatically trigger the calculation engine (Epic 4) to recompute all derived stats (AC, HP max, skill modifiers, spell save DC, etc.) and update the character object
-- **Field updater**: A generic `updateField(path, value)` function that updates any field on the active character. This avoids writing separate actions for every possible field update. The path uses dot notation (e.g., "abilityScores.strength", "equipment[0].isEquipped")
+- **React Query**: Server state library that manages fetching, caching, synchronizing, and updating server data. Provides `useQuery` for reads, `useMutation` for writes, automatic cache invalidation via `queryClient.invalidateQueries()`, and built-in loading/error states
+- **Zustand**: Used only for UI-local state. The character store holds a single `activeCharacterId` pointer — no character data lives in Zustand
+- **API layer**: An Axios-based API module (`api/characters.ts`) provides typed functions for all character endpoints: `getCharacters()`, `getCharacter(id)`, `createCharacter(data)`, `updateCharacter(id, data)`, `deleteCharacter(id)`
+- **Query keys**: `['characters']` for the list, `['character', id]` for a single character. Mutations invalidate these keys to keep the cache fresh
+- **Derived stats**: The Django backend computes all derived stats (AC, HP, modifiers, etc.) and returns them in the character response. The frontend does not run a calculation engine — it displays what the API returns
 
 ## Tasks
-- [ ] **T6.1.1** — Create `stores/characterStore.ts` with state: `{ activeCharacter: Character | null; characters: CharacterSummary[]; loading: boolean; error: string | null }`
-- [ ] **T6.1.2** — Implement actions: `loadCharacters()`, `loadCharacter(id)`, `saveCharacter()`, `createNewCharacter()`, `deleteCharacter(id)`, `duplicateCharacter(id)`
-- [ ] **T6.1.3** — Implement `updateField(path: string, value: any)` — generic field updater with auto-recalculation trigger
-- [ ] **T6.1.4** — Implement computed derivations: whenever the character changes, recompute all derived stats via the calculation engine
-- [ ] **T6.1.5** — Write tests: store initializes empty, loading a character populates state, updates trigger recalculation
+- [ ] **T6.1.1** — Create `api/characters.ts` — Axios API layer with typed functions: `getCharacters(): Promise<CharacterSummary[]>`, `getCharacter(id: string): Promise<Character>`, `createCharacter(data: CreateCharacterPayload): Promise<Character>`, `updateCharacter(id: string, data: Partial<Character>): Promise<Character>`, `deleteCharacter(id: string): Promise<void>`
+- [ ] **T6.1.2** — Create `hooks/useCharacters.ts` — `useCharacters()` hook wrapping `useQuery(['characters'], () => api.getCharacters())` for fetching the character list with loading and error states
+- [ ] **T6.1.3** — Create `hooks/useCharacter.ts` — `useCharacter(id)` hook wrapping `useQuery(['character', id], () => api.getCharacter(id), { enabled: !!id })` for fetching a single character
+- [ ] **T6.1.4** — Create `hooks/useCharacterMutations.ts` — `useCreateCharacter()`, `useUpdateCharacter()`, `useDeleteCharacter()` hooks using `useMutation` with `onSuccess` callbacks that call `queryClient.invalidateQueries(['characters'])` and `queryClient.invalidateQueries(['character', id])` as appropriate
+- [ ] **T6.1.5** — Create `stores/uiStore.ts` with Zustand — state: `{ activeCharacterId: string | null }`, action: `setActiveCharacterId(id: string | null)`. No character data in Zustand
+- [ ] **T6.1.6** — Write tests: Vitest + MSW for React Query hook tests (mock API responses), simple Zustand tests for UI store
 
 ## Acceptance Criteria
-- The store initializes with `activeCharacter: null`, empty `characters` array, `loading: false`, `error: null`
-- `loadCharacters()` fetches all character summaries from the database and populates the `characters` array
-- `loadCharacter(id)` fetches the full character from the database, sets it as `activeCharacter`, and triggers recalculation
-- `saveCharacter()` persists the active character to the database via `updateCharacter()`
-- `createNewCharacter()` calls `createCharacter()` and sets the result as `activeCharacter`
-- `deleteCharacter(id)` removes from database and updates the `characters` list
-- `duplicateCharacter(id)` creates a clone and adds it to the `characters` list
-- `updateField()` updates the specified field path on `activeCharacter` and triggers auto-recalculation
-- Derived stats (AC, HP, modifiers, etc.) are automatically recalculated when `activeCharacter` changes
-- All async actions properly set `loading` and `error` states
-- Tests verify initialization, loading, updates, and recalculation triggers
+- React Query manages all character server state — no character data is stored in Zustand
+- `useCharacters()` returns `{ data, isLoading, isError, error }` for the character list
+- `useCharacter(id)` returns `{ data, isLoading, isError, error }` for a single character, and is disabled when `id` is null/undefined
+- `useCreateCharacter()` posts to the API and invalidates the `['characters']` query cache on success
+- `useUpdateCharacter()` patches the API and invalidates both `['characters']` and `['character', id]` query caches on success
+- `useDeleteCharacter()` deletes via the API and invalidates the `['characters']` query cache on success
+- Zustand `uiStore` only holds `activeCharacterId` — a pointer, not data
+- Loading and error states are provided by React Query (no manual `loading`/`error` flags)
+- The API layer uses Axios with proper TypeScript return types
+- Tests use MSW to mock API responses and verify hook behavior
 
 ## Testing Requirements
 
 ### Unit Tests (Vitest)
-_For pure functions, calculations, data transforms, utilities, type guards, validators_
+_For Zustand store logic and API layer functions_
 
-- `should initialize with activeCharacter null, empty characters array, loading false, error null`
-- `should populate characters array from database via loadCharacters`
-- `should set activeCharacter from database and trigger recalculation via loadCharacter`
-- `should persist active character to database via saveCharacter`
-- `should create new character and set as activeCharacter via createNewCharacter`
-- `should remove character from database and update characters list via deleteCharacter`
-- `should create clone and add to characters list via duplicateCharacter`
-- `should update nested field on activeCharacter via updateField`
-- `should trigger auto-recalculation of derived stats when activeCharacter changes`
-- `should set loading=true during async operations and false after completion`
-- `should set error message on failed database operation`
+- `should initialize uiStore with activeCharacterId null`
+- `should set activeCharacterId via setActiveCharacterId`
+- `should clear activeCharacterId by setting null`
+- `should export getCharacters, getCharacter, createCharacter, updateCharacter, deleteCharacter from API layer`
+
+### Hook Tests (Vitest + MSW + renderHook)
+_For React Query hooks with mocked API responses_
+
+- `should return character list data via useCharacters on successful fetch`
+- `should return isLoading true while useCharacters fetch is in progress`
+- `should return isError true when useCharacters fetch fails`
+- `should return single character data via useCharacter(id) on successful fetch`
+- `should not fetch when useCharacter is called with null id (enabled: false)`
+- `should invalidate characters query cache after useCreateCharacter succeeds`
+- `should invalidate characters and character query caches after useUpdateCharacter succeeds`
+- `should invalidate characters query cache after useDeleteCharacter succeeds`
+- `should return error state when mutation fails`
 
 ### Test Dependencies
-- Mock database layer (Story 5.2 functions)
-- Mock calculation engine (Epic 4 functions)
+- MSW (Mock Service Worker) for API request interception
+- `@testing-library/react` with `renderHook` for hook testing
+- React Query `QueryClientProvider` wrapper for test renders
 - Character and CharacterSummary type fixtures
 
 ## Identified Gaps
 
-- **Error Handling**: Error recovery mechanism not specified (how does user clear the error state?)
-- **Performance**: Auto-recalculation debouncing for rapid field updates (e.g., point buy) not specified as acceptance criteria
-- **Edge Cases**: updateField with invalid path does not have specified behavior
+- **Optimistic Updates**: Whether mutations should use optimistic updates (update cache before server confirms) is not specified. Consider adding for `useUpdateCharacter` to improve perceived performance
+- **Error Handling**: How mutation errors surface to the user (toast, inline, etc.) is not defined at this layer — that is a UI concern for Phase 2
+- **Stale Time**: React Query `staleTime` and `cacheTime` configuration for character queries is not specified. Defaults may cause unnecessary refetches
 
 ## Dependencies
-- **Depends on:** Story 5.2 (Character CRUD functions), Story 5.4 (auto-save hook), Story 2.8 (Character, CharacterSummary types), Epic 4 (calculation engine for derived stat computation)
-- **Blocks:** All Phase 2+ UI components that display or edit character data
+- **Depends on:** Story 2.8 (Character, CharacterSummary types), Django REST API character endpoints (Epic 5 backend)
+- **Blocks:** All Phase 2+ UI components that display or edit character data, Story 6.2 (wizard finalization uses character mutation)
 
 ## Notes
-- The `updateField` function needs a way to set deeply nested values. Consider using `lodash-es/set` (immutable version) or a custom path-based setter. The path should support dot notation and array indexing
-- Auto-recalculation should be debounced or batched to avoid excessive computation when multiple fields change in rapid succession (e.g., during point buy where the user adjusts multiple scores quickly)
-- The `loading` flag should be set to true before any async operation and false after completion (success or failure). Use try/finally pattern
-- Error handling: failed database operations should set the `error` field with a human-readable message. The UI can display this as a toast notification
-- Consider adding a `derivedStats` computed property or separate object that holds all calculated values (AC, HP, modifiers, etc.) to avoid recalculating on every render
-- The store does NOT use Zustand's persist middleware — character data is persisted via the database layer, not localStorage
+- React Query provides automatic caching, background refetching, and stale-while-revalidate behavior out of the box. This replaces all manual `loading`/`error` state management that a Zustand-only approach would require
+- Zustand is minimal here — it holds only `activeCharacterId` as a UI pointer so components can know which character the user has selected without it being tied to a route parameter
+- The API layer (`api/characters.ts`) should use a shared Axios instance configured with the base URL and Django session auth credentials (`withCredentials: true`)
+- Consider adding `select` options to React Query hooks for data transformation (e.g., sorting characters by name or filtering by class)
+- Cache invalidation strategy: mutations invalidate query keys rather than manually updating the cache. This is simpler and guarantees consistency with the server, at the cost of an extra fetch after each mutation

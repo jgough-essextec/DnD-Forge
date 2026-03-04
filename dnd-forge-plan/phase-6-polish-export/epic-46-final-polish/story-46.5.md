@@ -8,9 +8,9 @@ As a player with homebrew modifications, I need to manually override computed va
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
@@ -37,7 +37,7 @@ As a player with homebrew modifications, I need to manually override computed va
 - "Reset to Computed" action (clicking the override icon) removes the override and restores the computed value
 - Overrides persist through level-ups and other character changes
 - When a computed value changes (e.g., after ability score increase), a notification appears: "[Field] has a manual override of [X], but the calculated value changed to [Y]. Would you like to update?"
-- Override data is stored in IndexedDB as part of the character model
+- Override data is persisted via API as part of the character model
 - Overrides are included in character export (JSON) and preserved on import
 - PDF export displays override values (not computed) for overridden fields
 
@@ -60,7 +60,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should show tooltip "This value is manually set. Calculated value: [N]. Click to reset." on override icon`
 - `should reset field to computed value when override indicator is clicked`
 - `should show notification "[Field] has a manual override of [X], but the calculated value changed to [Y]" after level-up`
-- `should persist overrides in IndexedDB as part of character model`
+- `should persist overrides via API as part of character model`
 - `should include overrides in character JSON export and preserve on import`
 
 ### E2E Tests (Playwright)

@@ -6,9 +6,9 @@
 As a developer, I need functions for spell save DC, spell attack bonus, spell slots (including multiclass), and preparation limits.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Spell save DC formula**: 8 + proficiency bonus + spellcasting ability modifier. Each class uses a different spellcasting ability: Wizard/Fighter(EK)/Rogue(AT) = INT, Cleric/Druid/Ranger = WIS, Bard/Paladin/Sorcerer/Warlock = CHA
 - **Spell attack bonus formula**: Proficiency bonus + spellcasting ability modifier

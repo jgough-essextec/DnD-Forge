@@ -1,72 +1,85 @@
 # Story 5.1 — Database Schema & Initialization
 
-> **Epic 5: Database Layer (IndexedDB via Dexie.js)** | **Phase 1: Foundation** (Weeks 1-2)
+> **Epic 5: Database Layer (Django ORM + PostgreSQL)** | **Phase 1: Foundation** (Weeks 1-2)
 
 ## Description
-As a developer, I need the IndexedDB database schema created and auto-upgrading.
+As a developer, I need Django models defined with proper PostgreSQL schema and migrations so the backend has a reliable, well-indexed relational data layer for characters, campaigns, and user preferences.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
-- **Dexie.js**: A wrapper around IndexedDB that provides a simpler API, TypeScript support, schema versioning with migration, and reactive query hooks. The database is created in the browser and persists across sessions
-- **Database tables**:
-  - `characters` — stores full Character objects. Primary key: `id` (UUID). Indexes on `name` (for search), `campaignId` (for campaign filtering), `isArchived` (for filtering active vs archived), `updatedAt` (for sorting by recency)
-  - `campaigns` — stores Campaign objects. Primary key: `id` (UUID). Indexes on `name` (for search), `joinCode` (for lookup)
-  - `preferences` — stores UserPreferences. Primary key: `id` (single-row table with fixed ID like "user-preferences")
-- **Schema versioning**: Dexie supports schema version migrations. Version 1 defines the initial schema. Future versions can add indexes, tables, or transform data. Each version upgrade runs a migration function
-- **Singleton pattern**: The database instance should be created once and exported as a singleton for use throughout the app. This prevents multiple database connections
-- **TypeScript integration**: Dexie supports generic typing of tables, so `db.characters` returns `Table<Character, string>` enabling type-safe queries
+- **Django ORM with PostgreSQL backend**: All persistence is handled server-side through Django models backed by PostgreSQL. The ORM provides model definitions, field validation, migration generation, and query building
+- **Models**:
+  - `Character` — stores full character data. UUID primary key via `models.UUIDField(default=uuid.uuid4, primary_key=True)`. Foreign keys to `Campaign` (nullable) and `User` (owner). Database indexes on `name`, `campaign`, `is_archived`, `updated_at`
+  - `Campaign` — stores campaign data. UUID primary key. Foreign key to `User` (owner). Unique index on `join_code`
+  - `UserPreferences` — stores per-user application preferences. UUID primary key. OneToOneField to `User`
+- **Django migrations**: Schema changes are managed via `python manage.py makemigrations` and `python manage.py migrate`. Each model change produces a migration file that can be applied forward or rolled back
+- **UUID primary keys**: All models use `models.UUIDField(default=uuid.uuid4, primary_key=True)` instead of auto-incrementing integers, providing globally unique identifiers suitable for distributed systems and client-side ID generation
+- **Foreign keys**: `Character.campaign` (FK to Campaign, nullable), `Character.owner` (FK to User), `Campaign.owner` (FK to User), `UserPreferences.user` (OneToOne to User)
+- **JSONField for complex nested data**: Fields like `ability_scores`, `skills`, `equipment`, and `spells` on Character use `models.JSONField()` to store structured nested data that does not require its own relational tables
+- **Model Meta classes**: Each model defines `class Meta` with `ordering`, `indexes`, and `verbose_name` for proper database behavior and admin integration
 
 ## Tasks
-- [ ] **T5.1.1** — Create `utils/database.ts` defining the Dexie database class with tables: `characters`, `campaigns`, `preferences`
-- [ ] **T5.1.2** — Define indexes: characters indexed on `id`, `name`, `campaignId`, `isArchived`, `updatedAt`; campaigns on `id`, `name`, `joinCode`; preferences on `id`
-- [ ] **T5.1.3** — Implement database version migration strategy (version 1 initial schema)
-- [ ] **T5.1.4** — Create singleton database instance export
-- [ ] **T5.1.5** — Write integration test: database initializes, table count is correct, indexes exist
+- [ ] **T5.1.1** — Create `backend/characters/models.py` with the `Character` model. Fields: `id` (UUIDField, primary_key, default=uuid.uuid4), `name` (CharField, max_length=100), `race` (CharField, max_length=50), `class_name` (CharField, max_length=50), `level` (PositiveIntegerField, default=1), `ability_scores` (JSONField, default=dict), `skills` (JSONField, default=list), `equipment` (JSONField, default=list), `spells` (JSONField, default=list), `background` (CharField, max_length=100, blank=True), `hp` (PositiveIntegerField, default=0), `campaign` (ForeignKey to Campaign, null=True, blank=True, on_delete=SET_NULL), `owner` (ForeignKey to User, on_delete=CASCADE, related_name='characters'), `is_archived` (BooleanField, default=False), `created_at` (DateTimeField, auto_now_add=True), `updated_at` (DateTimeField, auto_now=True). Define `Meta` class with indexes on `name`, `campaign`, `is_archived`, `updated_at`, and `owner`
+- [ ] **T5.1.2** — Create `backend/campaigns/models.py` with the `Campaign` model. Fields: `id` (UUIDField, primary_key, default=uuid.uuid4), `name` (CharField, max_length=200), `description` (TextField, blank=True), `join_code` (CharField, max_length=6, unique=True), `owner` (ForeignKey to User, on_delete=CASCADE, related_name='campaigns'), `settings` (JSONField, default=dict), `created_at` (DateTimeField, auto_now_add=True), `updated_at` (DateTimeField, auto_now=True). Define `Meta` class with indexes on `name` and ordering by `-updated_at`
+- [ ] **T5.1.3** — Create `backend/users/models.py` with the `UserPreferences` model. Fields: `id` (UUIDField, primary_key, default=uuid.uuid4), `user` (OneToOneField to User, on_delete=CASCADE, related_name='preferences'), `theme` (CharField, max_length=10, choices=['light','dark'], default='dark'), `auto_save_enabled` (BooleanField, default=True), `last_active_character` (ForeignKey to Character, null=True, blank=True, on_delete=SET_NULL). Define `Meta` class with verbose_name and verbose_name_plural
+- [ ] **T5.1.4** — Run `python manage.py makemigrations characters campaigns users` and verify that migration files are generated correctly. Run `python manage.py migrate` against a test PostgreSQL database and confirm all tables are created with the expected columns, indexes, and constraints
+- [ ] **T5.1.5** — Write model unit tests verifying: all fields exist with correct types, UUID primary keys are auto-generated, FK constraints enforce referential integrity (deleting a User cascades to Characters/Campaigns, deleting a Campaign sets Character.campaign to NULL), unique constraint on Campaign.join_code, default values are applied, `__str__` methods return meaningful representations
 
 ## Acceptance Criteria
-- The Dexie database class defines all 3 tables (characters, campaigns, preferences)
-- All specified indexes are defined and functional
-- The database initializes without errors on first load
-- The database migrates correctly when the schema version changes
-- The singleton export provides the same instance throughout the application
-- Integration tests verify table existence and index functionality
-- TypeScript generics provide type-safe table operations
+- All three models (`Character`, `Campaign`, `UserPreferences`) are defined in their respective Django apps
+- Migrations generate cleanly with `makemigrations` and apply without errors via `migrate`
+- UUID primary keys are auto-generated on object creation
+- Database indexes exist on `Character.name`, `Character.campaign`, `Character.is_archived`, `Character.updated_at`, and `Character.owner`
+- Database indexes exist on `Campaign.name` and `Campaign.join_code` (unique)
+- Foreign key constraints are enforced: deleting a User cascades to their Characters and Campaigns, deleting a Campaign sets `Character.campaign` to NULL
+- `UserPreferences` has a OneToOne relationship to User ensuring one preferences record per user
+- JSONField columns accept and return structured Python dicts/lists
+- All model unit tests pass
 
 ## Testing Requirements
 
-### Unit Tests (Vitest)
-_For pure functions, calculations, data transforms, utilities, type guards, validators_
+### Unit Tests (pytest + Django TestCase)
+_For model definitions, field validation, constraints, defaults, and relationships_
 
-- `should initialize Dexie database without errors`
-- `should define characters table with correct indexes (id, name, campaignId, isArchived, updatedAt)`
-- `should define campaigns table with correct indexes (id, name, joinCode)`
-- `should define preferences table with id index`
-- `should export singleton database instance (same reference on multiple imports)`
-- `should have version 1 schema defined`
-- `should have TypeScript generics providing type-safe table operations`
-- `should create all 3 tables on first initialization`
+- `should create a Character with auto-generated UUID primary key`
+- `should create a Character with correct default values (level=1, is_archived=False, hp=0)`
+- `should enforce CharField max_length constraints on Character.name and Character.race`
+- `should store and retrieve nested data in Character.ability_scores JSONField`
+- `should store and retrieve list data in Character.skills JSONField`
+- `should cascade delete Characters when owner User is deleted`
+- `should set Character.campaign to NULL when Campaign is deleted (SET_NULL)`
+- `should create a Campaign with auto-generated UUID primary key`
+- `should enforce unique constraint on Campaign.join_code`
+- `should cascade delete Campaigns when owner User is deleted`
+- `should create UserPreferences with OneToOne link to User`
+- `should enforce OneToOne constraint (only one preferences per user)`
+- `should apply default theme='dark' and auto_save_enabled=True on UserPreferences`
+- `should set last_active_character to NULL when referenced Character is deleted`
+- `should verify database indexes exist via Django connection introspection`
 
 ### Test Dependencies
-- `fake-indexeddb` library for mocking IndexedDB in Vitest jsdom environment
-- Character, Campaign, UserPreferences types from Epic 2
+- `pytest` and `pytest-django` for test execution
+- `django.test.TestCase` for transactional test isolation
+- `factory_boy` with `DjangoModelFactory` for creating test fixtures (User, Character, Campaign, UserPreferences)
+- `django.contrib.auth.models.User` for owner/user FK references
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for database initialization failure handling (corrupted IndexedDB, storage quota exceeded)
-- **Edge Cases**: No deleteDatabase() utility specified for development/testing cleanup
-- **Performance**: No specification for IndexedDB storage size limits or warnings
+- **Error Handling**: No specification for handling migration conflicts when multiple developers modify models concurrently (merge migrations)
+- **Edge Cases**: No specification for JSONField schema validation (e.g., ensuring ability_scores has the expected keys). Consider adding model-level `clean()` validation in a future story
+- **Performance**: No specification for database connection pooling settings or query optimization guidelines. Consider adding `django-db-connection-pool` or pgBouncer configuration
 
 ## Dependencies
-- **Depends on:** Story 1.3 (Dexie.js installed), Story 2.8 (Character type), Story 2.9 (Campaign type), Story 2.10 (UserPreferences type)
-- **Blocks:** Story 5.2 (Character CRUD), Story 5.3 (Campaign CRUD), Story 5.4 (Auto-save & Preferences)
+- **Depends on:** Story 1.3 (Django and DRF installed, PostgreSQL configured), Story 2.8 (Character type informs model fields), Story 2.9 (Campaign type informs model fields), Story 2.10 (UserPreferences type informs model fields)
+- **Blocks:** Story 5.2 (Character CRUD API), Story 5.3 (Campaign CRUD API), Story 5.4 (Auto-save & Preferences API)
 
 ## Notes
-- Dexie's schema definition uses a string syntax for indexes: `'++id, name, campaignId, isArchived, updatedAt'`. The `++` prefix denotes auto-increment (not needed here since we use UUIDs), and `&` prefix denotes unique indexes
-- IndexedDB has a limit on the number of indexes per table (varies by browser, typically ~64). Our index count is well within this limit
-- The version 1 migration is just the schema definition. Actual data migration functions become necessary starting from version 2+ when the schema evolves
-- Consider adding a `deleteDatabase()` utility function for development/testing that drops and recreates the database
-- The `preferences` table is essentially a key-value store with a single row. Dexie handles this fine but it's a slightly unusual pattern
-- Integration tests for IndexedDB require either a real browser environment or a mock like `fake-indexeddb` in the Vitest jsdom environment
+- Django's `auto_now_add=True` and `auto_now=True` on DateTimeField handle `created_at` and `updated_at` timestamps automatically. These fields are not editable via forms or serializers by default
+- `JSONField` uses PostgreSQL's native `jsonb` column type, which supports indexing and querying into JSON structures via Django ORM lookups like `ability_scores__strength__gt=10`
+- The `related_name` on ForeignKey fields enables reverse lookups: `user.characters.all()`, `user.campaigns.all()`, `campaign.characters.all()`
+- Consider adding a custom model manager for Character that filters out archived characters by default (e.g., `Character.active.all()` vs `Character.objects.all()`)
+- UUID primary keys avoid sequential ID enumeration attacks and simplify potential future multi-database or data migration scenarios
+- The `on_delete` behavior is critical: CASCADE for ownership (User deletes take everything), SET_NULL for optional associations (Campaign deletion does not destroy characters)

@@ -4,95 +4,95 @@
 
 ## Description
 
-As a player exporting my character sheet, I need Page 1 to show all combat-relevant stats in a familiar layout. Page 1 reproduces the official D&D 5e character sheet front page with the character header, ability scores column, saving throws, skills, combat stats, hit points, attacks table, personality traits, and features/proficiencies.
+As a user, I want the first page of my character PDF to show core stats in the classic D&D sheet layout. This page is a Django HTML template rendered by WeasyPrint, using CSS Grid and Flexbox to reproduce the official 5e character sheet front page: character header, ability scores column, saving throws, skills, combat stats, hit points, attacks table, personality traits, and features/proficiencies.
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
-- **PDF Layout**: Uses jsPDF direct drawing API with coordinates defined in `utils/pdfLayout.ts`. All measurements in mm. US Letter = 215.9mm x 279.4mm
+- **PDF Layout**: Django HTML template rendered by WeasyPrint. CSS Grid/Flexbox for layout. Print CSS in `static/pdf/styles.css`
 - **Page 1 Structure**: Three-column layout matching official 5e sheet — Left (ability scores, saves, skills), Center (combat stats, HP, attacks), Right (personality, features)
-- **Typography**: Cinzel for headings, Helvetica for body. Sizes defined in `utils/pdfStyles.ts`
-- **Data Source**: Character model from Phases 1-3 with computed values from the calculation engine
+- **Typography**: Cinzel for headings, sans-serif for body, defined in print CSS
+- **Data Source**: Character model from Phases 1-3 with computed values passed as Django template context
 
 ## Tasks
 
-- [ ] **T39.2.1** — **Character header:** name (large, centered), class & level, background, player name, race, alignment, experience points — arranged in a two-row header block with labeled fields
-- [ ] **T39.2.2** — **Ability scores column (left):** six vertical blocks, each containing: score (large number in a box), modifier (derived, in a circle or shield shape below), ability name label. Positioned along the left margin
-- [ ] **T39.2.3** — **Saving throws section:** six rows (one per ability), each with: filled/empty proficiency circle, modifier value, ability name. Adjacent to the ability score column
-- [ ] **T39.2.4** — **Skills section:** 18 rows, each with: filled/empty proficiency circle (double-filled for expertise), modifier value, skill name. Grouped visually below saving throws
-- [ ] **T39.2.5** — **Inspiration & proficiency bonus:** two small boxes at the top of the saves/skills column. Proficiency bonus auto-populated
-- [ ] **T39.2.6** — **Passive Perception:** labeled box below skills showing the computed value
-- [ ] **T39.2.7** — **Combat stats row (center-top):** three prominent boxes: AC (with armor type note), Initiative, Speed. Positioned prominently
-- [ ] **T39.2.8** — **Hit Points block (center):** HP Maximum (labeled), Current HP (large box), Temporary HP (smaller box). Below: Hit Dice (total and type), Death Saves (three success circles, three failure circles)
-- [ ] **T39.2.9** — **Attacks & Spellcasting table (center-bottom):** table with columns: Name, Atk Bonus, Damage/Type. Pre-populated with character's equipped weapons and cantrip attacks. Space for additional rows
-- [ ] **T39.2.10** — **Personality block (right column):** four labeled boxes stacked vertically: Personality Traits, Ideals, Bonds, Flaws. Text auto-sized to fit (reduce font size for long entries)
-- [ ] **T39.2.11** — **Features & Traits (right column, bottom):** scrollable text block listing all racial traits, class features, and feat descriptions. Truncate with "..." if content exceeds available space, with a note: "See full sheet for complete features"
-- [ ] **T39.2.12** — **Proficiencies & Languages (bottom-left):** labeled box listing armor, weapon, tool, and language proficiencies
+- [ ] **T39.2.1** — Create Django template `templates/pdf/page1_core_stats.html`. This is an includable template block that renders the full page 1 layout. It receives the character object and all computed stats via template context
+- [ ] **T39.2.2** — Create CSS layout for page 1 in `static/pdf/styles.css` — CSS Grid-based three-column layout matching the classic character sheet: left column (ability scores, saves, skills), center column (combat stats, HP, attacks), right column (personality, features)
+- [ ] **T39.2.3** — Style ability score blocks: each block displays the score (large number in a bordered box), the modifier (in a smaller overlay circle), and the ability name label. Use CSS Grid for the six vertical blocks along the left column
+- [ ] **T39.2.4** — Add header section to the template: character name (large, centered), class/level, background, race, alignment, XP — arranged in a two-row header block with labeled fields using CSS Flexbox
+- [ ] **T39.2.5** — Implement saving throws and skills list in the template. Saving throws: six rows with proficiency indicator (filled/empty circle via CSS), modifier, ability name. Skills: 18 rows with proficiency indicator (filled/empty/double-ring for expertise), modifier, skill name. Passive Perception box below skills
+- [ ] **T39.2.6** — Implement combat stats section: AC (with armor type note), Initiative, Speed in prominent bordered boxes. Hit Points block: HP max, current HP, temp HP, hit dice, death saves (three success/failure circles)
+- [ ] **T39.2.7** — Implement attacks table: HTML `<table>` with columns Name, Atk Bonus, Damage/Type, pre-populated from character's equipped weapons
+- [ ] **T39.2.8** — Implement right column: personality traits, ideals, bonds, flaws in stacked labeled boxes. Features and traits list below. Proficiencies and languages box at the bottom left
+- [ ] **T39.2.9** — Write test: render the template with a sample Level 5 Fighter character context, convert to PDF via WeasyPrint, and verify the PDF output contains expected text strings (character name, ability scores, skill names)
 
 ## Acceptance Criteria
 
-- Page 1 of the PDF contains all combat-relevant character stats in the official 5e layout
-- All six ability scores render with scores, modifiers, and labels in the left column
-- Saving throws show proficiency indicators and correct modifiers
-- All 18 skills render with proficiency circles (filled/empty/double for expertise) and modifiers
-- Combat stats (AC, Initiative, Speed) are prominently displayed
+- Page 1 Django template renders all core stats in an organized three-column layout matching the classic 5e character sheet
+- All six ability scores display both the score value and the computed modifier in styled blocks
+- Saving throws show proficiency indicators (filled/empty) and correct modifiers for all six abilities
+- All 18 skills render with proficiency indicators (filled/empty/double for expertise) and computed modifiers
+- Skills list is complete and in alphabetical order matching the standard 5e sheet
+- Combat stats (AC, Initiative, Speed) are prominently displayed in bordered boxes
 - Hit points block shows max HP, current HP, temp HP, hit dice, and death saves
-- Attacks table is populated with equipped weapons and cantrip attacks
-- Personality traits, ideals, bonds, and flaws render with auto-sized text
-- Features and proficiencies are listed with appropriate truncation for overflow
-- All computed values (modifiers, AC, initiative, passive perception) are correctly calculated
+- Attacks table is populated from the character's equipped weapons
+- Personality traits, ideals, bonds, and flaws render in labeled boxes
+- Features, proficiencies, and languages are listed
+- All computed values (modifiers, AC, initiative, passive perception, proficiency bonus) are correct in the rendered output
+- WeasyPrint renders the template to a valid PDF page without errors
 
 ## Testing Requirements
 
-### Unit Tests (Vitest)
-_For pure functions, calculations, data transforms, utilities, type guards, validators_
+### Backend Template Rendering Tests (pytest)
+_For verifying Django template produces correct HTML with character data_
 
-- `should correctly position character header fields (name, class, level, race, alignment) using pdfLayout coordinates`
-- `should render all six ability scores with correct score values and computed modifiers`
-- `should render saving throw modifiers with correct proficiency indicators (filled/empty)`
-- `should render all 18 skills with correct modifiers and proficiency circles (filled/empty/double for expertise)`
-- `should compute and display correct passive perception value`
-- `should auto-size personality trait text to fit within box constraints (minimum 8pt)`
-- `should truncate features text with "..." when content exceeds available space`
+- `should render page1_core_stats.html without template errors for a fully populated Level 5 Fighter`
+- `should include all six ability score values and computed modifiers in the rendered HTML`
+- `should include all 18 skill names with correct modifiers in the rendered HTML`
+- `should include saving throw values with proficiency indicators in the rendered HTML`
+- `should include combat stats (AC, Initiative, Speed) in the rendered HTML`
+- `should include character header fields (name, class, level, race, alignment) in the rendered HTML`
+- `should render correctly for a character with no equipped weapons (empty attacks table)`
+- `should render correctly for a multiclass character with combined class name in the header`
 
-### Functional Tests (React Testing Library)
-_For component rendering, user interactions, state changes, prop variations_
+### Backend PDF Output Tests (pytest + WeasyPrint)
+_For verifying end-to-end PDF generation from the page 1 template_
 
-- `should render Page 1 PDF layout with all sections visible for a complete character`
+- `should produce a valid PDF containing the character name as searchable text`
+- `should produce a PDF where page 1 contains ability score values matching the fixture data`
 
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
 
-- `should generate Page 1 PDF containing all combat-relevant stats for a Level 5 Fighter`
-- `should generate Page 1 with correct AC, Initiative, and Speed values in combat stats row`
-- `should include death save circles and hit dice in the HP block on Page 1`
+- `should download a PDF for a Level 5 Fighter and verify it contains combat-relevant stat text`
 
 ### Test Dependencies
-- Level 5 Fighter fixture with all ability scores, skills, proficiencies, and equipment populated
-- Level 3 Wizard fixture for testing spellcasting attack entries
-- pdfLayout coordinate constants from Story 39.1
-- pdfStyles typography constants from Story 39.1
+- Level 5 Fighter factory/fixture with all ability scores, skills, proficiencies, and equipment populated
+- Level 3 Wizard factory/fixture for testing spellcasting attack entries in the attacks table
+- Multiclass character fixture for testing header display
+- PDF text extraction utility (e.g., `pdfplumber` or `PyPDF2`) for verifying text content in generated PDFs
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for behavior when character has no equipped weapons for attacks table
-- **Edge Cases**: Behavior for characters with very long feature lists (where truncation kicks in) not precisely defined; how many features fit before overflow?
-- **Edge Cases**: No specification for multiclass characters with multiple class names in header
-- **Accessibility**: PDF accessibility (tagged PDF, reading order) not mentioned
+- **Error Handling**: No specification for behavior when the template encounters missing data (e.g., null ability scores). Template should use `{{ value|default:"--" }}` filters for safety
+- **Edge Cases**: Behavior for characters with very long feature lists that overflow the page 1 allocated space. CSS `overflow: hidden` or continuation to page 2 needs a defined approach
+- **Edge Cases**: Multiclass characters with multiple class names in the header need a defined display format (e.g., "Fighter 3 / Wizard 2")
+- **Accessibility**: PDF accessibility (tagged PDF, reading order) not addressed. WeasyPrint has limited support for PDF/UA tagging
 
 ## Dependencies
 
-- Story 39.1 (PDF generation architecture must be in place)
-- Character calculation engine from Phase 3 (derived stats)
-- Character data model with all fields populated
+- Story 39.1 (PDF generation architecture — WeasyPrint service, base template, print CSS must be in place)
+- Character calculation engine from Phase 3 (derived stats: modifiers, AC, initiative, proficiency bonus, passive perception)
+- Character data model with all fields populated (Django ORM)
 
 ## Notes
 
-- Text auto-sizing is critical for personality traits and features — long entries should reduce font size to fit, with a minimum readable size of 8pt
-- Proficiency circles should match the style used in the app: filled (proficient), empty (not proficient), double-ring (expertise)
-- The layout should closely match the official 5e character sheet for familiarity
+- HTML/CSS templates replace jsPDF coordinate-based drawing entirely. Use CSS Grid for the three-column page layout and Flexbox for individual sections. WeasyPrint supports CSS3 paged media, Grid, and Flexbox
+- Proficiency indicators can be implemented with CSS-styled spans: filled circle (proficient), empty circle (not proficient), double-ring (expertise). Use `border-radius: 50%` and `background` properties
+- The layout should closely match the official 5e character sheet for player familiarity
+- For long personality traits or feature lists, CSS `overflow: hidden` with `text-overflow: ellipsis` provides a cleaner approach than JavaScript-based font resizing. Alternatively, use a smaller base font size (8pt) for these sections to accommodate more content

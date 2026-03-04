@@ -8,9 +8,9 @@ As a player, I need a "Short Rest" button that walks me through spending hit dic
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### D&D 5e Short Rest Rules (Complete)
@@ -128,7 +128,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - Mock character data for single-class and multiclass characters with hit dice, HP, class features
 - Mock dice engine for hit die roll results
 - Mock Arcane Recovery modal integration (Story 28.3)
-- Mock Zustand character store for feature recovery state
+- MSW (Mock Service Worker) to mock PUT /api/characters/:id for persisting feature recovery state
 - Feature recovery mapping data
 
 ## Identified Gaps

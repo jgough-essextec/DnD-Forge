@@ -6,9 +6,9 @@
 As a developer, I need functions to compute modifiers, apply racial bonuses, and validate ability score generation methods.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Calculation engine architecture**: Pure functions with no side effects, no UI dependencies, no state management. Functions take data in and return computed results. Fully unit tested with >95% line coverage
 - **Ability score modifier formula**: `Math.floor((score - 10) / 2)`. This produces: score 1 = -5, score 8 = -1, score 10 = 0, score 12 = +1, score 14 = +2, score 16 = +3, score 18 = +4, score 20 = +5

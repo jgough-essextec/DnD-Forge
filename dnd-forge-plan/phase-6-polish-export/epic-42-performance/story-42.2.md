@@ -8,9 +8,9 @@ As a developer, I need SRD data to load on demand, not at initial page load, to 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90, SRD data <2MB total
 - **Accessibility Target**: WCAG 2.1 AA compliance
@@ -93,7 +93,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Notes
 
-- The service worker (Epic 43) will pre-cache ALL tiers for offline use — but the initial page load should only include Tier 1
+- Server-side caching and CDN can pre-cache SRD data for fast responses — but the initial page load should only include Tier 1
 - Vite's JSON import supports dynamic imports natively: `const data = await import('./data/spells.json')`
 - Consider splitting spells.json by level (spells-1.json, spells-2.json, etc.) if the single file is too large
 - The DataLoader should handle concurrent requests for the same data file (dedup in-flight requests)

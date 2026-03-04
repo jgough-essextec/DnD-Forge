@@ -6,9 +6,9 @@
 As a player, I need to see my AC, initiative bonus, and speed prominently displayed at the top of the center column.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Center Column Layout**: ~35% width on desktop. Combat stats row at top, followed by HP block, hit dice/death saves, then attacks section
 - **AC Computation**: Depends on equipped armor. Default: 10 + DEX mod. Light armor: armor base + DEX mod. Medium armor: armor base + DEX mod (max 2). Heavy armor: armor base (no DEX). Shield: +2. Special formulas: Barbarian Unarmored Defense (10 + DEX + CON), Monk Unarmored Defense (10 + DEX + WIS)

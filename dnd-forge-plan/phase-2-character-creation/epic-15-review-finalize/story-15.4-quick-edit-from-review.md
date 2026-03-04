@@ -8,10 +8,10 @@ As a player reviewing my character, I need to make last-minute tweaks without na
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Quick Edit Approach**: Each section of the character preview (ability scores, equipment, spells, background, etc.) has an edit icon. Clicking it opens a modal that renders the corresponding wizard step component. Saving within the modal updates the wizard store and immediately recalculates the preview
 - **Modal Component**: QuickEditModal wraps any step component in a dialog overlay. The step component works the same as in the wizard flow but renders in a modal context
 - **Inline Name Edit**: The character name in the review header is directly editable — clicking it turns it into an inline text input

@@ -6,9 +6,9 @@
 As a developer, I need functions that compute what recovers on short and long rests.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Short Rest** (1+ hours): A period of downtime where characters can spend hit dice to recover HP and some features recharge:
   - **Spend Hit Dice**: The player chooses how many hit dice to spend. For each hit die spent, roll the die + CON modifier to recover that many HP (minimum 0 recovery per die). Hit dice spent are tracked (cannot exceed total available)

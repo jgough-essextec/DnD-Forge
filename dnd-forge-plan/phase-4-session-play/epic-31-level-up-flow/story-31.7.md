@@ -4,13 +4,13 @@
 
 ## Description
 
-As a player, I need to see a summary of all level-up changes before confirming, and have the character sheet update to reflect the new level. The review screen consolidates every change made during the level-up wizard into a single view, allows the player to confirm or cancel, and on confirmation commits all changes to IndexedDB with a full recalculation of derived stats.
+As a player, I need to see a summary of all level-up changes before confirming, and have the character sheet update to reflect the new level. The review screen consolidates every change made during the level-up wizard into a single view, allows the player to confirm or cancel, and on confirmation commits all changes via API (PUT /api/characters/:id) with a full recalculation of derived stats.
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### Level Up Review Summary Categories
@@ -38,7 +38,7 @@ The review screen shows all changes organized by category:
 1. Take a pre-level-up snapshot (named "Before Level [old] -> [new]") for undo safety
 2. Commit all changes to the character object
 3. Run the full Phase 1 calculation engine to recalculate ALL derived stats
-4. Save to IndexedDB via the Phase 3 auto-save system
+4. Save via PUT /api/characters/:id using React Query mutation (Phase 3 auto-save system)
 5. Update the character gallery card with the new level
 6. Show a celebration message: "Welcome to Level [N]!"
 
@@ -64,7 +64,7 @@ The review screen shows all changes organized by category:
   - Spell Slots: before/after table (if caster)
   - New Spells: list of new spell names (if caster)
   - Swapped Spell: old -> new (if applicable)
-- [ ] **T31.7.2** — "Apply Level Up" button: commits all changes to the character in IndexedDB. Runs the full calculation engine to recalculate all derived stats. Shows a success celebration: "Welcome to Level [N]!"
+- [ ] **T31.7.2** — "Apply Level Up" button: commits all changes to the character via PUT /api/characters/:id using React Query mutation. Runs the full calculation engine to recalculate all derived stats. Shows a success celebration: "Welcome to Level [N]!"
 - [ ] **T31.7.3** — "Cancel Level Up" button: discards all level-up state and returns to the character sheet at the current level. Confirmation dialog: "Discard all level-up choices?"
 - [ ] **T31.7.4** — Update the character gallery card to show the new level immediately after applying
 - [ ] **T31.7.5** — If XP-based progression: auto-update XP display. If milestone-based: allow the DM to simply click "Level Up" without XP considerations
@@ -122,13 +122,13 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ### Test Dependencies
 - Mock level-up state with changes from all previous steps (HP, features, ASI, subclass, spells)
 - Mock Phase 1 calculation engine for full recalculation
-- Mock Phase 3 auto-save system (IndexedDB persistence)
+- MSW (Mock Service Worker) to mock PUT /api/characters/:id for persistence (Phase 3 auto-save system)
 - Mock Phase 3 undo/snapshot system
 - Mock Phase 3 character gallery for card update verification
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for IndexedDB save failure during apply; no rollback mechanism if recalculation fails; no specification for what happens if the snapshot creation fails
+- **Error Handling**: No specification for API save failure during apply; no rollback mechanism if recalculation fails; no specification for what happens if the snapshot creation fails
 - **Edge Cases**: Milestone vs XP-based progression display difference not fully specified in tasks; celebration message/animation details not specified (confetti mentioned in notes but not tasks)
 - **Accessibility**: Celebration message should be ARIA-announced; cancel confirmation dialog needs focus trapping; summary screen should be navigable by keyboard
 - **Performance**: Full recalculation time after level-up apply not specified; gallery card update should be near-instant
@@ -137,7 +137,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 - Stories 31.1-31.6 (all previous level-up wizard steps provide the data to summarize)
 - Phase 1 calculation engine (for full stat recalculation)
-- Phase 3 auto-save system (for IndexedDB persistence)
+- Phase 3 auto-save system (for API persistence via React Query mutation)
 - Phase 3 character gallery (for card update)
 - Phase 3 undo/snapshot system (for pre-level-up backup)
 

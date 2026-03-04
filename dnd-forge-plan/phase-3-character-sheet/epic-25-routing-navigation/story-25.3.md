@@ -6,11 +6,11 @@
 As a player, I need a settings page or panel to configure my preferences (dice sounds, auto-save, theme, default ability score method).
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
-- **Settings Storage**: IndexedDB `preferences` table (from Phase 1 database layer)
+- **Settings Storage**: API-backed preferences (GET/PUT /api/preferences/) via React Query
 - **Settings Access**: Via the nav bar gear icon. Can be a dedicated page or slide-out panel
 - **Available Settings**:
   - Default Player Name: pre-fills in creation wizard
@@ -22,11 +22,11 @@ As a player, I need a settings page or panel to configure my preferences (dice s
   - Reduced Motion: on/off toggle (disables all animations for accessibility)
   - Dark Mode / Light Mode: toggle (default: dark)
   - Gallery Default Sort: dropdown matching gallery sort options
-- **Danger Zone**: "Clear All Data" requires typing "DELETE" to confirm. "Export All Data" exports entire IndexedDB
+- **Danger Zone**: "Clear All Data" requires typing "DELETE" to confirm. "Export All Data" exports all user data via API
 - **About Section**: App version, OGL license acknowledgments, SRD link, credits
 
 ## Tasks
-- [ ] **T25.3.1** — Create `pages/SettingsPage.tsx` or `components/layout/SettingsPanel.tsx` — accessible from the nav bar gear icon. Settings stored in the IndexedDB `preferences` table
+- [ ] **T25.3.1** — Create `pages/SettingsPage.tsx` or `components/layout/SettingsPanel.tsx` — accessible from the nav bar gear icon. Settings persisted via API (PUT /api/preferences/) using React Query mutation
 - [ ] **T25.3.2** — Available settings:
   - **Default Player Name:** pre-fills in the creation wizard
   - **Dice Sound Effects:** toggle on/off
@@ -38,12 +38,12 @@ As a player, I need a settings page or panel to configure my preferences (dice s
   - **Dark Mode / Light Mode:** toggle (default: dark)
   - **Gallery Default Sort:** dropdown matching gallery sort options
 - [ ] **T25.3.3** — "Clear All Data" danger zone at the bottom of settings: "Delete all characters, campaigns, and preferences. This cannot be undone." Requires typing "DELETE" to confirm
-- [ ] **T25.3.4** — "Export All Data" button that exports the entire IndexedDB database as a single JSON backup file
+- [ ] **T25.3.4** — "Export All Data" button that exports all user data (fetched via GET /api/export/) as a single JSON backup file
 - [ ] **T25.3.5** — "About" section: app version, license acknowledgments (OGL for SRD content), link to D&D 5e SRD, credits
 
 ## Acceptance Criteria
 - Settings page/panel is accessible from the nav bar gear icon
-- All listed settings are configurable and persist to IndexedDB preferences table
+- All listed settings are configurable and persist via API (PUT /api/preferences/)
 - Default Player Name pre-fills in the creation wizard
 - Dice settings (sound, animation speed, inline results) affect dice engine behavior
 - Auto-Save Interval setting affects the debounce timer in edit mode
@@ -52,8 +52,8 @@ As a player, I need a settings page or panel to configure my preferences (dice s
 - Dark/Light Mode toggle switches the app theme
 - Gallery Default Sort setting affects the gallery's initial sort order
 - "Clear All Data" requires typing "DELETE" and confirms before executing
-- "Clear All Data" deletes all characters, campaigns, and preferences from IndexedDB
-- "Export All Data" exports the entire database as a JSON file
+- "Clear All Data" deletes all characters, campaigns, and preferences via API (DELETE /api/user-data/)
+- "Export All Data" exports all user data via API as a JSON file
 - "About" section shows version, OGL acknowledgments, SRD link, and credits
 - Settings changes take effect immediately without requiring a page reload
 
@@ -62,7 +62,7 @@ As a player, I need a settings page or panel to configure my preferences (dice s
 ### Unit Tests (Vitest)
 _For pure functions, calculations, data transforms, utilities, type guards, validators_
 
-- `should serialize preferences to IndexedDB-compatible format`
+- `should serialize preferences to API-compatible format`
 - `should validate auto-save interval options (500ms, 1s, 2s, manual)`
 - `should validate ability score method options (Standard Array, Point Buy, Rolling)`
 
@@ -71,7 +71,7 @@ _For component rendering, user interactions, state changes, prop variations_
 
 - `should render settings page accessible from nav bar gear icon`
 - `should display all listed settings with correct control types (toggles, dropdowns)`
-- `should persist Default Player Name to IndexedDB preferences`
+- `should persist Default Player Name via API preferences endpoint`
 - `should toggle Dice Sound Effects on/off`
 - `should change Dice Animation Speed (fast/normal/dramatic)`
 - `should change Auto-Save Interval setting`
@@ -82,8 +82,8 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should change Gallery Default Sort setting`
 - `should render "Clear All Data" danger zone requiring "DELETE" confirmation`
 - `should not execute clear when incorrect text is typed`
-- `should delete all data from IndexedDB when "DELETE" is correctly typed and confirmed`
-- `should render "Export All Data" button that exports entire database`
+- `should delete all data via API when "DELETE" is correctly typed and confirmed`
+- `should render "Export All Data" button that exports all user data via API`
 - `should display About section with version, OGL acknowledgments, SRD link, credits`
 - `should apply settings changes immediately without page reload`
 
@@ -94,20 +94,20 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should toggle Reduced Motion and verify animations are disabled across the app`
 
 ### Test Dependencies
-- Mock IndexedDB preferences table
+- MSW (Mock Service Worker) to mock preferences API endpoints (GET/PUT /api/preferences/)
 - Mock dice engine for dice-related settings
-- Mock Zustand stores for theme and preference state
+- Mock Zustand stores for theme state (ephemeral UI state)
 - Mock auto-save system from Story 20.2
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for IndexedDB preferences write failure
+- **Error Handling**: No specification for API preferences write failure
 - **Accessibility**: No specification for settings form ARIA labels, no keyboard navigation for settings controls
 - **Edge Cases**: No specification for "Export All Data" with very large databases (many characters with avatars)
-- **Loading/Empty States**: No specification for settings loading state while preferences are read from IndexedDB
+- **Loading/Empty States**: No specification for settings loading state while preferences are fetched from API
 
 ## Dependencies
-- Phase 1 IndexedDB preferences table for storage
+- Django REST API preferences endpoints (GET/PUT /api/preferences/) and React Query for state management
 - Phase 1 dice engine (affected by dice settings)
 - Story 20.2 (Auto-Save) — auto-save interval setting
 - Story 21.2 (Gallery Sort) — gallery default sort setting

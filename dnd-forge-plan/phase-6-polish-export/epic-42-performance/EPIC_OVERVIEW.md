@@ -12,15 +12,16 @@ Meet all non-functional performance requirements — FCP <1.5s, TTI <3s, Lightho
 |-------|-------|-------|-------|
 | 42.1 | Bundle Size Analysis & Reduction | 5 | Bundle visualization, code splitting, tree-shaking, font optimization, image optimization |
 | 42.2 | SRD Data Lazy Loading | 4 | Data splitting into tiers, DataLoader utility, preloading hints, payload measurement |
-| 42.3 | Rendering Performance | 6 | Gallery virtualization, memoization audit, calculation caching, IndexedDB optimization, debouncing, image lazy loading |
+| 42.3 | Rendering Performance | 6 | Gallery virtualization, memoization audit, calculation caching, React Query optimization, debouncing, image lazy loading |
 | 42.4 | Core Web Vitals & Lighthouse | 7 | Lighthouse audit, FCP, LCP, CLS, INP optimization, best practices, SEO |
-| 42.5 | Stress Testing | 5 | 100+ characters, large campaigns, long combats, memory leak detection, IndexedDB limits |
+| 42.5 | Stress Testing | 5 | 100+ characters, large campaigns, long combats, memory leak detection, API response time under load |
 
 ## Technical Approach
 
 - **Code Splitting:** Route-based chunks using React.lazy() and Suspense (Gallery, Sheet, Wizard, DM, Dice, PDF)
 - **SRD Data Tiers:** Tier 1 (~50KB always loaded), Tier 2 (~200KB on demand), Tier 3 (~500KB spells on demand), Tier 4 (~300KB monsters on demand)
 - **Virtual Scrolling:** react-window or @tanstack/virtual for galleries with 50+ characters
+- **React Query Optimization:** Stale-while-revalidate caching, query deduplication, optimistic updates, prefetching for navigation
 - **Memoization:** React.memo on all card/row components, useMemo for derived calculations, calculation engine caching
 - **Font Optimization:** Subset Cinzel to uppercase + digits (~30KB instead of ~100KB), font-display: swap
 
@@ -36,6 +37,8 @@ Meet all non-functional performance requirements — FCP <1.5s, TTI <3s, Lightho
 | Gallery Scroll (100+ chars) | 60fps |
 | Interaction to Next Paint | < 200ms |
 | CLS | < 0.1 |
+| API Response Time (p95) | < 200ms |
+| API Response Time (p99) | < 500ms |
 
 ## Dependencies
 
@@ -71,3 +74,5 @@ Meet all non-functional performance requirements — FCP <1.5s, TTI <3s, Lightho
 - Memory usage ceiling for 100+ characters not specified
 - Phase 3 OQ6 diff-based undo decision not resolved -- memory impact at scale unclear
 - SRD data tier individual load time targets not defined
+- React Query cache size limits and garbage collection strategy not defined
+- API response time targets under concurrent load not specified

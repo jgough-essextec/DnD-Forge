@@ -6,9 +6,9 @@
 As a developer, I need campaign, session, and DM note types.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Campaign**: A campaign groups characters and sessions together. It is managed by a DM and includes house rules that can override default game options. The join code is a 6-character alphanumeric code for sharing (in a local-first app, this serves as an identifier for potential future sync features)
 - **House rules**: Campaign-level settings that the DM configures — which ability score methods are allowed, starting level, starting gold overrides, whether multiclassing and feats are allowed, whether to use the encumbrance variant rule, and which source books are permitted

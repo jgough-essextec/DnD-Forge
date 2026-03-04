@@ -8,10 +8,10 @@ As a player, I need to see all available races at a glance with key information 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **SRD Races (9 total)**: Dwarf (Hill, Mountain), Elf (High, Wood), Halfling (Lightfoot, Stout), Human (Standard, Variant), Dragonborn, Gnome (Forest, Rock), Half-Elf, Half-Orc, Tiefling
 - **Race Data Structure**: Each race has name, description, abilityBonuses, size (Small/Medium), speed, traits (array with name + description), languages, proficiencies, subraces (optional), darkvision (optional)
 - **Layout**: Responsive card grid — 2 columns on mobile, 3 on tablet, 4-5 on desktop. Selection opens a detail panel (Story 9.2)

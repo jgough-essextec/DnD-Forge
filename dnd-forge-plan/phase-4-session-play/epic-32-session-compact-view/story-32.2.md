@@ -8,9 +8,9 @@ As a player, I want to choose which skills and abilities appear in my session co
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### All 18 D&D 5e Skills (Grouped by Ability)
@@ -54,7 +54,7 @@ As a player, I want to choose which skills and abilities appear in my session co
 ### Persistence
 - Pinned selections are stored per-character (not global) in the character data
 - Each character can have a different pinned configuration
-- Persisted to IndexedDB via the auto-save system
+- Persisted via the API via the auto-save system
 
 ### Pin Star on Full Sheet
 A star icon on each skill/save in the full character sheet allows quick add/remove from the session view pinned list, providing a fast alternative to opening the settings modal.
@@ -79,7 +79,7 @@ Pinned skills in the session view show:
 2. Default pinned selection matches the character's class
 3. Maximum of 8 pinned items enforced (UI prevents adding more)
 4. Pinned selections are stored per-character in the character data
-5. Pinned selections persist across page refreshes (IndexedDB)
+5. Pinned selections persist across page refreshes (stored via the API)
 6. Star icon on skills in the full character sheet toggles pinning
 7. Star icon reflects current pinned state (filled = pinned, empty = not pinned)
 8. Session view displays pinned skills with: name, modifier (large, rollable), proficiency dot

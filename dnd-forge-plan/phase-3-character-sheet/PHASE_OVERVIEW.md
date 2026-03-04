@@ -7,7 +7,7 @@
 Deliver a full-fidelity, 3-page digital character sheet with both read-only view and inline edit modes, a character gallery home screen with search/filter/sort, and complete character lifecycle management (duplicate, archive, delete, import, export). By the end of Phase 3, a player can view, edit, manage, and share their characters as fully functional digital character sheets.
 
 ## Phase 2 Dependencies
-Phase 3 assumes all Phase 2 deliverables are complete — the creation wizard (guided + freeform), all wizard step components and data pickers, and the ability to save a valid level-1 character to IndexedDB. Phase 3 builds the "post-creation" experience: what happens after you hit "Save Character."
+Phase 3 assumes all Phase 2 deliverables are complete — the creation wizard (guided + freeform), all wizard step components and data pickers, and the ability to save a valid level-1 character via the Django REST API. Phase 3 builds the "post-creation" experience: what happens after you hit "Save Character."
 
 ## Epics
 
@@ -18,7 +18,7 @@ Phase 3 assumes all Phase 2 deliverables are complete — the creation wizard (g
 | 19 | Character Sheet — Page 3 (Spellcasting) | Comprehensive spellcasting page: spellcasting header stats, spell slot tracking, organized spell lists by level with prepared spell toggles |
 | 20 | View / Edit Mode Toggle System | Seamless mode-switching between clean read-only view and full-featured editing form, with auto-save, undo history, and cascade recalculation |
 | 21 | Character Gallery (Home Screen) | Visually rich gallery of all characters with search, filter, sort, and character management actions — the primary entry point |
-| 22 | JSON Import / Export | Export characters as portable JSON files and import characters from JSON, enabling sharing, backup, and migration |
+| 22 | JSON Import / Export | Export characters as portable JSON via API, import characters from JSON with validation, and share via API-generated share tokens |
 | 23 | Character Avatar / Portrait System | Upload, crop, and display character portrait/avatar throughout the app |
 | 24 | Character Sheet Responsive Design | Full usability across all device sizes, from mobile phones to wide desktop monitors |
 | 25 | Routing & Navigation | React Router route structure, top bar, side navigation, settings, and page transitions |
@@ -28,8 +28,8 @@ Phase 3 assumes all Phase 2 deliverables are complete — the creation wizard (g
 2. View mode (clean read-only rendering with click-to-roll) and Edit mode (inline editing with auto-save, undo/redo, cascade recalculation)
 3. Character gallery home screen with search, filter, sort, grid/list views
 4. Character lifecycle management: duplicate, archive, delete
-5. JSON import/export with 5-stage validation pipeline and batch support
-6. Share via URL (compressed base64-encoded character data)
+5. JSON import/export via API with validation pipeline and batch support
+6. Share via API-generated share tokens with read-only shared character views
 7. Avatar/portrait system with upload, crop, and default generation
 8. Responsive design across mobile, tablet, desktop, and wide breakpoints
 9. Print-friendly styles for browser printing
@@ -60,11 +60,11 @@ View mode: clean typography, no visible form controls. Edit mode: smart form wit
 The Attacks & Spellcasting section generates attack rows from equipped weapons with computed attack bonuses and damage values based on proficiency, ability modifiers, and weapon properties.
 
 ### Gap S8 — Avatar/Portrait System
-Support image upload (JPEG/PNG, max 2MB) stored as base64 in IndexedDB, crop/resize to standard aspect ratio, fallback default avatar based on race/class.
+Support image upload (JPEG/PNG, max 2MB) uploaded via Django REST API and stored server-side, crop/resize to standard aspect ratio, fallback default avatar based on race/class.
 
 ## Dependencies
-- Phase 1: Types, SRD data, calculation engine, database layer, state stores, dice engine
-- Phase 2: Character creation wizard (guided and freeform modes), all wizard step components and data pickers, valid level-1 character save to IndexedDB
+- Phase 1: Types, SRD data, calculation engine, Django REST API layer, React Query (server state) + Zustand (UI state) stores, dice engine
+- Phase 2: Character creation wizard (guided and freeform modes), all wizard step components and data pickers, valid level-1 character save via Django REST API
 
 ## Recommended Build Order
 1. **Week 5, Day 1-2:** Epic 25 (Routing scaffold) + Epic 20 (Mode toggle system)
@@ -111,16 +111,16 @@ Support image upload (JPEG/PNG, max 2MB) stored as base64 in IndexedDB, crop/res
 ### Testing Infrastructure Needed
 - **Mock Data Fixtures**: Complete character data fixtures for various classes (Fighter, Wizard, Cleric, Bard, Warlock, Barbarian, Monk), races, levels, equipment loadouts, and spell lists
 - **Mock Stores/Contexts**: View/edit mode context provider, Zustand store mocks (character store, preferences store, save state store, undo/redo stack)
-- **Mock Services**: IndexedDB/Dexie.js mock layer, dice engine mock with controlled results, calculation engine mock with known input/output mappings
+- **Mock Services**: MSW (Mock Service Worker) for Django REST API endpoints, dice engine mock with controlled results, calculation engine mock with known input/output mappings
 - **Mock Components**: Phase 2 shared components (AbilityScoreDisplay, SpellDetailCard, spell browser, equipment picker)
-- **Mock APIs**: Canvas API mock for avatar processing, URL.createObjectURL/Blob mock for export, clipboard API mock, pako compression mock, File/drag-and-drop event mocks
+- **Mock APIs**: Canvas API mock for avatar processing, URL.createObjectURL/Blob mock for export, clipboard API mock, File/drag-and-drop event mocks
 - **Viewport Utilities**: Viewport size mocking for responsive tests (375px, 640px, 768px, 1024px, 1440px+)
 - **Timer Utilities**: Fake timer support for debounce testing (500ms auto-save, 300ms recalculation, 200ms search debounce, 5-second undo window)
 - **Browser Compatibility**: Print stylesheet testing across Chrome, Firefox, Safari
 
 ### Cross-Cutting Gaps
 - **Accessibility**: The most pervasive gap across all epics. Missing ARIA labels, keyboard navigation, screen reader support, and focus management across nearly every component. Recommend creating an accessibility audit checklist and dedicated accessibility test suite
-- **Error Handling**: Missing error states for IndexedDB operations (read failures, write failures, storage quota exceeded), invalid user input, and corrupted data across many stories
+- **Error Handling**: Missing error states for API operations (network failures, server errors, authentication errors), invalid user input, and corrupted data across many stories
 - **Loading/Empty States**: Many sections start empty for new characters (Gap S1) but the specific loading UI and empty state treatments are inconsistently specified
 - **Performance**: No render time budgets, no specification for large data sets (100+ characters, 50+ equipment items, full 9-level spellcasters), no memory monitoring for undo stack
 - **Mobile/Responsive**: Several mobile-specific interactions (swipe gestures, touch crop, mobile keyboard shortcuts) mentioned in notes but not in acceptance criteria

@@ -8,9 +8,9 @@ As a player, I need to see my recent roll history so I can reference past result
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### Roll History Entry Data Structure
@@ -111,6 +111,6 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Notes
 
-- Roll history is intentionally session-scoped (not persisted to IndexedDB) since it's ephemeral play data
+- Roll history is intentionally session-scoped (not persisted via the API) since it's ephemeral play data
 - The 50-roll limit prevents memory bloat during long sessions
 - Re-roll on click provides a fast way to repeat common rolls (e.g., damage for multiple attacks)

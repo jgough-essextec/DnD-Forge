@@ -6,9 +6,9 @@
 As a developer, I need all Phase 3 pages properly routed with clean URLs and navigation.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Route Structure**:
   - `/` — Home (Character Gallery)
@@ -18,7 +18,7 @@ As a developer, I need all Phase 3 pages properly routed with clean URLs and nav
   - `/share#[data]` — Shared Character View (read-only)
   - `/import` — Import Character page (or modal overlay)
 - **React Router**: Used for client-side routing. `useParams()` extracts characterId from URLs
-- **404 Handling**: If character doesn't exist in IndexedDB, show "Character not found" page with "Go Home" button
+- **404 Handling**: If character doesn't exist (API returns 404), show "Character not found" page with "Go Home" button
 - **Page Transitions**: Slide-in from right (deeper navigation: gallery -> sheet), slide-in from left (back navigation: sheet -> gallery). Use framer-motion `AnimatePresence`
 - **Browser History**: Mode changes and navigation push to history stack so browser back button works intuitively
 
@@ -30,7 +30,7 @@ As a developer, I need all Phase 3 pages properly routed with clean URLs and nav
   - `/character/:id/edit` — Character Sheet Edit Mode (or use query param `?mode=edit`)
   - `/share#[data]` — Shared Character View (read-only)
   - `/import` — Import Character page (or modal overlay)
-- [ ] **T25.1.2** — Implement `useParams()` to extract `characterId` from the URL. If the character doesn't exist in IndexedDB, show a 404-style page: "Character not found. It may have been deleted." with a "Go Home" button
+- [ ] **T25.1.2** — Implement `useParams()` to extract `characterId` from the URL. If the API returns 404 for the character, show a 404-style page: "Character not found. It may have been deleted." with a "Go Home" button
 - [ ] **T25.1.3** — Page transition animations: slide-in from right when navigating deeper (gallery -> sheet), slide-in from left when navigating back (sheet -> gallery). Use framer-motion `AnimatePresence`
 - [ ] **T25.1.4** — Browser back button should work intuitively: sheet -> gallery, edit mode -> view mode. Push URL state changes to the history stack
 
@@ -75,7 +75,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ### Test Dependencies
 - Mock React Router with test routes
-- Mock IndexedDB with character data (for valid IDs) and without (for 404 testing)
+- MSW (Mock Service Worker) to mock GET /api/characters/:id with character data (for valid IDs) and 404 responses (for 404 testing)
 - Mock framer-motion AnimatePresence for transition testing
 - Mock character sheet and gallery page components
 

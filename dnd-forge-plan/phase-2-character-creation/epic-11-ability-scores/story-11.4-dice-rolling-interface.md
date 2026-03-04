@@ -8,10 +8,10 @@ As a player using the Rolling method, I need to roll 4d6-drop-lowest six times w
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Rolling Method**: 4d6 drop lowest — roll four six-sided dice, discard the lowest value, sum the remaining three. Repeat six times to generate six ability score values
 - **Dice Engine**: Phase 1 dice engine handles the roll mechanics (4d6 notation parsing, roll execution, drop-lowest logic). This story adds the visual/animation layer on top
 - **Dice Animation**: CSS 3D transforms for a realistic tumbling effect on four d6 dice. Animation duration: 1-2 seconds. Optional sound effects (dice clatter) controlled by user preferences

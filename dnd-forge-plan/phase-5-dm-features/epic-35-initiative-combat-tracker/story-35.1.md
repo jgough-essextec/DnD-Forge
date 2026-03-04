@@ -8,9 +8,9 @@ As a DM, I need to create an encounter by adding all combatants — party member
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the encounter setup screen — the first step in the combat tracker flow. It is opened via the "Start Encounter" button on the campaign dashboard.
@@ -141,4 +141,4 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 - The SRD contains approximately 300+ monsters. For Phase 5, include a lightweight monsters index (name, CR, AC, HP, initiative mod, type, XP value), not full stat blocks. Full stat blocks are a Phase 6 enhancement.
 - Phase 5 supports only one active encounter per campaign at a time. Multiple simultaneous encounters are a Phase 6+ feature.
-- The encounter is saved to IndexedDB as a standalone record (not embedded in the campaign) because encounters can be large and are queried independently.
+- The encounter is saved via the API as a standalone record (not embedded in the campaign) because encounters can be large and are queried independently.

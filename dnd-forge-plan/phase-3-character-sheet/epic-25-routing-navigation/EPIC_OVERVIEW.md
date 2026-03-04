@@ -15,7 +15,7 @@ Wire up all Phase 3 pages into the React Router route structure and build the ap
 
 ## Key Components
 - `pages/HomePage.tsx` — gallery route (`/`)
-- `pages/SharedCharacterView.tsx` — shared view route (`/share#[data]`)
+- `pages/SharedCharacterView.tsx` — shared view route (`/share/:token`)
 - `pages/SettingsPage.tsx` — settings route
 - `components/layout/TopNav.tsx` — fixed top navigation bar
 
@@ -26,7 +26,8 @@ Wire up all Phase 3 pages into the React Router route structure and build the ap
 | `/character/new` | Creation Wizard | Phase 2 (already exists) |
 | `/character/:id` | Character Sheet View | Default tab: Core Stats |
 | `/character/:id/edit` | Character Sheet Edit | Or query param `?mode=edit` |
-| `/share#[data]` | Shared Character View | Read-only |
+| `/share/:token` | Shared Character View | Read-only (public, no auth required) |
+| `/login` | Login Page | Authentication entry point |
 | `/import` | Import Character | Modal overlay or dedicated page |
 
 ## Dependencies
@@ -42,7 +43,7 @@ Wire up all Phase 3 pages into the React Router route structure and build the ap
 - 404 handling for non-existent character IDs
 - Breadcrumbs dynamically update based on current route
 - Mobile: hamburger menu with slide-out drawer
-- Settings stored in IndexedDB preferences table
+- Settings stored via Django REST API user preferences endpoint; authenticated routes protected by login redirect
 
 ## Testing Summary
 
@@ -55,6 +56,6 @@ Wire up all Phase 3 pages into the React Router route structure and build the ap
 
 ### Key Gaps Found
 - **Accessibility**: Missing ARIA labels for navigation bar, breadcrumbs, hamburger menu, and settings form controls. No keyboard navigation for mobile drawer. No focus management on page transitions
-- **Error Handling**: Missing specification for corrupted URL parameters, IndexedDB preferences write failure, and settings loading failure
+- **Error Handling**: Missing specification for corrupted URL parameters, API preferences write failure, authentication redirect errors, and settings loading failure
 - **Edge Cases**: Very long character names in breadcrumbs (truncation), deep linking behavior, "Export All Data" with very large databases
-- **Loading/Empty States**: No settings loading state while preferences are read from IndexedDB
+- **Loading/Empty States**: No settings loading state while preferences are fetched from the API

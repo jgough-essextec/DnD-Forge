@@ -8,9 +8,9 @@ As a DM, I need to see all my campaigns and select one to manage.
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the campaign list view, accessible from main navigation as a "Campaigns" section alongside the character gallery. Campaigns display as cards in a responsive grid (1-3 columns).
@@ -71,14 +71,14 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should archive a campaign and verify it appears only when "Show Archived" is enabled`
 
 ### Test Dependencies
-- Mock Zustand campaign store with sample campaigns (active, archived, empty)
+- MSW (Mock Service Worker) API mocking with sample campaigns (active, archived, empty)
 - Mock React Router navigation
 - Sample campaign fixtures with varied states (active, archived, different sort dates)
 
 ## Identified Gaps
 
 - **Error Handling**: No specification for handling failed campaign deletion or archive operations
-- **Loading/Empty States**: No loading spinner specified while campaigns load from IndexedDB
+- **Loading/Empty States**: No loading spinner specified while campaigns load from API
 - **Accessibility**: No keyboard navigation spec for card grid or kebab menu (focus management, arrow keys)
 - **Mobile/Responsive**: Grid column breakpoints (1-3 columns) not explicitly defined
 - **Edge Cases**: Behavior with large number of campaigns (50+) not specified; no pagination or virtual scrolling mentioned

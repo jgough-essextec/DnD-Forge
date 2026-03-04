@@ -6,9 +6,9 @@
 As a developer, I need types for all application-level state management.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Wizard state**: The character creation wizard is a multi-step form that must persist state across page navigation. Uses Zustand with sessionStorage persist middleware. Steps include: race selection, class selection, ability score assignment, background selection, equipment selection, spell selection
 - **UI state**: Transient application state for modal management, sidebar visibility, edit mode toggling, mobile navigation, and dice roller panel. This state does not persist across sessions

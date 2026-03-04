@@ -6,9 +6,9 @@
 As a player, I need to see my total hit dice, track used dice, and record death saving throw successes/failures.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Hit Dice**: Each class has a specific hit die (e.g., Fighter d10, Wizard d6, Barbarian d12). At level 1, the character has 1 hit die. Multiclass characters have separate pools per class
 - **Death Saves**: Three success circles and three failure circles. Three successes = stabilized, three failures = dead. Natural 20 = restore 1 HP. Natural 1 = two failures. Check is >= 10 success, < 10 failure

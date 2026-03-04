@@ -20,15 +20,15 @@ A seamless mode-switching system that transforms the character sheet between a c
 - `useCharacterCalculations` hook — wraps Phase 1 calculation engine for reactive recalculation
 
 ## Dependencies
-- Phase 1: Calculation engine, Character type system, IndexedDB database layer, state stores
-- Phase 2: Character data stored in IndexedDB from creation wizard
+- Phase 1: Calculation engine, Character type system, Django REST API layer, React Query (server state) + Zustand (UI state) stores
+- Phase 2: Character data stored via Django REST API from creation wizard
 
 ## Notes
 - This epic is foundational — build first or in parallel with routing (Epic 25)
 - All character sheet page epics (17, 18, 19) depend on the mode toggle system
 - View mode: clean text rendering, no form borders, static proficiency dots, click-to-roll
 - Edit mode: subtle field borders, hover states, edit icons, "Unsaved changes" indicator
-- Auto-save uses 500ms debounce with optimistic concurrency (version field)
+- Auto-save uses 500ms debounce with optimistic concurrency (version field), saving via Django REST API PATCH endpoint
 - Undo/redo uses full state snapshots (max 50 states, ~20KB each)
 - Cascade recalculation uses a dependency map for efficient partial recalculation
 

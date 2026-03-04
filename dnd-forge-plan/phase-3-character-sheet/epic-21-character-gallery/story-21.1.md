@@ -6,11 +6,11 @@
 As a player opening the app, I need to see all my characters displayed as visually distinct cards so I can quickly find and open the one I want.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
-- **Gallery as Home Screen**: The character gallery is the app's primary entry point (route: `/`). It loads all non-archived characters from IndexedDB
+- **Gallery as Home Screen**: The character gallery is the app's primary entry point (route: `/`). It fetches all non-archived characters via GET /api/characters/ using a useQuery hook
 - **Gallery Card Identity (Gap S4)**: Cards must convey identity at a glance. Players identify characters by name, race, class, and level. Visual differentiation (avatar color, class icon) is critical
 - **Responsive Grid**: 1 column mobile (<640px), 2 columns tablet (640-1024px), 3 columns desktop (1024-1440px), 4 columns wide (>1440px)
 - **Card Content**: Avatar/portrait, character name (Cinzel font), race/class/level subtitle, quick stats (HP, AC, passive Perception), last edited timestamp, campaign badge
@@ -18,7 +18,7 @@ As a player opening the app, I need to see all my characters displayed as visual
 - **Empty State**: When no characters exist, show welcoming illustration with CTA to create first character
 
 ## Tasks
-- [ ] **T21.1.1** — Create `pages/HomePage.tsx` as the main gallery route (`/`). Loads all non-archived characters from IndexedDB. Displays a header with app branding, a "Create New Character" floating action button, and the character card grid
+- [ ] **T21.1.1** — Create `pages/HomePage.tsx` as the main gallery route (`/`). Fetches all non-archived characters via useQuery hook (GET /api/characters/). Displays a header with app branding, a "Create New Character" floating action button, and the character card grid
 - [ ] **T21.1.2** — Create `components/gallery/CharacterGallery.tsx` — responsive grid of character cards. Layout: 1 column on mobile (<640px), 2 columns on tablet (640-1024px), 3 columns on desktop (1024-1440px), 4 columns on wide (>1440px). Cards have consistent height with overflow handled
 - [ ] **T21.1.3** — Create `components/gallery/CharacterCard.tsx` — each card shows:
   - Avatar/portrait thumbnail (top, ~120px height) or race-silhouette placeholder with class-color background
@@ -32,7 +32,7 @@ As a player opening the app, I need to see all my characters displayed as visual
 - [ ] **T21.1.6** — **Empty state:** when no characters exist, show a welcoming illustration with centered CTA: "You don't have any characters yet. Create your first adventurer!" with a prominent "Create Character" button
 
 ## Acceptance Criteria
-- HomePage loads all non-archived characters from IndexedDB and renders the gallery
+- HomePage fetches all non-archived characters from the API via React Query and renders the gallery
 - Responsive grid uses correct column count for each breakpoint
 - Character cards display avatar, name, race/class/level, quick stats, and last edited timestamp
 - Cards have consistent height within the grid
@@ -73,21 +73,21 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should see empty state on first launch and navigate to create a character via CTA`
 
 ### Test Dependencies
-- Mock IndexedDB with multiple character records
-- Mock IndexedDB with zero characters (empty state)
+- MSW (Mock Service Worker) to mock GET /api/characters/ with multiple character records
+- MSW to mock GET /api/characters/ with zero characters (empty state)
 - Mock calculation engine for quick stats
 - Mock avatar system from Epic 23
 - Mock React Router for navigation
 
 ## Identified Gaps
 
-- **Loading/Empty States**: No specification for loading spinner/skeleton while characters load from IndexedDB
-- **Error Handling**: No specification for IndexedDB read failure (database corruption, permission denied)
+- **Loading/Empty States**: No specification for loading spinner/skeleton while characters load from API
+- **Error Handling**: No specification for API fetch failure (network error, server error)
 - **Accessibility**: No ARIA labels for gallery grid, no keyboard navigation between cards, no screen reader support for card content
 - **Performance**: No specification for render time with many characters (100+ cards)
 
 ## Dependencies
-- Phase 1 IndexedDB database layer for loading characters
+- Django REST API endpoints (GET /api/characters/) and React Query for fetching characters
 - Phase 1 calculation engine for computing quick stats (AC, HP, passive Perception)
 - Epic 23 (Avatar System) for portrait/placeholder display on cards
 - Epic 25 (Routing) for navigation to character sheet and creation wizard

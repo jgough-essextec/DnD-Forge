@@ -8,9 +8,9 @@ As a developer, I need Lighthouse scores above 90 in all categories. This story 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90 all categories
 - **Accessibility Target**: WCAG 2.1 AA compliance
@@ -77,7 +77,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - **Performance**: No specification for Lighthouse score targets per individual page (just >90 overall)
 - **Edge Cases**: Lighthouse scores can vary significantly between runs — no tolerance or retry strategy specified
 - **Error Handling**: No specification for what to do if Lighthouse scores are below target after all optimizations
-- **Dependency Issues**: SEO meta tags and Open Graph tags may not be relevant for a local-first PWA with no public URL
+- **Dependency Issues**: SEO meta tags and Open Graph tags are relevant since the app is a server-deployed web application with public URLs
 
 ## Dependencies
 

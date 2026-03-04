@@ -6,9 +6,9 @@
 As a player, I need to undo and redo changes in edit mode so I can safely experiment with modifications.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Undo/Redo Strategy**: State-based (not action-based). Each undo restores the full character state from the previous auto-save snapshot. Simpler implementation at the cost of granularity
 - **Stack Depth**: Max 50 states (configurable). At ~20KB per character state, that's approximately 1MB per character in memory. Open question: may reduce to 20 states if memory is a concern

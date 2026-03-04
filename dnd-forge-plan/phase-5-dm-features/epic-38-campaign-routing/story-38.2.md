@@ -8,12 +8,12 @@ As a user, I need the app to clearly distinguish when I'm viewing a character as
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
-This story establishes the visual and functional distinction between DM context and player context when viewing the same character. The same character data is shared — edits in either context save to the same IndexedDB record. The difference is purely in the UI: which panels are shown and which actions are available.
+This story establishes the visual and functional distinction between DM context and player context when viewing the same character. The same character data is shared — edits in either context save to the same API record. The difference is purely in the UI: which panels are shown and which actions are available.
 
 **DM Context** (character viewed from campaign dashboard):
 - "DM View" badge in the header
@@ -37,7 +37,7 @@ This story establishes the visual and functional distinction between DM context 
 - [ ] **T38.2.1** — When a character is viewed from the campaign dashboard (DM context), show a subtle "DM View" badge in the header. DM notes are visible. Additional actions like "Award XP" and "Add to Encounter" are available
 - [ ] **T38.2.2** — When a character is viewed from the gallery (player context), DM notes are hidden. Session play tools (dice, HP, spell slots) are prominent. No campaign management actions
 - [ ] **T38.2.3** — "DM View" on a character sheet includes: DM notes panel (slide-out), campaign context badge showing the campaign name, quick link back to the campaign dashboard
-- [ ] **T38.2.4** — The same character data is shared — edits in either context save to the same IndexedDB record. The difference is purely UI/access (which panels are shown)
+- [ ] **T38.2.4** — The same character data is shared — edits in either context save to the same API record. The difference is purely UI/access (which panels are shown)
 
 ## Acceptance Criteria
 
@@ -46,7 +46,7 @@ This story establishes the visual and functional distinction between DM context 
 - DM context includes "Award XP" and "Add to Encounter" actions
 - Player context shows session play tools prominently without campaign management actions
 - Campaign context badge and quick link to dashboard appear in DM view
-- Edits in either context save to the same IndexedDB record
+- Edits in either context save to the same API record
 - Changes made in DM context are immediately visible in player context and vice versa
 - Navigation between contexts is seamless (no data reload required)
 
@@ -57,7 +57,7 @@ _For pure functions, calculations, data transforms, utilities, type guards, vali
 
 - `should determine DM context when character is viewed from campaign dashboard route`
 - `should determine player context when character is viewed from gallery route`
-- `should share the same IndexedDB record for edits in both contexts`
+- `should share the same API record for edits in both contexts`
 
 ### Functional Tests (React Testing Library)
 _For component rendering, user interactions, state changes, prop variations_

@@ -8,9 +8,9 @@ As a DM, I need to track NPCs my party has encountered — their names, descript
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the NPC tracker — a searchable, filterable list of NPCs the party has encountered, accessible from the "Notes" tab on the campaign dashboard.
@@ -40,7 +40,7 @@ interface NPCEntry {
 
 **Cross-referencing:** NPCs tagged in session notes link to their NPC tracker entry and vice versa. Clicking an NPC name in a session note opens their tracker entry. Quick-add from session log: when typing NPC names in session notes, autocomplete from existing NPCs or offer to create a new entry.
 
-NPC entries are stored on the Campaign object (as part of campaign data in IndexedDB). They are a narrative tracking tool, not a combat tool — NPCs entering combat are added to the encounter tracker with quick stats (Story 35.1).
+NPC entries are stored on the Campaign object (as part of campaign data persisted via the API). They are a narrative tracking tool, not a combat tool — NPCs entering combat are added to the encounter tracker with quick stats (Story 35.1).
 
 ## Tasks
 
@@ -62,7 +62,7 @@ NPC entries are stored on the Campaign object (as part of campaign data in Index
 - Filter by role, status, and location narrows the list
 - Cross-referencing links NPC names in session notes to their tracker entries
 - Quick-add from session log allows creating NPCs inline when typing in notes
-- NPC entries persist to the campaign data in IndexedDB
+- NPC entries persist to the campaign data via API
 - All 6 role types and 4 status types are available
 
 ## Testing Requirements

@@ -6,9 +6,9 @@
 As a player, I need to see my full equipment list with quantities, weights, and the ability to add, remove, and equip/unequip items.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Equipment Section**: Spans full width at the bottom of Page 2. Scrollable table with equipped checkbox, name, quantity, weight, total weight, notes/properties
 - **Equip/Unequip Effects**: Toggling armor equip recalculates AC. Toggling weapon equip adds/removes from Attacks section on Page 1. Only one armor and one shield can be equipped at a time
@@ -82,7 +82,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for what happens when IndexedDB storage fails during item operations
+- **Error Handling**: No specification for what happens when API request fails during item operations
 - **Loading/Empty States**: No specification for empty equipment list display (character with no starting equipment)
 - **Accessibility**: No keyboard navigation for equipment table, no ARIA labels for equip checkboxes, no screen reader support for attunement counter
 - **Performance**: No specification for performance with large equipment lists (50+ items)

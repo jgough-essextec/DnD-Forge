@@ -8,9 +8,9 @@ As a player with low vision or color blindness, I need the app to have sufficien
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
@@ -22,7 +22,7 @@ As a player with low vision or color blindness, I need the app to have sufficien
   - `accent-gold (#e8b430) on bg-primary (#1a1a2e)` = ~7.1:1 (passes for large text, verify for small text)
   - Condition badge colors (red, orange, yellow, green) on their backgrounds need audit
 - **Color-Blind Safe Indicators**: Shape distinctions required — filled circle (proficient), empty circle (not proficient), double-ring (expertise). Text labels alongside color badges
-- **High Contrast Mode**: User preference toggle stored in IndexedDB, applied via CSS class on root element
+- **High Contrast Mode**: User preference toggle stored in the database, applied via CSS class on root element
 
 ## Tasks
 
@@ -49,7 +49,7 @@ As a player with low vision or color blindness, I need the app to have sufficien
 - Critical hit and fumble dice results show text labels ("CRITICAL!" / "FUMBLE!") alongside color highlights
 - High contrast mode toggle is available in settings/preferences
 - High contrast mode increases border weights, text contrast, and reduces transparency effects
-- High contrast preference persists across sessions (stored in IndexedDB)
+- High contrast preference persists across sessions (stored in the database)
 
 ## Testing Requirements
 
@@ -70,7 +70,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should display "CRITICAL!" text label for nat 20 alongside gold highlight`
 - `should display "FUMBLE!" text label for nat 1 alongside red highlight`
 - `should toggle high contrast mode via settings preference and apply CSS class to root element`
-- `should persist high contrast preference across sessions via IndexedDB`
+- `should persist high contrast preference across sessions via the API`
 
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
@@ -83,7 +83,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - Color contrast calculation utility for automated checks
 - All condition badge color definitions
 - High contrast mode CSS class definitions
-- IndexedDB preferences mock for high contrast persistence testing
+- MSW preferences API mock for high contrast persistence testing
 
 ## Identified Gaps
 

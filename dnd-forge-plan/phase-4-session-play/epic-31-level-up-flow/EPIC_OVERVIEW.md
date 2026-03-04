@@ -95,6 +95,6 @@ A guided, step-by-step level advancement wizard that handles the full complexity
 ### Key Gaps Found
 - Accessibility gaps across all steps: wizard modal focus trapping not specified; ARIA labels needed for step navigation, ability score dropdowns, feat prerequisites, spell browser; screen reader announcements for die rolls, stat changes, celebration messages
 - Edge cases: Level Up at max level (20) behavior undefined; multi-level advancement through ASI + subclass level simultaneously; subclass selection is permanent with no undo; Tough feat retroactive HP; features with choices at subclass levels (Battle Master maneuvers, Warlock invocations)
-- Error handling: IndexedDB save failures during apply; snapshot creation failures; missing class data for next level; recalculation failures
+- Error handling: API save failures during apply; snapshot creation failures; missing class data for next level; recalculation failures
 - Performance: cascade recalculation time after ASI; spell list loading performance; full recalculation after level-up apply
 - Mobile/responsive: wizard modal sizing on mobile; long feature/spell lists scrollability

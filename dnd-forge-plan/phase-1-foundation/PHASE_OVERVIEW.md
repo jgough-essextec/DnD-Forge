@@ -13,17 +13,18 @@ Establish the complete project scaffolding, type system, SRD game data layer, ca
 | 2 | Complete Type System | 10 | Every game entity, character field, calculation input/output, and UI state shape defined as TypeScript types/interfaces. Single source of truth for all code. |
 | 3 | SRD Game Data Layer | 7 | All D&D 5e Systems Reference Document data structured as static JSON files, importable as typed constants. The game's immutable reference library. |
 | 4 | Calculation Engine | 8 | Pure-function calculation module that computes every derived stat from source data. Fully unit tested. Zero UI dependencies. |
-| 5 | Database Layer (IndexedDB via Dexie.js) | 4 | Fully functional offline-first persistence layer for characters, campaigns, and preferences with CRUD operations, auto-save, and import/export. |
-| 6 | Zustand State Management Stores | 4 | Application-level state management configured with Zustand, including persist middleware for wizard state survival across navigation. |
+| 5 | Database Layer (Django ORM + PostgreSQL) | 4 | Server-side persistence layer using Django models, DRF ViewSets, and PostgreSQL for characters, campaigns, and preferences with REST API endpoints, auto-save, and import/export. |
+| 6 | State Management (React Query + Zustand) | 4 | React Query for server state (API data, caching, mutations) and Zustand for UI-only state (wizard progress, modals, dice history). |
 | 7 | Dice Engine | 1 | Cryptographically random dice rolling engine supporting all D&D dice types, advantage/disadvantage, drop-lowest, and modifiers. |
+| 48 | Authentication (Django + React) | 4 | Django session/token authentication with dj-rest-auth, registration, login/logout, password reset, and React auth context with protected routes. |
 
 ## Key Deliverables
 - Project runs: `npm run dev` shows the app shell with routing to all placeholder pages
 - Types compile: Every type file compiles with zero TypeScript errors under strict mode
 - Data loads: All SRD JSON files parse correctly and are importable as typed constants
 - Calculations pass: 100% of calculation engine unit tests pass (minimum 150 test cases)
-- Database works: Character and Campaign CRUD integration tests pass
-- Stores function: Zustand stores initialize, update, and persist correctly
+- API works: Django REST API endpoints for Character and Campaign CRUD pass integration tests
+- State management works: React Query hooks fetch/mutate correctly; Zustand stores initialize and persist UI state
 - Dice roll: Dice engine produces cryptographically random results with correct distribution
 - Test coverage: Calculation engine has >95% line coverage; overall project >80%
 - No hardcoded stats: Zero derived values exist as constants; everything flows through the calculation engine
@@ -98,25 +99,28 @@ Epic 1 (Scaffolding)
   └── Epic 2 (Types) — cannot write any code without types
        ├── Epic 3 (SRD Data) — data files must conform to types
        │    └── Epic 4 (Calculations) — calculations consume SRD data
-       │         └── Epic 5 (Database) — stores Character type
-       │              └── Epic 6 (Stores) — stores bridge to database
-       └── Epic 7 (Dice Engine) — uses DieType from types, consumed by calculations
+       │         └── Epic 5 (Database / API) — Django models + DRF endpoints
+       │              └── Epic 6 (State Mgmt) — React Query hooks consume API
+       ├── Epic 7 (Dice Engine) — uses DieType from types, consumed by calculations
+       └── Epic 48 (Authentication) — required by Epic 5 API endpoints and Epic 6 hooks
 ```
 
-Parallelizable: Epics 3 and 7 can be worked simultaneously after Epic 2 is complete. Epic 4 depends on both 3 and 7. Epics 5 and 6 are sequential but can begin their type definitions during Epic 2.
+Parallelizable: Epics 3, 7, and 48 can be worked simultaneously after Epic 2 is complete. Epic 4 depends on both 3 and 7. Epic 5 depends on 4 and 48. Epic 6 depends on 5.
 
 ## Summary Statistics
 | Category | Count |
 |----------|-------|
-| Epics | 7 |
-| Stories | 39 |
-| Tasks | ~185 |
+| Epics | 8 |
+| Stories | 43 |
+| Tasks | ~205 |
 | Unit Tests Required | ~150+ test cases |
 | Data Files to Create | ~20 JSON/TS files |
 | Type Definitions | ~60+ interfaces/types |
 | Calculation Functions | ~35+ pure functions |
-| Database Functions | ~20+ CRUD operations |
-| Zustand Stores | 4 |
+| Django Models | ~5+ models |
+| API Endpoints (DRF) | ~20+ ViewSet actions |
+| React Query Hooks | ~10+ query/mutation hooks |
+| Zustand Stores | 3 (wizard, UI, dice) |
 
 ## Testing Strategy Summary
 
@@ -126,21 +130,24 @@ Parallelizable: Epics 3 and 7 can be worked simultaneously after Epic 2 is compl
 | 2 — Complete Type System | 87 | 0 | 0 | 87 | 5 |
 | 3 — SRD Game Data Layer | 67 | 0 | 0 | 67 | 6 |
 | 4 — Calculation Engine | 111 | 0 | 0 | 111 | 7 |
-| 5 — Database Layer | 44 | 2 | 0 | 46 | 6 |
-| 6 — State Management Stores | 38 | 3 | 0 | 41 | 7 |
+| 5 — Database Layer (API) | 44 | 2 | 0 | 46 | 6 |
+| 6 — State Management | 38 | 3 | 0 | 41 | 7 |
 | 7 — Dice Engine | 15 | 0 | 0 | 15 | 3 |
-| **Totals** | **389** | **18** | **21** | **428** | **39** |
+| 48 — Authentication | TBD | TBD | TBD | TBD | TBD |
+| **Totals** | **389+** | **18+** | **21+** | **428+** | **39+** |
 
 ### Testing Infrastructure Needed
-- **Vitest + jsdom**: Primary test runner for all unit and functional tests (configured in Story 1.4)
+- **Vitest + jsdom**: Primary frontend test runner for all unit and functional tests (configured in Story 1.4)
+- **pytest + Django TestCase + DRF APITestCase**: Backend test runner for Django models, serializers, and API endpoints (Story 1.4)
 - **@testing-library/react + @testing-library/jest-dom**: Component rendering and assertion utilities
 - **Playwright**: E2E testing framework for full browser integration tests (Story 1.4 T1.4.7-T1.4.10)
-- **fake-indexeddb**: IndexedDB mock for database layer tests in jsdom environment (Epic 5)
-- **src/test/utils/renderWithProviders.tsx**: Test render wrapper with all providers (Zustand stores, Router, Theme)
-- **src/test/utils/mockStores.ts**: Zustand store mocks for character, wizard, UI, and dice stores
+- **MSW (Mock Service Worker)**: API mocking for frontend tests against Django REST API endpoints (Epic 5, Epic 6)
+- **src/test/utils/renderWithProviders.tsx**: Test render wrapper with all providers (React Query, Zustand stores, Router, Theme)
+- **src/test/utils/mockStores.ts**: Zustand store mocks for wizard, UI, and dice stores
 - **src/test/utils/testData.ts**: Character, race, class, and equipment fixture data for consistent test inputs
 - **Mock sessionStorage**: For Zustand persist middleware testing in wizard store (Epic 6)
 - **Mock window.matchMedia**: For responsive breakpoint testing in UI store (Story 6.3)
 - **Timer mocking (vi.useFakeTimers)**: For debounce testing in auto-save (Story 5.4)
 - **crypto.getRandomValues**: Must be available or polyfilled in test environment for dice engine tests (Epic 7)
-- **Mock calculation engine**: Deterministic mocks for calculation functions in store tests (Epic 6)
+- **Mock calculation engine**: Deterministic mocks for calculation functions in hook/store tests (Epic 6)
+- **Django test fixtures**: Factory functions or fixtures for Character, Campaign, User models (Epic 5, Epic 48)

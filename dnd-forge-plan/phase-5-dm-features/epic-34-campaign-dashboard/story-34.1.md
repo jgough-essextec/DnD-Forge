@@ -8,9 +8,9 @@ As a DM, I need a single dashboard screen that shows everything about my campaig
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the campaign dashboard page — the DM's command center. It is the primary destination for the `/campaign/:id` route.
@@ -26,7 +26,7 @@ This story creates the campaign dashboard page — the DM's command center. It i
 - Header collapses to name + essential action buttons
 - Content stacks vertically
 
-The dashboard loads the campaign and all linked characters from IndexedDB via the `useCampaign` hook (Story 33.1). If the campaign is not found, display a 404 with "Campaign not found" and a "Go to Campaigns" button.
+The dashboard loads the campaign and all linked characters from the API via the `useCampaign` React Query hook (Story 33.1). If the campaign is not found, display a 404 with "Campaign not found" and a "Go to Campaigns" button.
 
 The "Party" tab is the default view and hosts the Party Stats Grid (Story 34.2), Skill Matrix (Story 34.3), Language Coverage (Story 34.4), and Party Composition (Story 34.5). The other tabs host features from Epics 35 and 36.
 
@@ -54,7 +54,7 @@ The "Party" tab is the default view and hosts the Party Stats Grid (Story 34.2),
 ### Unit Tests (Vitest)
 _For pure functions, calculations, data transforms, utilities, type guards, validators_
 
-- `should return 404 state when campaign ID does not exist in IndexedDB`
+- `should return 404 state when campaign ID does not exist via API`
 - `should default to "Party" tab when no tab query parameter is provided`
 
 ### Functional Tests (React Testing Library)
@@ -83,11 +83,11 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Identified Gaps
 
-- **Loading/Empty States**: No loading spinner specified while campaign and characters load from IndexedDB
+- **Loading/Empty States**: No loading spinner specified while campaign and characters load from API
 - **Accessibility**: No ARIA labels specified for tab navigation or action buttons; no keyboard shortcut for tab switching
 - **Mobile/Responsive**: Breakpoint for mobile vs desktop layout not explicitly defined
 - **Performance**: No specification for lazy-loading tab content or initial render time targets
-- **Edge Cases**: Behavior when campaign has characters but character data is corrupted or missing from IndexedDB
+- **Edge Cases**: Behavior when campaign has characters but character data is corrupted or API returns partial data
 
 ## Dependencies
 

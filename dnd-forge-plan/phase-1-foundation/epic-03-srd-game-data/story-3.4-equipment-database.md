@@ -6,9 +6,9 @@
 As a developer, I need all SRD weapons, armor, adventuring gear, tools, and packs as structured data.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Weapons**: All SRD weapons across 4 categories (Simple Melee, Simple Ranged, Martial Melee, Martial Ranged). Each weapon has: name, category, cost (in GP), damage dice + damage type, weight, and properties. Weapon properties include: Ammunition (with range), Finesse, Heavy, Light, Loading, Reach, Special, Thrown (with range), Two-Handed, Versatile (with alternate die)
 - **Armor** (13 types + shield): Organized by category (Light, Medium, Heavy). Each armor has: name, category, cost, base AC, DEX modifier cap (null=uncapped, 2=medium max, 0=heavy), stealth disadvantage flag, STR requirement (for heavy armor), and weight

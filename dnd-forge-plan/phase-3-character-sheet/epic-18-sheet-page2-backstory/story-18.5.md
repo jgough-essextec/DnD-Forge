@@ -6,9 +6,9 @@
 As a player, I need a freeform section to track non-currency treasure — gems, art objects, magic items, quest items.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Treasure Section Position**: In the right column of Page 2, below the backstory and additional features sections
 - **Empty State**: Treasure starts empty for new characters — this is a Gap S1 field that must display gracefully when empty
@@ -24,7 +24,7 @@ As a player, I need a freeform section to track non-currency treasure — gems, 
 - Edit mode provides a textarea with helpful placeholder text
 - Optional structured entries allow adding named treasure items with GP value and description
 - Empty state displays gracefully (placeholder text or collapsed section)
-- Treasure data persists to IndexedDB
+- Treasure data persists via the API
 
 ## Testing Requirements
 
@@ -36,7 +36,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should provide textarea with placeholder text in edit mode`
 - `should support adding structured treasure entries with name, GP value, and description`
 - `should display graceful empty state (placeholder or collapsed section) when treasure is empty`
-- `should persist treasure data to IndexedDB via auto-save`
+- `should persist treasure data via the API via auto-save`
 
 ### Test Dependencies
 - Mock character data with freeform treasure text

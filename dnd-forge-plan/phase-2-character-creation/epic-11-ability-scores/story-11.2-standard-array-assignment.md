@@ -8,10 +8,10 @@ As a player using Standard Array, I need a drag-and-drop interface to assign eac
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Standard Array Values**: [15, 14, 13, 12, 10, 8] — six fixed values to assign to the six abilities (STR, DEX, CON, INT, WIS, CHA)
 - **Drag-and-Drop Library**: @dnd-kit/core and @dnd-kit/sortable for drag-and-drop interactions
 - **Assignment Mechanics**: Each value chip is draggable. Each ability slot is a drop target. Dropping a value on an occupied slot swaps the values. A "Reset" button clears all assignments

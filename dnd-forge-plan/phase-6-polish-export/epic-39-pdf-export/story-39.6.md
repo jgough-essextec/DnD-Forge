@@ -1,85 +1,97 @@
-# Story 39.6 — Campaign Export to PDF
+# Story 39.6 — Export UI & Download
 
 > **Epic 39: PDF Character Sheet Export** | **Phase 6: Polish & Export** (Weeks 11-12)
 
 ## Description
 
-As a DM, I need to export a campaign summary PDF showing all party members' key stats. This includes a party overview page with a summary table of all characters' key stats (useful as a DM quick-reference printout), one-page-per-character condensed summaries, and an option to include full three-page character sheets for a comprehensive campaign binder.
+As a user, I want a download button on the character sheet that fetches the server-generated PDF and saves it to my browser. This story covers the frontend "Export PDF" button, the Axios API call to the backend PDF endpoint, the browser download trigger from the blob response, and loading/error state handling.
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
-- **Campaign Data**: Campaign model from Phase 5 with party members, session notes, NPCs, loot
-- **Party Stats Grid**: Existing component from Phase 5 campaign dashboard showing all characters' key stats
-- **PDF Output**: Single PDF document with campaign name, party overview table, and per-character summaries
-- **Condensed Character View**: Name, race, class, level, ability scores, AC, HP, key features, spell save DC — one page per character
+- **Export Trigger**: "Export PDF" button on the character sheet page (quick-action bar)
+- **API Call**: `GET /api/characters/:id/pdf/` via Axios with `responseType: 'blob'` to receive binary PDF data
+- **Download Mechanism**: Create a temporary object URL from the blob response, create a hidden `<a>` element with `download` attribute, trigger click, revoke URL
+- **State Handling**: Loading spinner during PDF generation, error toast on failure
+- **No Client-Side PDF Generation**: All rendering happens on the server via WeasyPrint. The frontend only fetches and downloads
 
 ## Tasks
 
-- [ ] **T39.6.1** — "Export Party Summary" option on the campaign dashboard. Generates a single PDF with: campaign name, description, and a one-page-per-character summary (condensed: name, race, class, level, ability scores, AC, HP, key features, spell save DC)
-- [ ] **T39.6.2** — **Party overview page:** first page of the campaign PDF is a summary table showing all characters' key stats (same data as the party stats grid). Useful as a DM quick-reference printout
-- [ ] **T39.6.3** — Option to include full character sheets (3 pages each) after the summary, creating a comprehensive campaign binder PDF
+- [ ] **T39.6.1** — Add an "Export PDF" button to the character sheet UI (quick-action bar). Use a shadcn/ui `Button` with a download icon. The button should be visible to the character owner and DMs with access to the character
+- [ ] **T39.6.2** — On button click, call `GET /api/characters/:id/pdf/` via Axios with `responseType: 'blob'`. Extract the filename from the `Content-Disposition` response header (falling back to `character_sheet.pdf` if not present)
+- [ ] **T39.6.3** — Create browser download from the blob response: create an object URL via `URL.createObjectURL(blob)`, create a hidden `<a>` element with the `download` attribute set to the filename, programmatically click it, then revoke the object URL to free memory
+- [ ] **T39.6.4** — Show a loading state during PDF generation: disable the button, show a spinner or "Generating PDF..." text. On success, trigger the download and reset the button. On failure (non-200 response or network error), show an error toast with a user-friendly message ("Failed to generate PDF. Please try again.")
+- [ ] **T39.6.5** — Write tests: Vitest — mock Axios response with a PDF blob, verify `URL.createObjectURL` is called and the download anchor is created with the correct filename. Verify loading state toggles correctly. Verify error state shows toast on failure. E2E: Playwright test clicking the Export PDF button and verifying a download is triggered
 
 ## Acceptance Criteria
 
-- "Export Party Summary" option is available on the campaign dashboard
-- Generated PDF includes campaign name and description on the first page
-- Party overview page contains a summary table with all characters' key stats matching the party stats grid
-- Each character has a one-page condensed summary with name, race, class, level, ability scores, AC, HP, key features, and spell save DC
-- Option to include full three-page character sheets after the summaries works correctly
-- Campaign binder PDF (with full sheets) generates correctly for parties of 4-8 characters
-- PDF downloads with a descriptive filename (e.g., `[CampaignName]_Party_Summary.pdf`)
+- "Export PDF" button is visible on the character sheet page for the character owner
+- Clicking the button triggers an API call to `GET /api/characters/:id/pdf/` with `responseType: 'blob'`
+- On successful response, the PDF downloads to the browser with the filename from the `Content-Disposition` header
+- Loading state is shown while the API call is in progress (button disabled, spinner visible)
+- Error state shows a user-friendly toast message when the API call fails
+- The download mechanism works across major browsers (Chrome, Firefox, Safari, Edge)
+- No client-side PDF generation libraries are loaded; all rendering happens server-side
 
 ## Testing Requirements
 
 ### Unit Tests (Vitest)
-_For pure functions, calculations, data transforms, utilities, type guards, validators_
+_For the download utility function and button component logic_
 
-- `should generate party overview page with summary table matching party stats grid data`
-- `should generate one-page condensed summary per character with name, race, class, level, ability scores, AC, HP, key features, spell save DC`
-- `should generate correct filename format: [CampaignName]_Party_Summary.pdf`
+- `should call Axios GET with responseType blob when export is triggered`
+- `should create an object URL from the blob response`
+- `should create a hidden anchor element with the correct download filename from Content-Disposition header`
+- `should fall back to "character_sheet.pdf" filename when Content-Disposition header is missing`
+- `should revoke the object URL after triggering download`
+- `should set loading state to true while API call is in progress`
+- `should reset loading state to false after successful download`
+- `should show error toast when API call returns non-200 status`
+- `should show error toast when API call fails with network error`
 
 ### Functional Tests (React Testing Library)
-_For component rendering, user interactions, state changes, prop variations_
+_For component rendering, user interactions, state changes_
 
-- `should render "Export Party Summary" option on campaign dashboard`
-- `should show progress indicator during campaign PDF generation for large parties`
-- `should provide option to include full three-page character sheets in the campaign binder`
+- `should render Export PDF button on the character sheet page`
+- `should disable the button and show spinner during loading state`
+- `should re-enable the button after download completes`
+- `should display error toast when PDF generation fails`
 
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
 
-- `should export campaign summary PDF with overview page and per-character condensed summaries`
-- `should generate campaign binder PDF with full three-page character sheets for a 4-character party`
-- `should generate campaign binder PDF correctly for a party of 8 characters (24+ pages)`
+- `should click Export PDF button and verify a file download is triggered`
+- `should show loading indicator while PDF is being generated`
+- `should show error message when server returns 500 for PDF generation`
 
 ### Test Dependencies
-- Campaign fixture with 4 characters (varied classes and levels)
-- Campaign fixture with 8 characters for large party testing
-- Party stats grid mock data matching Phase 5 format
-- PDF generation mocks for unit/functional tests
+- MSW (Mock Service Worker) handler for `GET /api/characters/:id/pdf/` returning a mock PDF blob
+- MSW handler returning 500 error for failure testing
+- Character sheet page rendered with a test character
+- Playwright download event listener for verifying file download
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for behavior when one character in the party fails PDF generation
-- **Performance**: No target for campaign binder generation time (8 characters x 3 pages = 24 pages)
-- **Edge Cases**: Behavior for campaigns with no characters or single character not specified
-- **Edge Cases**: NPC stat blocks mentioned as future enhancement but not addressed
-- **Loading/Empty States**: No specification for progress UI during large campaign PDF generation
+- **Error Handling**: Specific error messages for different failure modes (401 unauthorized, 404 character not found, 500 server error) not defined — the toast should ideally differentiate
+- **Edge Cases**: Behavior when the user clicks "Export PDF" multiple times rapidly — should debounce or disable the button during the request
+- **Browser Compatibility**: The `URL.createObjectURL` + hidden anchor download approach may behave differently in Safari (especially iOS Safari). Needs cross-browser testing
+- **Large PDFs**: No timeout defined for the API call. Very complex characters could take several seconds to render server-side. Consider a reasonable timeout (e.g., 30 seconds)
 
 ## Dependencies
 
-- Stories 39.1-39.4 (PDF generation architecture and all three page layouts for full sheet option)
-- Story 39.5 (PDF export infrastructure — progress indicator, error handling)
-- Phase 5 campaign data model and party stats grid component
+- Story 39.1 (PDF generation architecture — the `GET /api/characters/:id/pdf/` endpoint must exist and return PDF binary)
+- Story 39.5 (Multi-page assembly — the endpoint must produce a complete multi-page PDF)
+- Character sheet page from Phase 3 (the quick-action bar where the Export PDF button is placed)
+- Axios HTTP client (already in the project for API calls)
+- shadcn/ui Button and Toast components (already in the project UI library)
 
 ## Notes
 
-- The campaign binder option can produce large PDFs (8 characters x 3 pages = 24 pages + overview). Show clear progress indication
-- The condensed one-page character view should prioritize the most DM-useful information (combat stats, key features, spell save DC)
-- Consider adding NPC stat blocks as an optional section in the campaign PDF (future enhancement)
+- No client-side PDF generation libraries (jsPDF, html2canvas, @react-pdf/renderer) are needed. All PDF rendering happens on the server via WeasyPrint. The frontend's only job is to make the API call and trigger the browser download
+- The blob download pattern (`URL.createObjectURL` + hidden anchor) is a well-established approach. Remember to call `URL.revokeObjectURL()` after the download to avoid memory leaks
+- The `Content-Disposition` header from the backend provides the filename (e.g., `attachment; filename="Thorin_Level5_Fighter.pdf"`). Parse this header to extract the filename for the download attribute
+- Consider wrapping the download logic in a reusable `useFileDownload` hook or utility function, as it may be needed for future export features (e.g., campaign export)

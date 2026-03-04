@@ -4,7 +4,7 @@
 
 ## Goal
 
-Perfect the `@media print` CSS so that printing directly from the browser produces a clean, professional character sheet without needing the PDF export — as a fast alternative for players who just want a quick printout.
+Perfect the `@media print` CSS so that printing directly from the browser produces a clean, professional character sheet without needing the server-side PDF export — as a fast alternative for players who just want a quick printout.
 
 ## Stories
 

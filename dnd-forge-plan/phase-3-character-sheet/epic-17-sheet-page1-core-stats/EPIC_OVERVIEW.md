@@ -36,7 +36,7 @@ A pixel-accurate digital recreation of the D&D 5e character sheet Page 1, showin
 
 ## Dependencies
 - Phase 1: Calculation engine, dice engine, SRD data, Character type system
-- Phase 2: AbilityScoreDisplay shared component, character data in IndexedDB
+- Phase 2: AbilityScoreDisplay shared component, character data loaded via Django REST API
 - Epic 20: View/Edit mode toggle system (build first or in parallel)
 
 ## Layout
@@ -64,7 +64,7 @@ A pixel-accurate digital recreation of the D&D 5e character sheet Page 1, showin
 
 ### Key Gaps Found
 - **Accessibility**: Pervasive across all stories -- missing ARIA labels, keyboard navigation, and screen reader support for ability scores, proficiency dots, dice rolls, tooltips, and interactive elements
-- **Error Handling**: Missing error states for IndexedDB load failure, invalid numeric inputs in edit mode, and empty states for many sections
-- **Loading States**: No loading skeleton or spinner specified for initial character sheet load from IndexedDB
+- **Error Handling**: Missing error states for API load failure, invalid numeric inputs in edit mode, and empty states for many sections
+- **Loading States**: No loading skeleton or spinner specified for initial character sheet load from the API
 - **Performance**: No render time targets for the most complex page (Page 1 has 10+ distinct sections)
 - **Edge Cases**: Boundary value handling not specified for ability scores (3-30 range), HP (negative values), and hit dice usage counts

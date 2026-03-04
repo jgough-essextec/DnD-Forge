@@ -8,10 +8,10 @@ As a player, I need a guided step-by-step interface so I can create my character
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Wizard Step Registry**: Step 0 (Intro/Mode Selection), Step 1 (Race), Step 2 (Class), Step 3 (Ability Scores), Step 4 (Background & Personality), Step 5 (Equipment), Step 6 (Spellcasting — conditional), Step 7 (Review & Finalize)
 - **State Management**: Zustand wizard store with sessionStorage persist middleware for state recovery across browser closes
 - **Animation**: framer-motion for slide left/right step transitions

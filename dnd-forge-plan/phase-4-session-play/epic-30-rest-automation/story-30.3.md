@@ -8,9 +8,9 @@ As a developer, I need a system to track uses remaining for all limited-use clas
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### Extended Feature Type
@@ -135,13 +135,13 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ### Test Dependencies
 - Mock character data for each class with limited-use features at various levels
 - Mock Phase 1 SRD class feature data with recovery type mapping
-- Mock Zustand character store for feature usage persistence
+- MSW (Mock Service Worker) to mock PUT /api/characters/:id for feature usage persistence via React Query mutation
 - `applyShortRest` and `applyLongRest` pure function test fixtures
 - Level-up threshold test data for scaling features
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for what happens if usesRemaining becomes negative or exceeds maxUses; no validation on corrupted feature data from IndexedDB
+- **Error Handling**: No specification for what happens if usesRemaining becomes negative or exceeds maxUses; no validation on corrupted feature data from API
 - **Edge Cases**: Barbarian Rage at Level 20 is "unlimited" -- how to display unlimited uses with the circle pattern; subclass features with special recovery rules (e.g., Arcane Ward) not fully mapped; features with "special" recovery type lack specific recovery logic
 - **Accessibility**: No ARIA labels for usage counter circles (e.g., "2 of 3 Rage uses remaining"); no keyboard interaction for expend/recover circles; screen reader should announce use expend/recover events
 - **Dependency Issues**: Task T30.3.5 depends on Epic 31 (Level Up Flow) but this story is listed as a dependency OF Epic 31 -- bidirectional dependency needs ordering clarification

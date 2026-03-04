@@ -6,9 +6,9 @@
 As a developer, I need all SRD feats with prerequisites and mechanical effects.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **D&D 5e Feats**: Feats are optional abilities chosen instead of an Ability Score Improvement (ASI) at ASI levels. The DM must allow feats (house rule). Each feat has a name, description, potential prerequisites, and mechanical effects
 - **Prerequisites**: Some feats require minimum ability scores (e.g., Heavy Armor Master requires STR 13), specific race (e.g., some racial feats), specific proficiency (e.g., Medium Armor Master requires medium armor proficiency), or other conditions. Many feats have no prerequisites

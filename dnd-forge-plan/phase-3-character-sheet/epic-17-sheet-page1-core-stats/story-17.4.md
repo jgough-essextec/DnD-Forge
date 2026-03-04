@@ -6,9 +6,9 @@
 As a player, I need to see all 18 skills with proficiency indicators, expertise markers, and computed modifiers, grouped or listed in the official order.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Left Column Layout**: Skills list renders below saving throws in the left column (~30% width)
 - **Skill Computation**: modifier = ability mod + proficiency bonus (if proficient) + double proficiency bonus (if expertise). Jack of All Trades (Bard feature) adds half proficiency bonus to non-proficient skills

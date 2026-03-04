@@ -1,79 +1,92 @@
 # Story 5.3 — Campaign CRUD Operations
 
-> **Epic 5: Database Layer (IndexedDB via Dexie.js)** | **Phase 1: Foundation** (Weeks 1-2)
+> **Epic 5: Database Layer (Django ORM + PostgreSQL)** | **Phase 1: Foundation** (Weeks 1-2)
 
 ## Description
-As a developer, I need repository functions for campaign management.
+As a developer, I need Django REST Framework API endpoints for Campaign CRUD operations with join code support so users can create and manage campaigns and other players can join via a shareable code.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
-- **Campaign storage**: The full `Campaign` object is stored in IndexedDB via Dexie.js. Each campaign has a UUID primary key, timestamps, and a unique 6-character alphanumeric join code
-- **Campaign structure** (from Story 2.9): `{ id, name, description, dmId, playerIds: string[], characterIds: string[], joinCode, houseRules, sessions: SessionNote[], npcs?: NPC[], createdAt, updatedAt }`
-- **Join code**: A 6-character alphanumeric code generated on campaign creation. Used as a human-readable identifier for sharing. In the current local-first architecture this is metadata; in a future sync feature it could be used for sharing
-- **Character-Campaign association**: Characters are linked to campaigns via the `characterIds` array on the Campaign object and the `campaignId` field on the Character object. Adding/removing a character should update both sides
-- **HouseRules** (from Story 2.9): `{ allowedSources, abilityScoreMethod, startingLevel, startingGold?, allowMulticlass, allowFeats, encumbranceVariant }` — configured by the DM when creating a campaign
-- **Campaign queries**: Need to list all campaigns, get a specific campaign, and get all characters in a campaign
+- **DRF ViewSet pattern**: `CampaignViewSet` extends `ModelViewSet` for standard CRUD. A custom `@action` provides the join-by-code flow. Routes are registered via `DefaultRouter`
+- **Join code**: A unique 6-character alphanumeric code (uppercase letters and digits, `[A-Z0-9]`) auto-generated when a campaign is created. The `generate_join_code()` model method generates a random code and retries if it collides with an existing one. The `join_code` field has a `unique=True` database constraint
+- **Campaign ownership**: The campaign `owner` (FK to User) is the DM. The owner has full CRUD access. Other users interact via the join endpoint
+- **Join flow**: `POST /api/campaigns/:id/join/` accepts a `join_code` in the request body, validates it matches the campaign, and adds the requesting user's character to the campaign by setting `Character.campaign = campaign`
+- **Character-Campaign association**: Characters are linked to campaigns via the `Character.campaign` ForeignKey. Querying a campaign's characters uses the reverse relation `campaign.characters.all()`
+- **API endpoints**:
+  - `GET /api/campaigns/` — list authenticated user's campaigns (owned by user)
+  - `POST /api/campaigns/` — create a new campaign (join_code auto-generated)
+  - `GET /api/campaigns/:id/` — retrieve a campaign by UUID
+  - `PUT /api/campaigns/:id/` — full update (owner only)
+  - `PATCH /api/campaigns/:id/` — partial update (owner only)
+  - `DELETE /api/campaigns/:id/` — delete campaign (owner only, sets associated characters' campaign FK to NULL)
+  - `POST /api/campaigns/:id/join/` — join a campaign by providing the correct join_code
 
 ## Tasks
-- [ ] **T5.3.1** — Implement `createCampaign(data: Partial<Campaign>): Promise<Campaign>` — generates UUID, join code (6-char alphanumeric)
-- [ ] **T5.3.2** — Implement `getCampaign(id: string): Promise<Campaign | undefined>`
-- [ ] **T5.3.3** — Implement `getAllCampaigns(): Promise<Campaign[]>`
-- [ ] **T5.3.4** — Implement `updateCampaign(id: string, updates: Partial<Campaign>): Promise<Campaign>`
-- [ ] **T5.3.5** — Implement `addCharacterToCampaign(campaignId: string, characterId: string): Promise<void>`
-- [ ] **T5.3.6** — Implement `removeCharacterFromCampaign(campaignId: string, characterId: string): Promise<void>`
-- [ ] **T5.3.7** — Implement `getCharactersByCampaign(campaignId: string): Promise<Character[]>`
-- [ ] **T5.3.8** — Write integration tests: create campaign, add/remove characters, campaign deletion
+- [ ] **T5.3.1** — Create `backend/campaigns/serializers.py` with `CampaignSerializer` using `ModelSerializer`. Include all Campaign model fields. Set `id`, `join_code`, `created_at`, `updated_at`, and `owner` as read-only fields. The `join_code` is auto-generated and should never be set by the client. Add a nested read-only `characters` field that returns a summary list of characters in the campaign
+- [ ] **T5.3.2** — Create `backend/campaigns/views.py` with `CampaignViewSet` extending `ModelViewSet`. Override `get_queryset()` to filter by `owner=request.user`. Override `perform_create()` to set `owner=request.user` and call `generate_join_code()`. Apply `IsAuthenticated` and `IsOwner` permissions
+- [ ] **T5.3.3** — Add `generate_join_code()` method to the Campaign model in `backend/campaigns/models.py`. Generate a random 6-character uppercase alphanumeric string from `[A-Z0-9]`. Query the database for uniqueness and retry (up to 10 attempts) if a collision is found. Call this method in the model's `save()` on creation (when `join_code` is empty)
+- [ ] **T5.3.4** — Add a `join` custom action to `CampaignViewSet` using `@action(detail=True, methods=['post'])`. Accept `{"join_code": "ABC123", "character_id": "<uuid>"}` in the request body. Validate the join_code matches the campaign. Validate the character exists and is owned by the requesting user. Set `character.campaign = campaign` and save. Return 200 on success, 400 on invalid code or character
+- [ ] **T5.3.5** — Register URL routes in `backend/campaigns/urls.py` using `DefaultRouter`. Register the `CampaignViewSet` at the `campaigns` prefix. Include in the project's root `urls.py` under `/api/`. Write API tests in `backend/campaigns/tests/test_api.py` covering all CRUD operations, join code generation uniqueness, join flow (success and failure), and permission checks
 
 ## Acceptance Criteria
-- `createCampaign()` generates a UUID, a unique 6-character alphanumeric join code, sets timestamps, and persists to IndexedDB
-- `getCampaign()` retrieves a campaign by ID or returns undefined if not found
-- `getAllCampaigns()` returns all campaigns sorted by most recently updated
-- `updateCampaign()` updates the specified fields and the `updatedAt` timestamp
-- `addCharacterToCampaign()` adds the character ID to the campaign's `characterIds` array AND sets `campaignId` on the character
-- `removeCharacterFromCampaign()` removes the character ID from the campaign AND clears `campaignId` on the character
-- `getCharactersByCampaign()` returns all Character objects associated with a campaign
-- Join codes are unique across all campaigns
-- Integration tests verify the full campaign lifecycle including character association
+- `CampaignSerializer` serializes all Campaign fields with `join_code` as read-only (auto-generated on creation)
+- `POST /api/campaigns/` creates a campaign with a unique 6-character alphanumeric join code and sets `owner` to the authenticated user
+- `GET /api/campaigns/` returns only campaigns owned by the authenticated user
+- `GET /api/campaigns/:id/` returns campaign details including a summary of associated characters
+- `PUT /api/campaigns/:id/` and `PATCH /api/campaigns/:id/` update campaign fields (owner only), `join_code` cannot be changed
+- `DELETE /api/campaigns/:id/` deletes the campaign (owner only), associated characters' `campaign` FK is set to NULL (via model's `on_delete=SET_NULL`)
+- `POST /api/campaigns/:id/join/` validates the join code, validates the character belongs to the requesting user, sets the character's campaign FK, and returns 200
+- `POST /api/campaigns/:id/join/` returns 400 if the join code does not match or the character is invalid
+- Join codes are unique across all campaigns (enforced by database unique constraint)
+- Generated join codes are exactly 6 characters, uppercase alphanumeric
+- All API tests pass
 
 ## Testing Requirements
 
-### Unit Tests (Vitest)
-_For pure functions, calculations, data transforms, utilities, type guards, validators_
+### API Tests (pytest + DRF APITestCase)
+_For HTTP endpoint behavior, serialization, permissions, join code logic, and validation_
 
-- `should generate UUID and unique 6-char join code when creating a campaign via createCampaign`
-- `should set timestamps on campaign creation via createCampaign`
-- `should retrieve a campaign by ID via getCampaign`
-- `should return undefined for non-existent campaign ID via getCampaign`
-- `should return all campaigns sorted by most recently updated via getAllCampaigns`
-- `should update specified fields and updatedAt timestamp via updateCampaign`
-- `should add characterId to campaign and set campaignId on character via addCharacterToCampaign`
-- `should remove characterId from campaign and clear campaignId on character via removeCharacterFromCampaign`
-- `should return all characters associated with a campaign via getCharactersByCampaign`
-- `should generate unique join codes across campaigns`
-- `should apply default house rules when not specified`
+- `should return 200 with list of user's campaigns on GET /api/campaigns/`
+- `should return only campaigns owned by the authenticated user`
+- `should return 201 with created campaign including auto-generated join_code on POST /api/campaigns/`
+- `should generate a 6-character uppercase alphanumeric join_code on campaign creation`
+- `should generate unique join codes across multiple campaign creations`
+- `should set owner to authenticated user on POST /api/campaigns/`
+- `should return 200 with campaign details on GET /api/campaigns/:id/ for owner`
+- `should return 404 on GET /api/campaigns/:id/ for non-owner`
+- `should return 200 with updated campaign on PUT /api/campaigns/:id/ for owner`
+- `should not allow changing join_code via PUT or PATCH`
+- `should return 204 on DELETE /api/campaigns/:id/ for owner`
+- `should set associated characters' campaign to NULL on campaign deletion`
+- `should return 200 on POST /api/campaigns/:id/join/ with correct join_code and valid character`
+- `should set character.campaign to the campaign on successful join`
+- `should return 400 on POST /api/campaigns/:id/join/ with incorrect join_code`
+- `should return 400 on POST /api/campaigns/:id/join/ with character not owned by requesting user`
+- `should return 401 or 403 for unauthenticated requests to all endpoints`
 
 ### Test Dependencies
-- `fake-indexeddb` for IndexedDB mocking
-- Database singleton from Story 5.1
-- Character CRUD functions from Story 5.2
-- Campaign type from Story 2.9
+- `pytest` and `pytest-django` for test execution
+- `rest_framework.test.APITestCase` and `rest_framework.test.APIClient` for HTTP-level testing
+- `factory_boy` with `DjangoModelFactory` for creating User, Character, and Campaign test fixtures
+- `django.contrib.auth.models.User` for creating authenticated test users
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for what happens when adding a character that is already in a campaign (move or reject?)
-- **Error Handling**: Campaign deletion behavior for associated characters (clear campaignId) should be explicit in acceptance criteria
-- **Edge Cases**: Join code collision handling (extremely unlikely but should retry on uniqueness failure)
+- **Error Handling**: No specification for what happens when a character already belongs to a different campaign and attempts to join a new one (move or reject?). Consider requiring the character to leave the current campaign first
+- **Error Handling**: No specification for campaign membership tracking beyond the Character FK. A future ManyToMany `members` field on Campaign could track which users have joined
+- **Edge Cases**: Join code collision handling is addressed by retry logic, but 10 retries may not be sufficient if the code space becomes crowded. This is extremely unlikely with 36^6 combinations but should log a warning
 
 ## Dependencies
-- **Depends on:** Story 5.1 (database schema and singleton), Story 5.2 (Character CRUD for updating character's campaignId), Story 2.9 (Campaign, HouseRules, SessionNote, NPC types)
-- **Blocks:** Epic 6 (Stores will bridge to campaign CRUD), Phase 4+ (Campaign management UI)
+- **Depends on:** Story 5.1 (Campaign and Character models defined and migrated), Story 5.2 (Character API for character ownership validation), Story 1.3 (Django/DRF installed and configured)
+- **Blocks:** Epic 6 (React Query hooks for campaign API), Phase 4+ (Campaign management UI)
 
 ## Notes
-- Join code generation: Generate a random 6-character string from `[A-Z0-9]` (36^6 = ~2.2 billion combinations). Check for uniqueness against existing campaigns before accepting
-- `addCharacterToCampaign` and `removeCharacterFromCampaign` update both the Campaign and Character records in a single Dexie transaction to maintain consistency
-- Campaign deletion should consider what happens to associated characters. Options: (1) clear their `campaignId` (preferred — characters survive independently), (2) cascade delete (too destructive). Implement option 1
-- `getCharactersByCampaign` should use the `campaignId` index on the characters table for efficient querying rather than loading all characters and filtering
-- HouseRules defaults should be sensible: `allowedSources: ['SRD']`, `abilityScoreMethod: 'any'`, `startingLevel: 1`, `allowMulticlass: true`, `allowFeats: true`, `encumbranceVariant: false`
+- Join code generation uses Python's `random.choices(string.ascii_uppercase + string.digits, k=6)` to produce a random 6-character string. The `unique=True` database constraint is the ultimate guarantee of uniqueness; the retry loop in `generate_join_code()` handles the application-level collision check
+- The `@action(detail=True, methods=['post'])` decorator on the `join` method generates the URL pattern `/api/campaigns/<pk>/join/` automatically via the router
+- Campaign deletion uses the model's `on_delete=SET_NULL` on `Character.campaign`, so PostgreSQL automatically nullifies the FK on associated characters when a campaign is deleted. No manual cleanup is needed
+- The join flow intentionally requires both the `join_code` and `character_id` so the system knows which of the user's characters to associate with the campaign
+- Consider adding a `leave` action (`POST /api/campaigns/:id/leave/`) in a future story that sets `character.campaign = None`
+- The `settings` JSONField on Campaign can store house rules, allowed sources, and other campaign-specific configuration. Validation of the settings structure can be added via a custom serializer field or model `clean()` method

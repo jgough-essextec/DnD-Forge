@@ -6,9 +6,9 @@
 As a developer, I need the application routes defined with placeholder pages so that navigation works end-to-end.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Routing**: React Router v6 with `BrowserRouter`. All page components are lazy-loaded using `React.lazy()` and `Suspense` for code splitting
 - **Route structure**: The app has three main areas: (1) Player-facing pages (character gallery, creation wizard, character sheet, level up), (2) DM-facing pages (campaigns, encounter tracker), (3) Utility pages (dice roller, settings)

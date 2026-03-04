@@ -21,8 +21,8 @@ The app's home screen — a visually rich gallery of all the player's characters
 - `components/gallery/CharacterActions.tsx` — dropdown menu for card actions
 
 ## Dependencies
-- Phase 1: Character type system, IndexedDB database layer
-- Phase 2: Character data in IndexedDB from creation wizard
+- Phase 1: Character type system, Django REST API layer
+- Phase 2: Character data persisted via Django REST API from creation wizard
 - Epic 17-19: Character sheet must be viewable (cards link to sheets)
 - Epic 23: Avatar/portrait system (displayed on cards)
 
@@ -44,8 +44,8 @@ The app's home screen — a visually rich gallery of all the player's characters
 | **Totals** | **13** | **33** | **7** | **53** |
 
 ### Key Gaps Found
-- **Loading/Empty States**: No loading skeleton or spinner while characters load from IndexedDB
+- **Loading/Empty States**: No loading skeleton or spinner while characters load from the API
 - **Accessibility**: Missing keyboard navigation for gallery grid cards, filter chips, and batch selection. No ARIA labels for context menus
-- **Error Handling**: No specification for IndexedDB read failure (database corruption) or CRUD operation failures
+- **Error Handling**: No specification for API read failure (network errors, server errors) or CRUD operation failures
 - **Performance**: No render time targets for gallery with many characters (100+ cards)
 - **Edge Cases**: Combined empty state when all filters exclude all characters not specified. Batch delete confirmation behavior unclear

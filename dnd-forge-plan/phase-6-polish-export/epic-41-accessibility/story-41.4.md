@@ -8,9 +8,9 @@ As a player sensitive to motion, I need all animations to respect my system pref
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
@@ -37,7 +37,7 @@ As a player sensitive to motion, I need all animations to respect my system pref
 - HP bar changes are instant (no animated counting) when reduced motion is active
 - Toast notifications appear without slide-in animation when reduced motion is active
 - In-app "Reduce Motion" toggle exists in settings and overrides system preference
-- Reduced motion preference persists across sessions (stored in IndexedDB)
+- Reduced motion preference persists across sessions (stored in the database)
 - Loading spinners are replaced with static "Loading..." text or simple progress bar when reduced motion is active
 - No vestibular triggers remain when reduced motion is enabled
 
@@ -59,7 +59,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should apply instant HP bar changes (no animated counting) when reduced motion is active`
 - `should show toast notifications without slide-in animation when reduced motion is active`
 - `should replace spinning loaders with static "Loading..." text when reduced motion is active`
-- `should persist reduced motion toggle preference in IndexedDB across sessions`
+- `should persist reduced motion toggle preference in the database across sessions`
 
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
@@ -72,7 +72,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - System `prefers-reduced-motion` media query mock
 - useReducedMotion() React context
 - All animated components (dice roller, framer-motion pages, modals, HP bar, toasts, loaders)
-- IndexedDB preferences mock for toggle persistence
+- MSW preferences API mock for toggle persistence
 
 ## Identified Gaps
 

@@ -6,9 +6,9 @@
 As a player, I need to see my character's physical description fields and appearance notes.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Page 2 Layout**: Two-column layout on desktop. Left column (~35%): portrait, appearance notes, allies & organizations. Right column (~65%): backstory, additional features, treasure. Equipment and currency span full width at bottom
 - **Top Banner**: Duplicates character name from Page 1, plus physical detail fields in a horizontal strip (age, height, weight, eyes, skin, hair)
@@ -75,7 +75,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ## Dependencies
 - Epic 23 (Avatar/Portrait System) for portrait display and upload
 - Epic 20 view/edit mode toggle system
-- Phase 2 character data in IndexedDB (appearance fields from creation wizard)
+- Phase 2 character data via API (appearance fields from creation wizard)
 
 ## Notes
 - Physical detail fields may be empty for characters created without filling in appearance details — display graceful empty states

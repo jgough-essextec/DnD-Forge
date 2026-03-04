@@ -1,11 +1,11 @@
 # Phase 2: Character Creation Wizard
 
 > **Timeline:** Weeks 3-4
-> **Phase Goal:** Deliver a fully functional, guided character creation wizard that walks players through the official D&D 5e creation process step-by-step, as well as a freeform creation mode for experienced players. By the end of Phase 2, a user can create a complete, valid level-1 character and save it to IndexedDB.
+> **Phase Goal:** Deliver a fully functional, guided character creation wizard that walks players through the official D&D 5e creation process step-by-step, as well as a freeform creation mode for experienced players. By the end of Phase 2, a user can create a complete, valid level-1 character and save it via the Django REST API to PostgreSQL.
 
 ## Summary
 
-Phase 2 builds the core user-facing feature of D&D Character Forge: the character creation wizard. This phase implements a multi-step guided wizard (8 steps including intro), a parallel freeform creation mode, and all the data-driven UI components needed to select races, classes, ability scores, backgrounds, equipment, and spells. The wizard integrates with the Phase 1 foundation (type system, SRD game data, calculation engine, Dexie.js database, Zustand stores, dice engine) to produce complete, validated level-1 characters persisted to IndexedDB.
+Phase 2 builds the core user-facing feature of D&D Character Forge: the character creation wizard. This phase implements a multi-step guided wizard (8 steps including intro), a parallel freeform creation mode, and all the data-driven UI components needed to select races, classes, ability scores, backgrounds, equipment, and spells. The wizard integrates with the Phase 1 foundation (type system, SRD game data, calculation engine, React Query API layer, Zustand stores (UI state), dice engine) to produce complete, validated level-1 characters persisted via the Django REST API to PostgreSQL.
 
 ## Epics
 
@@ -32,7 +32,7 @@ Phase 2 builds the core user-facing feature of D&D Character Forge: the characte
 7. **Equipment** — Both starting equipment packages and gold-buy mode work; AC computes correctly from armor selection
 8. **Spellcasting** — Cantrip and spell selection works for all 6 level-1 casting classes with correct counts
 9. **Review** — Character preview shows all 3 pages with correctly computed derived stats
-10. **Persistence** — Wizard state survives browser refresh (sessionStorage); saved characters appear in character gallery (IndexedDB)
+10. **Persistence** — Wizard state survives browser refresh (sessionStorage); saved characters are persisted via the Django REST API and appear in the character gallery
 11. **Validation** — No character can be saved with validation errors; warnings are non-blocking but clearly communicated
 12. **Responsive** — Wizard is usable on mobile (640px), tablet (1024px), and desktop (1440px)
 13. **Accessible** — All interactive elements are keyboard-navigable with visible focus indicators; ARIA labels on all form controls
@@ -112,8 +112,8 @@ Phase 2 assumes all Phase 1 deliverables are complete:
 - **Full type system** — All TypeScript interfaces for Character, Race, Class, Spell, Equipment, Background, etc.
 - **SRD game data files** — All races, classes, spells, equipment, backgrounds, feats as static JSON
 - **Calculation engine** — Tested engine for computing derived stats (AC, HP, modifiers, proficiency bonus, etc.)
-- **Database layer** — Dexie.js CRUD operations for characters
-- **Zustand stores** — State management with sessionStorage persistence middleware
+- **API layer** — React Query hooks wrapping Django REST API endpoints for character CRUD operations
+- **Zustand stores** — UI state management with sessionStorage persistence middleware
 - **Dice engine** — Core dice rolling logic (NdM+X notation parsing, roll execution)
 
 ## Dependency Graph
@@ -145,7 +145,7 @@ Epic 16 (Shared Components) — built alongside or just ahead of the steps
        |    depends on: spell SRD data, spell slot calculations
        |
        |-- Epic 15 (Review & Finalize) — final step
-            depends on: ALL previous steps, calculation engine, database layer
+            depends on: ALL previous steps, calculation engine, Django REST API layer
 ```
 
 **Parallelizable:** Once the wizard framework (Epic 8) and shared components (Epic 16) are in place, individual step Epics (9-14) can be worked in parallel by different developers. Epic 15 (Review) must be last as it integrates everything.
@@ -190,7 +190,7 @@ Epic 16 (Shared Components) — built alongside or just ahead of the steps
 - **Mock Zustand wizard store** with sessionStorage persist middleware for all step state persistence/restore testing
 - **Mock Phase 1 calculation engine** for derived stat computation (modifiers, AC, HP, initiative, spell save DC, attack bonuses)
 - **Mock Phase 1 dice engine** with deterministic results for all rolling interfaces (ability scores, personality, gold)
-- **Mock Phase 1 Dexie.js database layer** (`createCharacter()`) for save testing with success and failure scenarios
+- **MSW (Mock Service Worker)** for mocking Django REST API endpoints (`createCharacter()`) with success and failure scenarios
 - **Mock SRD game data fixtures**: races (9), classes (12), spells (100+), equipment (weapons, armor, gear, packs), backgrounds, feats -- all as static JSON test fixtures
 - **Mock @dnd-kit** (drag-and-drop library) for Standard Array and Rolling assignment testing
 - **Mock framer-motion** for step transition and panel animation assertions

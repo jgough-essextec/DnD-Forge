@@ -8,10 +8,10 @@ As a Fighter, Paladin, or Ranger player, I need to choose my Fighting Style at l
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Fighting Style Options by Class**:
   - **Fighter**: Archery (+2 ranged attack rolls), Defense (+1 AC when wearing armor), Dueling (+2 damage with one-handed weapon, no other weapon), Great Weapon Fighting (reroll 1s and 2s on damage dice with two-handed/versatile weapons), Protection (impose disadvantage on attack roll against adjacent ally when wielding shield), Two-Weapon Fighting (add ability modifier to off-hand damage)
   - **Paladin**: Defense, Dueling, Great Weapon Fighting, Protection

@@ -8,9 +8,9 @@ As a DM, I need to track loot I've given to the party — magic items, gold, que
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the loot and reward tracker — a running ledger of all treasure and rewards given during the campaign, accessible from the "Notes" tab on the campaign dashboard.
@@ -32,13 +32,13 @@ interface LootEntry {
 - Running ledger sortable by item name, type, value, assigned character, session number
 - Total value summary: "Total party loot value: ~2,450 GP"
 - "Add Loot" with SRD magic item search for auto-filling known items, custom items for homebrew
-- "Assign to Character" optionally adds item to character's equipment list in IndexedDB
+- "Assign to Character" optionally adds item to character's equipment list via API mutation
 - Filtering by type, assigned character, session, and "Unassigned" (party loot not yet claimed)
 - Separate "Party Gold" tracker showing total currency across all characters
 
-**Character inventory integration:** When loot is assigned to a character, the DM can optionally add it to that character's equipment list. This updates the character's inventory in IndexedDB with a confirmation dialog.
+**Character inventory integration:** When loot is assigned to a character, the DM can optionally add it to that character's equipment list. This updates the character's inventory via API mutation with a confirmation dialog.
 
-Loot entries are stored as part of the campaign data in IndexedDB.
+Loot entries are stored as part of the campaign data persisted via the API.
 
 ## Tasks
 
@@ -46,7 +46,7 @@ Loot entries are stored as part of the campaign data in IndexedDB.
 - [ ] **T36.4.2** — Loot entry fields: Item name (required), Type (Gold/Currency, Magic Item, Mundane Item, Quest Reward, Other), Value (in GP equivalent, optional), Quantity (default 1), Assigned to (dropdown of party characters, or "Party Loot" for unassigned), Session awarded (link to session note), Notes (freeform)
 - [ ] **T36.4.3** — Loot list: sortable table with columns for item name, type icon, value, assigned character, session number. Total value summary at the bottom: "Total party loot value: ~2,450 GP"
 - [ ] **T36.4.4** — "Add Loot" button: quick-add form. SRD magic item search for auto-filling name and description of known items. Custom items for homebrew
-- [ ] **T36.4.5** — "Assign to Character" action: when loot is assigned, optionally add it to that character's equipment list (updates the character's inventory in IndexedDB). Confirmation: "Add [item] to [character]'s inventory?"
+- [ ] **T36.4.5** — "Assign to Character" action: when loot is assigned, optionally add it to that character's equipment list (updates the character's inventory via API mutation). Confirmation: "Add [item] to [character]'s inventory?"
 - [ ] **T36.4.6** — Filtering: by type, by assigned character, by session. "Unassigned" filter shows party loot not yet claimed
 - [ ] **T36.4.7** — Currency tracking: separate from item loot, a "Party Gold" tracker showing total currency across all characters (aggregated from each character's currency data)
 
@@ -57,11 +57,11 @@ Loot entries are stored as part of the campaign data in IndexedDB.
 - Loot list is a sortable table with type icons and value summary
 - Total party loot value displays at the bottom
 - "Add Loot" form includes SRD magic item search and custom item entry
-- Assigning loot to a character optionally updates their equipment list in IndexedDB
+- Assigning loot to a character optionally updates their equipment list via API mutation
 - Assignment confirmation dialog prevents accidental inventory changes
 - Filtering by type, character, session, and "Unassigned" works
 - "Party Gold" tracker aggregates currency across all characters
-- Loot entries persist to campaign data in IndexedDB
+- Loot entries persist to campaign data via API
 
 ## Testing Requirements
 
@@ -89,14 +89,14 @@ _For component rendering, user interactions, state changes, prop variations_
 _For critical user journeys, multi-step flows, full-page interactions_
 
 - `should add a magic item via SRD search, assign to a character, and verify it appears in the loot table`
-- `should assign loot to a character and verify it optionally updates their equipment in IndexedDB`
+- `should assign loot to a character and verify it optionally updates their equipment via API`
 - `should filter loot by "Unassigned" and verify only party loot is shown`
 
 ### Test Dependencies
 - Mock campaign with 10+ loot entries of varied types
 - SRD magic item data (subset for testing)
 - Character fixtures with existing equipment/inventory
-- Mock IndexedDB for inventory sync verification
+- MSW (Mock Service Worker) API mocking for inventory sync verification
 - Session note fixtures for session linking
 
 ## Identified Gaps

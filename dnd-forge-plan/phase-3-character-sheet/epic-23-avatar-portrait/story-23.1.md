@@ -6,13 +6,13 @@
 As a player, I need to upload an image for my character's portrait and have it stored with the character data.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Image Upload (Gap S8)**: Accept JPEG and PNG files up to 2MB. Client-side processing only — no server upload
 - **Image Processing**: Resize to maximum 400x400 pixels maintaining aspect ratio. Use HTML5 `canvas` API for resizing. Convert to JPEG at 80% quality to minimize storage
-- **Storage**: Base64 data URL string stored in the character's `avatar` field in IndexedDB
+- **Storage**: Base64 data URL string stored in the character's `avatar` field via the Django REST API
 - **Crop Interface**: Simple CSS-based square crop with drag-to-position. No heavy library needed
 - **Default Avatar**: If no avatar uploaded, generate a placeholder based on race (silhouette icon) with class-themed color background
 - **Upload Triggers**: Character sheet portrait area (edit mode) and gallery card edit action
@@ -70,7 +70,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ### Test Dependencies
 - Mock image files (valid JPEG, valid PNG, oversized, wrong type)
 - Mock canvas API for image processing
-- Mock IndexedDB for avatar storage
+- MSW (Mock Service Worker) for avatar API mocking
 - Mock view/edit mode context
 
 ## Identified Gaps
@@ -82,11 +82,11 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Dependencies
 - Phase 1 Character type system (avatar field on Character model)
-- Phase 1 IndexedDB database layer for storing avatar data
+- Phase 1 Django REST API layer for storing avatar data
 - Epic 20 (View/Edit Mode) — upload is available in edit mode
 
 ## Notes
-- Base64 storage in IndexedDB is simple but can be large (~50-100KB per image after processing). This is acceptable for a local-first app
+- Base64 storage via the API is simple but can be large (~50-100KB per image after processing). Consider server-side image storage for production
 - The crop interface should be lightweight — no need for a library like react-cropper. CSS transforms and mouse/touch events are sufficient
 - Default avatars provide visual differentiation in the gallery even before players upload images
 - Class color scheme: Fighter (red), Wizard (blue), Rogue (dark gray), Cleric (gold), Ranger (green), Paladin (silver), Barbarian (orange), Bard (purple), Druid (brown), Monk (teal), Sorcerer (crimson), Warlock (dark purple)

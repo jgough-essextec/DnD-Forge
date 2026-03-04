@@ -2,24 +2,23 @@
 
 ## Architecture
 
-D&D Character Forge is a **local-first Progressive Web App** with no backend server. All application data (characters, campaigns, preferences) lives in the browser's IndexedDB, accessed through Dexie.js. SRD game reference data (races, classes, spells, equipment) is bundled as static TypeScript files at build time. The app works fully offline once loaded.
+D&D Character Forge is a **Django REST API backend + React SPA frontend + PostgreSQL database** application for Dungeons & Dragons 5th Edition character creation, management, and session play. User data (characters, campaigns, preferences) is persisted in PostgreSQL via the Django ORM. SRD game reference data (races, classes, spells, equipment) is available both as static TypeScript files bundled with the frontend (for fast client-side access) and as Django fixtures loaded into the database (for backend validation and queries). Authentication is handled by Django session auth.
 
 ```
-User Browser
-+---------------------------------------------------------------+
-|                                                                 |
-|   React UI (Tailwind + shadcn/ui)                              |
-|       |                                                         |
-|   Zustand Stores (characterStore, campaignStore, uiStore)      |
-|       |                                                         |
-|   Dexie.js  ------>  IndexedDB  (characters, campaigns, prefs) |
-|       |                                                         |
-|   Static Data Imports  (src/data/*.ts -- SRD content)          |
-|                                                                 |
-+---------------------------------------------------------------+
++------------------+          +----------------------------+       +------------+
+|  React SPA       |  REST    |  Django REST API           |       | PostgreSQL |
+|  (Vite + TS)     | <------> |  (DRF ViewSets + Routers)  | <---> |  Database  |
+|                  |  JSON    |                            |       |            |
+|  Tailwind/shadcn |          |  Django Auth (sessions)    |       +------------+
+|  React Query     |          |  WeasyPrint (PDF export)   |
+|  Zustand (UI)    |          |  Django ORM                |
+|                  |          |                            |
+|  Static SRD Data |          |  SRD Fixtures              |
+|  (src/data/*.ts) |          |  (backend validation)      |
++------------------+          +----------------------------+
 ```
 
-The data flow is unidirectional: UI components read from Zustand stores, which sync with Dexie.js for persistence. SRD reference data is imported directly as typed constants -- never mutated at runtime.
+The data flow is: React components use React Query to fetch/mutate data via the Django REST API, which persists to PostgreSQL. Zustand stores handle ephemeral UI-only state (wizard step, modal state, theme). SRD reference data is imported directly as typed constants on the frontend for fast access -- never mutated at runtime.
 
 ---
 
@@ -27,12 +26,20 @@ The data flow is unidirectional: UI components read from Zustand stores, which s
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| No backend | IndexedDB via Dexie.js | Offline-first requirement, zero server cost, simplifies deployment. Characters are personal data that does not need cloud sync for MVP. |
-| Zustand over Redux | Zustand | Minimal boilerplate, built-in persist middleware for IndexedDB sync, intuitive API. The app has moderate state complexity (wizard steps, active character, UI state) -- Redux is overkill. |
-| Static SRD data over runtime API | Build-time ETL to .ts files | Offline support requires bundled data. Static imports give compile-time type safety. No runtime dependency on external APIs. |
+| Backend framework | Django 5+ with Django REST Framework | Mature, batteries-included framework with excellent ORM, auth, admin, and serialization. DRF provides browsable API, pagination, filtering, and serializer validation out of the box. |
+| Database | PostgreSQL | Robust relational database with strong JSON support, excellent Django integration, and managed hosting options on all major cloud providers. |
+| Server state management | React Query (TanStack Query) | Handles caching, background refetching, optimistic updates, and loading/error states for API data. Eliminates manual fetch logic in components. |
+| UI-only state | Zustand | Lightweight store for ephemeral UI state (wizard step, modal state, theme, view/edit toggle). Not used for server-persisted data. |
+| Static SRD data (frontend) | Build-time ETL to .ts files | Static imports give compile-time type safety and fast client-side lookups. No round-trip to the API for reference data that never changes. |
+| SRD data (backend) | Django fixtures + management commands | SRD data loaded into PostgreSQL for server-side validation, query filtering, and API endpoints. |
+| Auth | Django session authentication | Simple, secure, built-in. Session cookies handled automatically by the browser. No token management required on the frontend. |
 | Tailwind + shadcn/ui | Utility-first styling + accessible primitives | Rapid development with consistent design tokens. shadcn/ui provides keyboard-navigable, ARIA-compliant components out of the box. |
-| Vite over CRA/Next | Vite | Fastest HMR for development. Pure client-side app does not need SSR. Simple configuration. |
-| jsPDF for export | Client-side PDF | Must work offline. No server-side rendering needed. |
+| Vite over CRA/Next | Vite | Fastest HMR for development. React SPA does not need SSR. Simple configuration. |
+| PDF export | WeasyPrint (server-side) | Produces high-fidelity PDF from HTML/CSS templates rendered on the Django backend. Supports CSS print media, custom fonts, and complex layouts. |
+| Testing (backend) | pytest + Django TestCase | pytest for ergonomic test writing; Django TestCase for database fixtures, client simulation, and transaction rollback. |
+| Testing (frontend) | Vitest + React Testing Library | Fast unit/integration tests with jsdom. RTL encourages testing user behavior over implementation details. |
+| Testing (E2E) | Playwright | Cross-browser end-to-end test automation against the full stack. |
+| Deployment | Docker (Django + PostgreSQL + Nginx) | Containerized deployment for consistent environments across development and production. |
 
 ---
 
@@ -84,13 +91,13 @@ The calculation engine must evaluate the character's class, equipped items, and 
 
 Characters with levels in multiple spellcasting classes use a shared spell slot table based on their combined "caster level," which weights each class differently (full casters count full levels, half-casters count half, third-casters count one-third). The calculation must handle all combinations correctly.
 
-### Offline-First Data Integrity
+### API-Backed Data Persistence
 
-With no server for conflict resolution, the app uses optimistic concurrency via a `version` field on characters. Auto-save is debounced (500ms after last change) and writes directly to IndexedDB. The Zustand persist middleware keeps store state and IndexedDB in sync.
+Character data is persisted via the Django REST API to PostgreSQL. React Query handles optimistic updates with automatic rollback on error. Auto-save is debounced (500ms after last change) and issues a PATCH request to the API. The Django ORM provides transaction safety and the `updated_at` timestamp field enables conflict detection for concurrent edits.
 
 ### Wizard State Preservation
 
-The 7-step character creation wizard must preserve all state across step navigation (back/forward), accidental page refreshes, and browser tab switches. Zustand's persist middleware with session storage handles this.
+The 7-step character creation wizard must preserve all state across step navigation (back/forward), accidental page refreshes, and browser tab switches. Draft wizard state is held in Zustand with session storage persistence for resilience against accidental refreshes. On finalization, the completed character is sent to the Django API for persistence.
 
 ---
 
@@ -124,10 +131,44 @@ The 7-step character creation wizard must preserve all state across step navigat
 ### State Architecture
 
 ```
-characterStore     -- Active character data, CRUD operations, auto-save to Dexie
-campaignStore      -- Active campaign, party data, session notes
-uiStore            -- Wizard step, modal state, theme, view/edit toggle
-diceStore          -- Current roll, roll history, animation state
+React Query        -- Server state: characters, campaigns, SRD data from API
+                      Handles caching, background refetch, optimistic updates
+Zustand stores:
+  uiStore          -- Wizard step, modal state, theme, view/edit toggle
+  diceStore        -- Current roll, roll history, animation state
+```
+
+### API Endpoints Overview
+
+```
+Auth:
+  POST   /api/auth/login/          -- Session login
+  POST   /api/auth/logout/         -- Session logout
+  GET    /api/auth/user/           -- Current user profile
+
+Characters:
+  GET    /api/characters/          -- List user's characters
+  POST   /api/characters/          -- Create character
+  GET    /api/characters/:id/      -- Retrieve character
+  PATCH  /api/characters/:id/      -- Update character (auto-save)
+  DELETE /api/characters/:id/      -- Delete character
+  GET    /api/characters/:id/pdf/  -- Download character sheet PDF (WeasyPrint)
+
+Campaigns:
+  GET    /api/campaigns/           -- List user's campaigns
+  POST   /api/campaigns/           -- Create campaign
+  GET    /api/campaigns/:id/       -- Retrieve campaign with party
+  PATCH  /api/campaigns/:id/       -- Update campaign
+  DELETE /api/campaigns/:id/       -- Delete campaign
+  POST   /api/campaigns/:id/join/  -- Join campaign via code
+
+SRD Reference Data:
+  GET    /api/srd/races/           -- List races
+  GET    /api/srd/classes/         -- List classes
+  GET    /api/srd/spells/          -- List spells (paginated, filterable)
+  GET    /api/srd/equipment/       -- List equipment
+  GET    /api/srd/backgrounds/     -- List backgrounds
+  GET    /api/srd/feats/           -- List feats
 ```
 
 ---
@@ -138,13 +179,15 @@ diceStore          -- Current roll, roll history, animation state
 |--------|--------|
 | First Contentful Paint | < 1.5s |
 | Time to Interactive | < 3s |
-| Lighthouse Score | > 90 (all categories) |
-| Bundle Size | < 500KB gzipped (excluding SRD data) |
-| SRD Data | Lazy-loaded, < 2MB total |
-| Offline Support | Full functionality via PWA service worker |
+| API Response Latency (p95) | < 200ms for CRUD operations |
+| API Response Latency (PDF) | < 2s for PDF generation |
+| Frontend Bundle Size | < 500KB gzipped (excluding SRD data) |
+| SRD Data (frontend) | Lazy-loaded, < 2MB total |
 | Browser Support | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+ |
-| Auto-save Latency | Debounced, 500ms after last change |
+| Auto-save Latency | Debounced, 500ms after last change, PATCH to API |
 | Max Characters | 100+ per user without performance degradation |
+| Database Query Time | < 50ms for typical ORM queries |
+| Concurrent Users | Support 100+ concurrent users per deployment |
 
 ---
 

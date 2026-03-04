@@ -4,7 +4,7 @@
 
 ## Summary
 
-Phase 5 delivers a complete Dungeon Master toolkit for D&D Character Forge. Campaign CRUD with house rules and invite codes, a party dashboard with at-a-glance stats grid and skill/language matrices, a full combat/initiative tracker with turn cycling and NPC/monster support, DM-only character notes, a campaign session log, an NPC tracker, a loot/reward tracker, and XP/milestone level-up distribution — all while maintaining the local-first IndexedDB architecture.
+Phase 5 delivers a complete Dungeon Master toolkit for D&D Character Forge. Campaign CRUD with house rules and invite codes, a party dashboard with at-a-glance stats grid and skill/language matrices, a full combat/initiative tracker with turn cycling and NPC/monster support, DM-only character notes, a campaign session log, an NPC tracker, a loot/reward tracker, and XP/milestone level-up distribution — all backed by the Django REST API and PostgreSQL database.
 
 **Phase 4 Dependencies:** Phase 5 assumes all Phase 4 session play features are complete — dice roller, HP tracker, spell slot tracker, conditions tracker, rest automation, and level-up flow. The DM features build on these by orchestrating them across multiple characters simultaneously (party HP, group initiative, party-wide XP awards, etc.).
 
@@ -40,9 +40,9 @@ Phase 5 delivers a complete Dungeon Master toolkit for D&D Character Forge. Camp
 
 ## Pre-Phase Audit Notes
 
-### Gap D1 — Local DM Role Model (No Authentication)
+### Gap D1 — DM Role Model (Django Auth)
 
-The app is local-first with no user accounts. Resolution: the user who creates a campaign is the DM by definition. Characters added to a campaign are always from the local IndexedDB. Players "join" by importing a character JSON into the DM's app, or by the DM creating a placeholder character. The `dmId` field is set to a locally generated persistent user ID stored in the preferences table. This is a single-device DM-centric workflow.
+The app uses Django's authentication system. The user who creates a campaign is the DM by definition. Characters added to a campaign are fetched via the Django REST API. Players "join" by entering a server-validated join code. The `dmId` field is set to the authenticated user's ID from Django auth. DM role is enforced server-side via API permissions.
 
 ### Gap D2 — Campaign-Character Relationship
 
@@ -68,16 +68,16 @@ Defined: `id`, `campaignId`, `sessionId`, `name`, `combatants`, `currentTurnInde
 
 Class-to-role mapping for composition analysis. Roles: Tank/Defender, Melee Striker, Ranged Striker, Healer/Support, Controller, Utility/Skill Monkey, Face (Social). Analysis is informational, not prescriptive.
 
-### Gap D8 — Join Codes as Local Import Mechanism
+### Gap D8 — Join Codes as Server-Validated Mechanism
 
-Without a backend, join codes work as a local import mechanism: DM generates a 6-char code tied to a campaign export. Players import the campaign metadata JSON. True sharing is via JSON export/import. This scaffolding pattern matches the future backend-enabled flow.
+Join codes are server-validated: DM generates a 6-char code stored in PostgreSQL and tied to the campaign. Players enter the code via the join endpoint, which validates the code server-side and adds the player's character to the campaign. The Django REST API handles code generation, validation, and campaign membership.
 
 ---
 
 ## Dependencies
 
 ### External Phase Dependencies
-- **Phase 1-3:** Full character creation, sheet display, data layer, export/import
+- **Phase 1-3:** Full character creation, sheet display, Django REST API data layer, export/import
 - **Phase 4:** Dice roller, HP tracker, spell slot tracker, conditions tracker, rest automation, level-up flow
 
 ### Internal Dependency Graph
@@ -145,12 +145,12 @@ Epic 33 (Campaign CRUD & Data Model) <- FOUNDATION - build first
 **Test Distribution:** Unit 31% / Functional 50% / E2E 19% — aligns with Phase 5 target of Functional (50%) + E2E (40% of integration coverage)
 
 ### Testing Infrastructure Needed
-- **Mock Database**: fake-indexeddb for Dexie.js testing; in-memory IndexedDB for store and hook tests
+- **Mock Database**: MSW (Mock Service Worker) for Django REST API testing; React Query test wrapper for hook tests
 - **SRD Data Fixtures**: Monster index (subset: Goblin, Orc, Dragon), magic item data, CR-to-XP mapping table, XP threshold table, language reference (8 Common + 8 Exotic)
 - **Campaign Fixtures**: Empty campaign, campaign with 4 characters, campaign with 8+ characters, archived campaign, campaign with full data (sessions, encounters, NPCs, loot)
 - **Character Fixtures**: Characters at various levels and XP thresholds, casters and non-casters, characters with conditions/temp HP, characters near death, level 20 characters
 - **Encounter Fixtures**: Active encounter mid-combat, encounter with grouped monsters, encounter with lair actions, completed encounter with XP summary
 - **Mock Phase 4 Dependencies**: Dice roller (deterministic), HP tracker logic, conditions system, death save logic, spell slot tracker, rest automation, level-up flow
 - **Mock UI Utilities**: Debounce timer mocks, drag-and-drop testing utilities, framer-motion animation mocks, file input mocks for JSON import
-- **Context Providers**: DMContextProvider mock (isDMView flag), React Router mock with params, Zustand store mocks for campaign, encounter, and character stores
+- **Context Providers**: DMContextProvider mock (isDMView flag), React Router mock with params, React Query client wrapper for campaign/encounter/character API hooks, Zustand store mocks for UI state
 - **Shared Test Utilities**: XP calculation helpers (shared between Epic 35 and 37), campaign export/import validation helpers, join code generation/validation helpers

@@ -8,9 +8,9 @@ As a DM, I need to award XP to individual characters or the whole party for enco
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the XP award system — accessible from the campaign dashboard header ("Award XP" button) and from within the session log.
@@ -44,7 +44,7 @@ This story creates the XP award system — accessible from the campaign dashboar
 | 10 | 64,000 | 20 | 355,000 |
 
 **"Apply" button:**
-- Adds XP to each character's `experiencePoints` field in IndexedDB
+- Adds XP to each character's `experiencePoints` field via API mutation
 - For characters crossing a level threshold, shows "Level Up Available!" notification on their card
 - Links to Phase 4 Epic 31 level-up flow
 
@@ -56,7 +56,7 @@ The XP threshold table is available inline or as a tooltip reference for the DM.
 - [ ] **T37.1.2** — Two modes: "Award to All" and "Award Individually." "Award to All" gives the same XP to every character in the campaign. "Award Individually" lets the DM set a different amount per character
 - [ ] **T37.1.3** — XP input: numeric field. Optional reason/source (e.g., "Goblin encounter", "Rescued the merchant", "Brilliant roleplay"). These notes are logged in the session record
 - [ ] **T37.1.4** — Pre-award preview: for each character, show current XP, XP to add, new total, and whether the character levels up. Highlight any character crossing a level threshold: "[Name] will advance to Level [N]!"
-- [ ] **T37.1.5** — "Apply" button: adds XP to each character's `experiencePoints` field, saves to IndexedDB. For characters that crossed a level threshold, show a "Level Up Available!" notification on their card with a link to trigger the level-up flow (Phase 4 Epic 31)
+- [ ] **T37.1.5** — "Apply" button: adds XP to each character's `experiencePoints` field via API mutation. For characters that crossed a level threshold, show a "Level Up Available!" notification on their card with a link to trigger the level-up flow (Phase 4 Epic 31)
 - [ ] **T37.1.6** — XP threshold table reference (from the SRD): display inline or as a tooltip so the DM can see how much XP is needed for each level
 
 ## Acceptance Criteria
@@ -67,7 +67,7 @@ The XP threshold table is available inline or as a tooltip reference for the DM.
 - Optional reason/source field logs the XP source
 - Pre-award preview shows current XP, added XP, new total, and level-up status for each character
 - Level threshold crossings are highlighted prominently
-- "Apply" persists XP to each character's `experiencePoints` in IndexedDB
+- "Apply" persists XP to each character's `experiencePoints` via API mutation
 - Characters crossing level thresholds receive "Level Up Available!" notifications
 - Level-up notification links to the Phase 4 level-up flow
 - XP threshold table is accessible as a reference for the DM
@@ -104,13 +104,13 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ### Test Dependencies
 - SRD XP threshold table data
 - Character fixtures at various XP levels (near threshold, far from threshold, at max level)
-- Mock Zustand campaign store with character XP fields
+- MSW (Mock Service Worker) API mocking for campaign and character XP endpoints
 - Mock Phase 4 level-up flow trigger
 
 ## Identified Gaps
 
 - **Error Handling**: No specification for handling negative XP input or XP overflow past level 20
-- **Loading/Empty States**: No loading state during XP persistence to IndexedDB
+- **Loading/Empty States**: No loading state during XP persistence via API
 - **Accessibility**: No ARIA labels for the XP input or mode toggle; no screen reader announcement for level-up notifications
 - **Edge Cases**: Behavior when awarding XP to a level 20 character (should it still accumulate?); behavior when campaign uses milestone mode (button should be hidden per Story 37.2)
 

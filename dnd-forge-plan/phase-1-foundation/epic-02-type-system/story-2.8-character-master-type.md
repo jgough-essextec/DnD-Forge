@@ -6,11 +6,11 @@
 As a developer, I need the complete Character interface that aggregates all sub-types into the master entity.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
-- **Character interface**: The master entity that aggregates all sub-types defined in Stories 2.1-2.7. This is the primary data structure stored in IndexedDB and managed by Zustand stores. It includes:
+- **Character interface**: The master entity that aggregates all sub-types defined in Stories 2.1-2.7. This is the primary data structure stored in the database and managed by Zustand stores. It includes:
   - **Identity fields**: id (UUID), name, playerName, avatar URL, timestamps (createdAt, updatedAt), version number for optimistic concurrency
   - **Core choices**: race (RaceSelection from Story 2.2), classes (ClassSelection[] from Story 2.3 — array for multiclass), background (BackgroundSelection from Story 2.6), alignment (from Story 2.1)
   - **Ability scores**: base scores (AbilityScores from Story 2.1), method used (standard array, point buy, rolled), raw rolls (if rolled)

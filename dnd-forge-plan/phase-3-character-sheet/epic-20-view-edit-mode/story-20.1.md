@@ -6,9 +6,9 @@
 As a player, I need a clear way to switch between reading my character sheet and editing it, with obvious visual cues for which mode I'm in.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **View Mode vs. Edit Mode (Gap S6)**: Two distinct UX paradigms:
   - View mode: clean typography, no visible form controls, optimal information density, parchment-like backgrounds, click-to-roll on skills/saves/attacks
@@ -67,20 +67,20 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should show save prompt when pressing Escape with unsaved changes in edit mode`
 
 ### Test Dependencies
-- Mock Zustand store for mode state management
-- Mock character data in IndexedDB
+- Mock Zustand store for mode state management (UI state: isEditing toggle)
+- MSW (Mock Service Worker) to mock API responses for character data
 - Mock localStorage for first-time help banner dismissal state
 - Mock keyboard event handlers
 
 ## Identified Gaps
 
 - **Accessibility**: No ARIA labels for mode toggle button, no screen reader announcement of mode changes, no focus management after mode switch
-- **Error Handling**: No specification for what happens if mode switch fails (e.g., IndexedDB unavailable during save prompt)
+- **Error Handling**: No specification for what happens if mode switch fails (e.g., API unavailable during save prompt)
 - **Mobile/Responsive**: No specification for how keyboard shortcuts behave on mobile (no physical keyboard)
 
 ## Dependencies
-- Phase 1 state management (Zustand) for mode state
-- Phase 2 character data in IndexedDB
+- Phase 1 state management (Zustand) for mode state (UI state: isEditing toggle)
+- Phase 2 character data via React Query (fetched from API)
 
 ## Notes
 - This is a foundational story for the entire character sheet — all other sheet components depend on the mode toggle system

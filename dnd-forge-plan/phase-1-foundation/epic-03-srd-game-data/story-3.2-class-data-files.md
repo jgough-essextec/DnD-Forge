@@ -6,9 +6,9 @@
 As a developer, I need complete class data for all 12 SRD classes with level-by-level feature progression, proficiencies, and spell slot tables.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **12 SRD Classes**: Each class requires hit die, primary abilities, saving throw proficiencies, full proficiency lists (armor, weapons, tools, skill choices), level 1-20 feature progression, subclass selection level and name, ASI levels, starting equipment choices, and starting gold dice formula
   - **Barbarian**: d12, STR primary, STR/CON saves, light/medium armor + shields, simple/martial weapons, 2 skills from [Animal Handling, Athletics, Intimidation, Nature, Perception, Survival], Primal Path at 3, starting gold 2d4x10. Key features: Rage (1-6/day, +2-4 damage), Unarmored Defense (10+DEX+CON), Reckless Attack (2), Danger Sense (2), Extra Attack (5), Fast Movement (5, +10 speed unarmored), Feral Instinct (7), Brutal Critical (9,13,17), Relentless Rage (11), Persistent Rage (15), Indomitable Might (18), Primal Champion (20, STR/CON to 24)

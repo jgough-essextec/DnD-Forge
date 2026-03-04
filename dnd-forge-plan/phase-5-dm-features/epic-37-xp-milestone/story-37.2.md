@@ -8,9 +8,9 @@ As a DM using milestone progression, I need to directly level up one or all char
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story implements milestone-based leveling, where the DM directly advances characters without XP tracking. This is a common alternative to XP-based progression in D&D 5e.
@@ -52,7 +52,7 @@ interface HouseRules {
 - In Milestone mode, XP fields show "Milestone" text instead of numbers
 - In Milestone mode, "Award XP" button becomes "Milestone Level Up"
 - Characters at level 20 cannot be leveled further
-- Level-up changes persist to IndexedDB
+- Level-up changes persist via API mutation
 
 ## Testing Requirements
 
@@ -84,7 +84,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ### Test Dependencies
 - Mock campaign with 4 characters at various levels
 - Mock Phase 4 level-up flow (batched)
-- Mock Zustand campaign store with house rules
+- MSW (Mock Service Worker) API mocking for campaign house rules endpoints
 - Character fixtures including one at level 20 (for cap testing)
 
 ## Identified Gaps

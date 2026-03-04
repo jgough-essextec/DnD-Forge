@@ -8,10 +8,10 @@ As a new player, I need tooltips and contextual help throughout the wizard so I 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Game Term Dictionary**: ~50 common D&D terms with beginner-friendly definitions. Terms include: Proficiency Bonus, Saving Throw, Ability Check, Ability Modifier, Cantrip, Spell Slot, Hit Die, Hit Points, Armor Class, Initiative, Darkvision, Proficiency, Expertise, Advantage/Disadvantage, etc.
 - **GameTermTooltip**: Wraps any D&D game term in the wizard UI with a hover/tap tooltip showing the plain-English definition. Works on both desktop (hover) and mobile (tap)
 - **StepHelp**: A collapsible "Need Help?" panel at the top of each wizard step with step-specific guidance for new players. Different help text for each step

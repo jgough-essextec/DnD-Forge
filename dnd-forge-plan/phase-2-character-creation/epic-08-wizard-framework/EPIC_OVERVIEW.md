@@ -20,7 +20,7 @@ A reusable, multi-step wizard component with progress tracking, validation gatin
 - **WizardNavigation.tsx** — Fixed bottom bar with Back/Next/Save buttons and validation gating
 - **IntroStep.tsx** — Mode selection entry point with guided and freeform cards
 - **FreeformCreation.tsx** — Single-page editable character sheet with accordion sections
-- **Zustand wizard store** with sessionStorage persist middleware for state recovery
+- **Zustand wizard store** (ephemeral UI state) with sessionStorage persist middleware for state recovery; finalized characters are saved via Django REST API
 - **framer-motion** for animated step transitions (slide left/right)
 - **Step validation interface** — Each step exposes `validate(): { valid: boolean; errors: string[] }`
 - **Conditional step logic** — Skip spellcasting step for non-casters at level 1
@@ -44,5 +44,5 @@ A reusable, multi-step wizard component with progress tracking, validation gatin
 
 ## Dependencies
 
-- **Depends on:** Phase 1 foundation (Zustand stores with persist middleware, type system, calculation engine, React Router)
+- **Depends on:** Phase 1 foundation (React Query (server state) + Zustand (UI state) stores with persist middleware, type system, calculation engine, React Router)
 - **Blocks:** All step Epics (9-15) plug into this wizard shell; Epic 16 shared components are used within the framework

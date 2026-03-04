@@ -12,7 +12,7 @@ Integrate all DM features into the app's routing and navigation structure, with 
 |-------|-------|-------|-------|
 | 38.1 | DM Route Structure | 5 | New routes, breadcrumbs, navigation bar, page transitions, deep linking |
 | 38.2 | DM vs Player Context | 4 | Context-aware character view, DM badge, DM notes visibility, shared data |
-| 38.3 | Join Campaign Flow | 5 | Join page, code entry, local import, character selection, success state |
+| 38.3 | Join Campaign Flow | 5 | Join page, code entry, server-validated join, character selection, success state |
 | 38.4 | Campaign Export & Import | 5 | Full export, player-safe export, import validation, merge handling |
 
 ## Route Structure
@@ -27,8 +27,8 @@ Integrate all DM features into the app's routing and navigation structure, with 
 
 ## Key Design Decisions
 
-- **DM vs Player Context:** The same character data is shared; edits in either context save to the same IndexedDB record. The difference is purely UI/access (which panels are shown).
-- **Join Codes (Local Phase 5):** Join codes resolve against local campaigns only. For cross-device sharing, JSON export/import is the transport layer. This scaffolds the future backend-enabled flow.
+- **DM vs Player Context:** The same character data is shared; edits in either context save via the Django REST API. The difference is purely UI/access (which panels are shown), with DM permissions enforced server-side.
+- **Join Codes:** Join codes are validated server-side via the Django REST API. Players enter a code which is verified against the campaign in PostgreSQL, and the player's character is added to the campaign membership.
 - **Campaign Export:** Two modes — full export (includes DM notes, NPC tracker, session notes) and player-safe export (excludes DM-only content).
 - **Navigation:** "Campaigns" section added alongside existing "Characters" section in top nav bar.
 

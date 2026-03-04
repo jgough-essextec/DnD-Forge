@@ -6,9 +6,9 @@
 As a player, I need to see and track my HP max, current HP, and temporary HP, with a clear visual indicator of my health status.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **HP Block Position**: Below combat stats row in the center column
 - **Max HP Computation**: Hit die max + CON modifier at level 1, plus per-level additions for higher levels. Calculation engine handles this
@@ -91,4 +91,4 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - Current HP is one of the most frequently changed values during gameplay — the quick damage/heal modal must be fast and intuitive
 - At character creation, Current HP equals Max HP and Temp HP is 0
 - The HP block is a critical "empty state" case from Gap S1: these fields exist at level 1 but Temp HP starts at 0
-- The mini-history is session-only (not persisted to IndexedDB) — it helps players track what just happened
+- The mini-history is session-only (not persisted via the API) — it helps players track what just happened

@@ -8,10 +8,10 @@ As a player choosing a race with subraces, I need to pick my subrace and see how
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
-- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, Dexie.js database layer, Zustand stores, dice engine
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
+- **Phase 1 Foundation Available**: Type system, SRD game data (races, classes, spells, equipment, backgrounds, feats as static JSON), calculation engine, React Query API layer, Zustand stores (UI state), dice engine
 - **Races with Subraces**: Dwarf (Hill Dwarf, Mountain Dwarf), Elf (High Elf, Wood Elf), Gnome (Forest Gnome, Rock Gnome), Halfling (Lightfoot Halfling, Stout Halfling)
 - **Races without Subraces**: Human (but has Standard vs. Variant as a special case), Dragonborn (has ancestry as a special case), Half-Elf, Half-Orc, Tiefling
 - **Variant Human**: Treated as a subrace-like option. When selected, requires: +1 to two abilities (dropdowns), 1 skill proficiency (from all 18), 1 feat (opens feat picker — connects to Story 9.4)

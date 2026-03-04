@@ -6,22 +6,22 @@
 As a player, I need quick-access actions for each character without opening the full sheet — duplicate, export, archive, and delete.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Character Actions**: Available from the kebab icon on each card and from the right-click context menu
 - **Duplicate**: Deep copy with new ID, incremented name ("Gandalf" -> "Gandalf (Copy)"), fresh timestamps
 - **Archive (Soft Delete)**: Sets `isArchived: true`. Card disappears from default view. 5-second undo toast. Viewable in "Show Archived" filter
-- **Permanent Delete**: Confirmation dialog with character name. Cannot be undone. Removes from IndexedDB
+- **Permanent Delete**: Confirmation dialog with character name. Cannot be undone. DELETE /api/characters/:id via React Query mutation
 - **Batch Operations**: Multi-select mode with checkbox overlay on cards. Batch action bar: Archive, Delete, Export All
 - **Toast Notifications**: Success/undo feedback for all actions using shadcn/ui toast system
 
 ## Tasks
 - [ ] **T21.3.1** — Create `components/gallery/CharacterActions.tsx` — a dropdown menu rendered from the kebab icon on each card and from the right-click context menu. Actions: View Character, Edit Character, Duplicate, Export as JSON, Archive, Delete
-- [ ] **T21.3.2** — **Duplicate:** creates a deep copy of the character with a new ID, incremented name (e.g., "Gandalf -> Gandalf (Copy)"), and fresh timestamps. Persists immediately to IndexedDB. Shows a success toast: "Character duplicated!" with an "Open Copy" link
+- [ ] **T21.3.2** — **Duplicate:** creates a deep copy of the character with a new ID, incremented name (e.g., "Gandalf -> Gandalf (Copy)"), and fresh timestamps. Persists immediately via POST /api/characters/ using React Query mutation. Shows a success toast: "Character duplicated!" with an "Open Copy" link
 - [ ] **T21.3.3** — **Archive (soft delete):** sets `isArchived: true` on the character. Card disappears from the default gallery view. Show a toast: "Character archived. Undo?" with a 5-second undo timer. Archived characters appear in the "Show Archived" filtered view with a muted overlay and "Unarchive" action
-- [ ] **T21.3.4** — **Permanent Delete:** confirmation dialog: "Permanently delete [Character Name]? This cannot be undone." Red "Delete" button, muted "Cancel" button. On confirm, remove from IndexedDB. Show toast: "Character deleted."
+- [ ] **T21.3.4** — **Permanent Delete:** confirmation dialog: "Permanently delete [Character Name]? This cannot be undone." Red "Delete" button, muted "Cancel" button. On confirm, DELETE /api/characters/:id via React Query mutation. Show toast: "Character deleted."
 - [ ] **T21.3.5** — **Batch operations:** a "Select" mode toggle that enables multi-select on cards (checkbox overlay). When cards are selected, show a batch action bar at the bottom: "N selected — Archive | Delete | Export All"
 
 ## Acceptance Criteria
@@ -33,7 +33,7 @@ As a player, I need quick-access actions for each character without opening the 
 - Archive toast shows "Undo?" with 5-second timer that reverses the archive
 - Archived characters appear in "Show Archived" filter with muted styling and "Unarchive" action
 - Permanent Delete shows confirmation dialog with character name and red Delete button
-- Permanent Delete removes character from IndexedDB
+- Permanent Delete removes character via API (DELETE /api/characters/:id)
 - "Select" mode enables multi-select with checkbox overlay on cards
 - Batch action bar appears with count and Archive/Delete/Export All options
 
@@ -57,7 +57,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should undo archive action within 5-second window`
 - `should show archived characters with muted overlay in "Show Archived" view`
 - `should show confirmation dialog with character name for permanent delete`
-- `should remove character from IndexedDB on confirmed permanent delete`
+- `should remove character via API (DELETE /api/characters/:id) on confirmed permanent delete`
 - `should show "Character deleted" toast after permanent delete`
 - `should enable multi-select mode with checkbox overlay on cards`
 - `should show batch action bar with count and Archive/Delete/Export All options when cards selected`
@@ -70,14 +70,14 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should select multiple characters, batch archive, and verify they are removed from gallery`
 
 ### Test Dependencies
-- Mock IndexedDB with multiple character records for CRUD operations
+- MSW (Mock Service Worker) to mock character API endpoints for CRUD operations
 - Mock toast notification system (shadcn/ui)
 - Mock export utility from Story 22.1
 - Mock timer for 5-second undo window
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for failure during duplicate (IndexedDB write failure), archive, or delete operations
+- **Error Handling**: No specification for failure during duplicate (API request failure), archive, or delete operations
 - **Accessibility**: No keyboard shortcuts for quick actions, no ARIA labels for context menu items, no screen reader support for batch selection
 - **Edge Cases**: No specification for batch delete confirmation (individual confirmation per character or single bulk confirmation?)
 
@@ -85,7 +85,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - Story 21.1 (Gallery Grid Layout) — actions integrate with gallery cards
 - Story 21.2 (Search, Filter & Sort) — "Show Archived" filter reveals archived characters
 - Story 22.1 (JSON Export) — "Export as JSON" action uses the export utility
-- Phase 1 IndexedDB database layer for character CRUD operations
+- Django REST API endpoints for character CRUD operations and React Query for API state management
 
 ## Notes
 - The duplicate name logic should handle existing copies: "Gandalf (Copy)" -> "Gandalf (Copy 2)"

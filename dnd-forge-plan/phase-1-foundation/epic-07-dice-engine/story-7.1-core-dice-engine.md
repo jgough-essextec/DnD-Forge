@@ -6,9 +6,9 @@
 As a developer, I need a pure-function dice engine that all rolling throughout the app delegates to.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **Cryptographic randomness**: All dice rolls must use `crypto.getRandomValues()` for true randomness. This is a Web Crypto API available in all modern browsers. It provides a uniform distribution, which is critical for fair dice simulation. Do NOT use `Math.random()` which is a pseudorandom number generator and not suitable for gaming
 - **Uniform distribution**: When rolling a d20, each value 1-20 must have exactly 1/20 probability. The implementation must avoid modulo bias. The correct approach: generate a random integer in a range that is evenly divisible by the die size, then use modulo. Alternatively, use rejection sampling: generate a random value, reject if it falls outside the valid range, retry

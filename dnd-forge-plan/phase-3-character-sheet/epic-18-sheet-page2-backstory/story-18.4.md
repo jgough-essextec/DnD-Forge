@@ -6,9 +6,9 @@
 As a player, I need to track my currency across all five denominations with auto-conversion.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Currency Denominations (D&D 5e)**: CP (Copper Pieces), SP (Silver Pieces), EP (Electrum Pieces), GP (Gold Pieces), PP (Platinum Pieces)
 - **Conversion Rates**: 1 PP = 10 GP = 20 EP = 100 SP = 1000 CP
@@ -29,7 +29,7 @@ As a player, I need to track my currency across all five denominations with auto
 - "Auto-Convert" toggle converts currency up automatically when enabled
 - Conversion rates tooltip displays the full conversion table
 - Total wealth in GP equivalent displays at the bottom
-- Currency values persist to IndexedDB
+- Currency values persist via the API auto-save
 
 ## Testing Requirements
 
@@ -50,7 +50,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should toggle auto-convert on/off and convert currency up when enabled`
 - `should display conversion rates tooltip on hover`
 - `should display total wealth in GP equivalent at the bottom`
-- `should persist currency changes to IndexedDB via auto-save`
+- `should persist currency changes via the API via auto-save`
 
 ### Test Dependencies
 - Mock character data with starting currency

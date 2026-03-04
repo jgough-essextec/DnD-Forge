@@ -6,9 +6,9 @@
 As a developer, I need class types that capture the full complexity of class features, proficiencies, spell progression, and level-by-level advancement.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Domain**: D&D 5th Edition SRD — 9 races (with subraces), 12 classes (with subclasses), ability scores, skills, spells, equipment, backgrounds, feats
 - **D&D 5e Classes**: 12 core classes, each with unique hit dice, proficiencies, features at specific levels, and subclass selection:
   - Barbarian (d12, Primal Path at 3), Bard (d8, College at 3), Cleric (d8, Domain at 1), Druid (d8, Circle at 2), Fighter (d10, Archetype at 3), Monk (d8, Tradition at 3), Paladin (d10, Oath at 3), Ranger (d10, Archetype at 3), Rogue (d8, Archetype at 3), Sorcerer (d6, Origin at 1), Warlock (d8, Patron at 1), Wizard (d6, School at 2)

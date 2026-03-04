@@ -28,7 +28,7 @@ The second page of the character sheet displaying character appearance, backstor
 
 ## Dependencies
 - Phase 1: Character type system, SRD equipment data, calculation engine (carrying capacity)
-- Phase 2: Equipment picker, character data in IndexedDB
+- Phase 2: Equipment picker, character data loaded via Django REST API
 - Epic 17: Page 1 AC calculation (equipment equip state affects AC)
 - Epic 20: View/Edit mode toggle system
 - Epic 23: Avatar/portrait system (portrait display)
@@ -54,6 +54,6 @@ The second page of the character sheet displaying character appearance, backstor
 ### Key Gaps Found
 - **Accessibility**: Missing ARIA labels for equipment table, currency fields, appearance inputs, and all interactive elements
 - **Loading/Empty States**: Several sections start empty for new characters (treasure, allies, backstory) but empty state treatments not fully specified
-- **Error Handling**: Missing specification for IndexedDB failures during item operations and invalid input handling for currency
+- **Error Handling**: Missing specification for API failures during item operations and invalid input handling for currency
 - **Performance**: No specification for equipment list performance with many items (50+) or backstory rendering with 5,000+ characters
 - **Edge Cases**: Auto-convert behavior with Electrum (awkward 2:1 GP ratio) not specified

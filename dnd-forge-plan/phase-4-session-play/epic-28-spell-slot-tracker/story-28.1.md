@@ -8,9 +8,9 @@ As a spellcaster during a session, I need to mark spell slots as used when I cas
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard), Phase 3 (character sheet 3-page display, gallery, import/export, view/edit mode with auto-save)
 
 ### D&D 5e Spell Slot System
@@ -106,7 +106,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - **Loading/Empty States**: No specification for non-caster characters visiting the spell page
 - **Edge Cases**: Behavior when all slots at every level are expended; upcasting to a level with no available slots; slot recovery interaction with manual toggle vs rest recovery
 - **Accessibility**: No ARIA labels for slot circles (available/expended state); no keyboard interaction for toggling slots; screen reader should announce slot expend/recover events
-- **Performance**: No specification for slot state auto-save frequency to IndexedDB
+- **Performance**: No specification for slot state auto-save frequency via the API
 
 ## Dependencies
 
@@ -116,6 +116,6 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Notes
 
-- Spell slot expended state must persist in the character data (auto-saved to IndexedDB) so it survives page refresh
+- Spell slot expended state must persist in the character data (auto-saved via the API) so it survives page refresh
 - The override for no-slots casting is important for features like the Sorcerer's ability to convert sorcery points to slots
 - Slot recovery happens through the rest system (Epic 30), not through manual un-expending (though manual toggle is available as a correction mechanism)

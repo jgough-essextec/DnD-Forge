@@ -8,9 +8,9 @@ As a developer, I need clean routes for all DM features that integrate with the 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story defines and implements all new routes for DM features, integrating them with the existing React Router setup from Phase 3.
@@ -34,7 +34,7 @@ This story defines and implements all new routes for DM features, integrating th
 
 **Page transitions:** Consistent with Phase 3 patterns (slide animations, framer-motion).
 
-**Deep linking:** Navigating directly to `/campaign/:id` loads the campaign and its characters from IndexedDB. Missing campaign or characters show appropriate error states.
+**Deep linking:** Navigating directly to `/campaign/:id` loads the campaign and its characters from the API via React Query. Missing campaign or characters show appropriate error states.
 
 ## Tasks
 
@@ -47,7 +47,7 @@ This story defines and implements all new routes for DM features, integrating th
 - [ ] **T38.1.2** — Breadcrumb updates: "Campaigns" -> "[Campaign Name]" -> "Encounter: [Name]" or "Session [N]"
 - [ ] **T38.1.3** — Navigation: add "Campaigns" to the top navigation bar alongside the existing "Characters" section. Active section is highlighted. On mobile, both are accessible from the hamburger menu
 - [ ] **T38.1.4** — Page transitions: consistent with Phase 3 (slide animations, framer-motion)
-- [ ] **T38.1.5** — Deep linking: navigating directly to `/campaign/:id` loads the campaign and its characters from IndexedDB. If the campaign or characters are missing, show appropriate error states
+- [ ] **T38.1.5** — Deep linking: navigating directly to `/campaign/:id` loads the campaign and its characters from the API via React Query. If the campaign or characters are missing, show appropriate error states
 
 ## Acceptance Criteria
 
@@ -62,7 +62,7 @@ This story defines and implements all new routes for DM features, integrating th
 - Active navigation section is visually highlighted
 - Mobile hamburger menu includes both "Characters" and "Campaigns"
 - Page transitions match Phase 3 animation patterns
-- Direct URL navigation loads data from IndexedDB with error states for missing data
+- Direct URL navigation loads data from API via React Query with error states for missing data
 
 ## Testing Requirements
 
@@ -87,7 +87,7 @@ _For component rendering, user interactions, state changes, prop variations_
 _For critical user journeys, multi-step flows, full-page interactions_
 
 - `should navigate between /campaigns and /campaign/:id routes with correct page transitions`
-- `should deep-link directly to /campaign/:id and load campaign data from IndexedDB`
+- `should deep-link directly to /campaign/:id and load campaign data from API`
 - `should navigate the full route hierarchy: campaigns list -> dashboard -> encounter -> session`
 - `should render mobile navigation with hamburger menu containing both sections`
 

@@ -2,7 +2,7 @@
 
 ## App Summary
 
-D&D Character Forge is a local-first React Progressive Web App (PWA) for Dungeons & Dragons 5th Edition character creation, management, and session play. It targets two user personas: **Players** (who create and manage characters through a guided wizard or freeform editor) and **Dungeon Masters** (who manage campaigns, track party composition, and run combat encounters). The app requires no backend server -- all data is persisted locally in IndexedDB via Dexie.js, with full offline support.
+D&D Character Forge is a full-stack web application for Dungeons & Dragons 5th Edition character creation, management, and session play. It uses a **Django REST API backend** with **PostgreSQL** for data persistence and a **React SPA frontend**. It targets two user personas: **Players** (who create and manage characters through a guided wizard or freeform editor) and **Dungeon Masters** (who manage campaigns, track party composition, and run combat encounters). Users authenticate via Django session auth, and all character/campaign data is persisted server-side in PostgreSQL.
 
 ---
 
@@ -10,16 +10,22 @@ D&D Character Forge is a local-first React Progressive Web App (PWA) for Dungeon
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
+| Backend Framework | Django 5+ | Web framework with ORM, auth, admin, and management commands |
+| API Layer | Django REST Framework | REST API with serializers, viewsets, pagination, and filtering |
+| Database | PostgreSQL | Relational data persistence for characters, campaigns, and users |
+| Auth | Django session authentication | User registration, login, and session management |
+| PDF Generation | WeasyPrint | Server-side PDF rendering from HTML/CSS templates |
 | Frontend Framework | React 18+ with TypeScript | Component-based UI with strong typing |
 | Build Tool | Vite | Fast HMR and optimized production builds |
 | Styling | Tailwind CSS | Utility-first CSS framework |
 | Component Library | shadcn/ui | Accessible, composable UI components |
-| State Management | Zustand | Lightweight client state with persist middleware |
-| Data Persistence | Dexie.js (IndexedDB) | Offline-first structured storage for characters and campaigns |
+| Server State | React Query (TanStack Query) | API data fetching, caching, and optimistic updates |
+| UI State | Zustand | Lightweight store for ephemeral UI state (wizard, modals, theme) |
 | Routing | React Router v6 | Client-side page navigation |
-| PDF Generation | jsPDF + html2canvas | Client-side character sheet PDF export |
+| Backend Testing | pytest + Django TestCase | Unit and integration tests for API and business logic |
+| Frontend Testing | Vitest + React Testing Library | Fast unit and integration tests |
 | E2E Testing | Playwright | Cross-browser end-to-end test automation |
-| Unit Testing | Vitest + React Testing Library | Fast unit and integration tests |
+| Deployment | Docker (Django + PostgreSQL + Nginx) | Containerized deployment |
 
 ---
 
@@ -27,12 +33,12 @@ D&D Character Forge is a local-first React Progressive Web App (PWA) for Dungeon
 
 | Phase | Name | Weeks | Epics | Description |
 |-------|------|-------|-------|-------------|
-| 1 | Foundation | 1-2 | 1-7 | Project scaffolding, type system, SRD data ETL pipeline, calculation engine, database layer, state management, dice engine |
+| 1 | Foundation | 1-2 | 1-7 | Project scaffolding, type system, SRD data ETL pipeline, calculation engine, database layer (Django ORM + PostgreSQL), state management (React Query + Zustand), dice engine |
 | 2 | Character Creation Wizard | 3-4 | 8-16 | Guided and freeform character creation with all D&D 5e steps (race, class, ability scores, background, equipment, spells, review) |
 | 3 | Character Sheet & Management | 5-6 | 17-25 | 3-page digital character sheet, character gallery, import/export, edit mode, responsive design |
 | 4 | Session Play Features | 7-8 | 26-32 | Dice roller with animations, HP/spell slot/condition tracking, rest automation, level up flow, compact mobile view |
 | 5 | DM Features | 9-10 | 33-38 | Campaign management, party overview dashboard, combat/initiative tracker, DM notes, XP/milestone management |
-| 6 | Polish & Export | 11-12 | 39-46 | PDF export with official sheet layout, accessibility audit, performance optimization, PWA offline support, mobile polish, E2E testing |
+| 6 | Polish & Export | 11-12 | 39-48 | PDF export (WeasyPrint) with official sheet layout, accessibility audit, performance optimization, deployment and infrastructure, mobile polish, E2E testing, auth |
 
 ---
 
@@ -52,8 +58,8 @@ dnd-forge-plan/
 |   |-- epic-02-type-system/
 |   |-- epic-03-srd-game-data/
 |   |-- epic-04-calculation-engine/
-|   |-- epic-05-database-layer/
-|   |-- epic-06-state-management/
+|   |-- epic-05-database-layer/          (Django ORM + PostgreSQL)
+|   |-- epic-06-state-management/        (React Query + Zustand)
 |   +-- epic-07-dice-engine/
 |
 |-- phase-2-character-creation/        <-- Weeks 3-4, Epics 8-16
@@ -105,10 +111,12 @@ dnd-forge-plan/
     |-- epic-40-print-stylesheet/
     |-- epic-41-accessibility/
     |-- epic-42-performance/
-    |-- epic-43-pwa/
+    |-- epic-43-deployment-infrastructure/
     |-- epic-44-mobile-responsive/
     |-- epic-45-cross-browser-testing/
-    +-- epic-46-final-polish/
+    |-- epic-46-final-polish/
+    |-- epic-47-reserved/
+    +-- epic-48-auth/
 ```
 
 ---

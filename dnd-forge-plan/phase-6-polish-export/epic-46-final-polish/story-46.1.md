@@ -8,16 +8,16 @@ As a player, I need visual feedback while content loads so the app doesn't feel 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router, jsPDF (PDF export), Playwright (E2E testing)
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router, WeasyPrint (server-side PDF), Playwright (E2E testing)
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phases 1-5 (complete character creation, sheet display, session play, DM/campaign features)
 - **Performance Targets**: Bundle <500KB, FCP <1.5s, TTI <3s, Lighthouse >90
 - **Accessibility Target**: WCAG 2.1 AA compliance
 - **Skeleton Screen Design**: Grey pulsing rectangles matching the actual content layout structure. Smooth fade transition to real content when loaded
 - **Loading Scenarios**:
-  - Gallery: Characters loading from IndexedDB (typically fast, but noticeable with 100+ characters)
-  - Character sheet: Individual character data loading from IndexedDB
+  - Gallery: Characters loading from API (typically fast, but noticeable with 100+ characters)
+  - Character sheet: Individual character data loading from API
   - Campaign dashboard: Party data and session notes loading
   - SRD data: First-time loading of Tier 2/3/4 data files (spell browser, creation wizard)
   - PDF generation: Multi-page PDF compilation (can take 2-5 seconds)
@@ -25,7 +25,7 @@ As a player, I need visual feedback while content loads so the app doesn't feel 
 
 ## Tasks
 
-- [ ] **T46.1.1** — **Gallery skeleton:** while characters load from IndexedDB, show skeleton card placeholders (grey pulsing rectangles matching the card layout). Transition: skeleton fades to real content
+- [ ] **T46.1.1** — **Gallery skeleton:** while characters load from API, show skeleton card placeholders (grey pulsing rectangles matching the card layout). Transition: skeleton fades to real content
 - [ ] **T46.1.2** — **Character sheet skeleton:** while a character loads, show the three-page layout structure with skeleton placeholders for each section. Ability score blocks pulse, text areas show grey lines
 - [ ] **T46.1.3** — **Campaign dashboard skeleton:** party grid shows skeleton rows with pulsing cells. Tab content areas show loading indicators
 - [ ] **T46.1.4** — **SRD data loading:** when navigating to the creation wizard or spell page for the first time, show: "Loading game data..." with a progress bar based on the number of data files fetched
@@ -33,7 +33,7 @@ As a player, I need visual feedback while content loads so the app doesn't feel 
 
 ## Acceptance Criteria
 
-- Gallery shows skeleton card placeholders while characters load from IndexedDB
+- Gallery shows skeleton card placeholders while characters load from API
 - Skeleton cards match the actual card layout dimensions and structure
 - Gallery skeletons fade smoothly to real content when loaded
 - Character sheet shows skeleton layout with pulsing ability score blocks and grey text line placeholders
@@ -60,7 +60,7 @@ _For component rendering, user interactions, state changes, prop variations_
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
 
-- `should show gallery skeleton placeholders before characters appear from IndexedDB`
+- `should show gallery skeleton placeholders before characters appear from API`
 - `should show PDF progress bar advancing through Page 1 -> Page 2 -> Page 3 -> Compiling -> complete`
 - `should use consistent grey color scheme across all skeleton screens`
 

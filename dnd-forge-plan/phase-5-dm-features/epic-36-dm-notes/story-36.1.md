@@ -8,9 +8,9 @@ As a DM, I need to write private notes about each character that are visible onl
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story implements DM-only notes per character. The `dmNotes` field already exists on the Character type from prior phases. This story creates the UI for editing and viewing those notes, with strict visibility rules.
@@ -46,7 +46,7 @@ The notes panel is accessible from the character's expanded row in the Party Sta
 - DM notes are excluded from JSON exports unless explicitly toggled
 - Quick-note tags (Secret, Plot Hook, Relationship, Motivation, Weakness) can be added as colored badges
 - "All DM Notes" view shows all per-character notes organized by character name
-- Notes save to the character's `dmNotes` field in IndexedDB
+- Notes save to the character's `dmNotes` field via API mutation
 
 ## Testing Requirements
 
@@ -63,7 +63,7 @@ _For component rendering, user interactions, state changes, prop variations_
 
 - `should render DM notes panel accessible from party stats grid expanded row`
 - `should display markdown-lite editor with real-time preview`
-- `should auto-save notes to IndexedDB on 500ms debounce after editing`
+- `should auto-save notes via API mutation on 500ms debounce after editing`
 - `should NOT render dmNotes when character is viewed from gallery (player context)`
 - `should render dmNotes when character is viewed from campaign dashboard (DM context)`
 - `should add quick-note tags (Secret, Plot Hook, Relationship, Motivation, Weakness) as colored badges`
@@ -84,7 +84,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Identified Gaps
 
-- **Error Handling**: No specification for auto-save failure handling or offline save retry
+- **Error Handling**: No specification for auto-save failure handling or API error retry
 - **Loading/Empty States**: No empty state for "All DM Notes" view when no notes exist
 - **Accessibility**: No ARIA labels for quick-note tag buttons; no keyboard shortcut for toggling the notes panel
 - **Mobile/Responsive**: Slide-out panel vs inline section behavior on mobile not specified

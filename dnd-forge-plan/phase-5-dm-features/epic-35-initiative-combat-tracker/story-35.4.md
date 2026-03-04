@@ -8,9 +8,9 @@ As a DM, I need to quickly apply damage, healing, and conditions to any combatan
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story adds HP and condition management to the combat tracker. It reuses the same HP logic and conditions system from Phase 4 but applies them to all combatants (players, monsters, NPCs) in the combat tracker context.
@@ -66,7 +66,7 @@ interface Combatant {
 - Temp HP is editable and absorbs damage before regular HP
 - Concentration badge appears on concentrating spellcasters
 - Concentration check reminder fires when a concentrating combatant takes damage with correct DC
-- All HP changes for player combatants sync back to the character's IndexedDB record
+- All HP changes for player combatants sync back to the character record via the API
 
 ## Testing Requirements
 
@@ -99,13 +99,13 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should apply damage to a monster, reduce to 0 HP, and see "Defeated" overlay`
 - `should apply damage to a player, trigger death saves, and roll a death save`
 - `should add a condition to a combatant and see it persist across turns`
-- `should sync player HP changes back to character's IndexedDB record after combat`
+- `should sync player HP changes back to character record via API after combat`
 
 ### Test Dependencies
 - Mock Phase 4 HP tracker logic, conditions system, death save logic, and dice roller
 - Combatant fixtures at various HP levels (full, half, 0, with temp HP)
 - Spellcaster combatant fixture with concentration state
-- Mock IndexedDB for player character HP sync verification
+- MSW mock for player character HP sync verification
 
 ## Identified Gaps
 
@@ -122,7 +122,7 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Notes
 
-- HP changes to player combatants must sync back to the actual Character record in IndexedDB. When combat ends, the character's HP should reflect what happened during combat.
+- HP changes to player combatants must sync back to the actual Character record in the database. When combat ends, the character's HP should reflect what happened during combat.
 - Monster HP only exists within the encounter — it is not persisted beyond the encounter lifecycle.
 - The concentration check reminder is one of the most commonly forgotten rules in D&D 5e. Automating the reminder is a high-value DM feature.
 - Quick damage buttons save significant time during combat when the DM knows the damage and just needs to apply it quickly.

@@ -6,16 +6,16 @@
 As a player with many characters, I need to search by name and filter by class, race, level, or campaign to find specific characters quickly.
 
 ## Technical Context
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth
 - **Prior Phases Available**: Phase 1 (types, SRD data, calculation engine, database, state stores, dice engine), Phase 2 (character creation wizard — guided and freeform modes)
 - **Gallery Toolbar**: Positioned above the card grid with search, filter chips, sort dropdown, and view toggle
 - **Search**: Text input with debounced (200ms) case-insensitive substring match on character name
 - **Filter Chips**: By Class (multi-select dropdown with counts), By Race (same pattern), By Level range (toggle chips), By Campaign, Show Archived toggle
 - **Sort Options**: Last Edited (default), Name A-Z, Name Z-A, Level High-Low, Level Low-High, Date Created Newest, Date Created Oldest
 - **View Toggle**: Grid View (cards) vs. List View (compact sortable table)
-- **Preference Persistence**: Last-used sort/filter preferences saved to IndexedDB preferences table
+- **Preference Persistence**: Last-used sort/filter preferences saved via API (PUT /api/preferences/) using React Query mutation
 
 ## Tasks
 - [ ] **T21.2.1** — Create `components/gallery/GalleryToolbar.tsx` — a toolbar above the card grid with search and filter controls
@@ -28,7 +28,7 @@ As a player with many characters, I need to search by name and filter by class, 
   - "Show Archived": toggle to include archived characters (displayed with a muted/dimmed style)
 - [ ] **T21.2.4** — **Sort:** dropdown with options: "Last Edited" (default), "Name (A-Z)", "Name (Z-A)", "Level (High to Low)", "Level (Low to High)", "Date Created (Newest)", "Date Created (Oldest)"
 - [ ] **T21.2.5** — **View toggle:** switch between "Grid View" (cards) and "List View" (compact table). List view shows: avatar thumbnail, name, race, class, level, AC, HP, campaign, last edited — as a sortable data table
-- [ ] **T21.2.6** — Persist the user's last-used sort/filter preferences in the user preferences IndexedDB table so the gallery opens in their preferred state
+- [ ] **T21.2.6** — Persist the user's last-used sort/filter preferences via API (PUT /api/preferences/) using React Query mutation so the gallery opens in their preferred state
 
 ## Acceptance Criteria
 - Gallery toolbar renders above the card grid with search, filters, sort, and view toggle
@@ -42,7 +42,7 @@ As a player with many characters, I need to search by name and filter by class, 
 - Sort dropdown offers 7 sort options with "Last Edited" as default
 - View toggle switches between Grid (cards) and List (table) views
 - List view displays a sortable data table with all key character fields
-- Sort/filter preferences persist to IndexedDB and restore on next visit
+- Sort/filter preferences persist via API and restore on next visit
 
 ## Testing Requirements
 
@@ -70,7 +70,7 @@ _For component rendering, user interactions, state changes, prop variations_
 - `should render sort dropdown with 7 options and "Last Edited" as default`
 - `should switch between Grid View (cards) and List View (table) with view toggle`
 - `should render sortable data table in List view with key character fields`
-- `should persist sort/filter preferences to IndexedDB and restore on next visit`
+- `should persist sort/filter preferences via API and restore on next visit`
 
 ### E2E Tests (Playwright)
 _For critical user journeys, multi-step flows, full-page interactions_
@@ -79,8 +79,8 @@ _For critical user journeys, multi-step flows, full-page interactions_
 - `should switch between grid and list views and verify both display correctly`
 
 ### Test Dependencies
-- Mock IndexedDB with diverse character set (multiple classes, races, levels, campaigns)
-- Mock IndexedDB preferences table for persistence testing
+- MSW (Mock Service Worker) to mock GET /api/characters/ with diverse character set (multiple classes, races, levels, campaigns)
+- MSW to mock GET/PUT /api/preferences/ for persistence testing
 - Mock debounce timer for search
 - Fixture data with archived characters
 
@@ -92,8 +92,8 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 ## Dependencies
 - Story 21.1 (Gallery Grid Layout) — toolbar integrates with the gallery grid
-- Phase 1 IndexedDB database layer for loading and querying characters
-- Phase 1 IndexedDB preferences table for persisting sort/filter preferences
+- Django REST API endpoints (GET /api/characters/) and React Query for fetching characters
+- Django REST API preferences endpoints (GET/PUT /api/preferences/) for persisting sort/filter preferences
 
 ## Notes
 - Filter counts are dynamic — they reflect only the user's actual characters, not all possible classes/races

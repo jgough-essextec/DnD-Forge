@@ -8,9 +8,9 @@ As a DM running combat, I need to see the initiative order, track whose turn it 
 
 ## Technical Context
 
-- **App**: D&D Character Forge — local-first React PWA for D&D 5e character creation and management
-- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand (state), Dexie.js (IndexedDB), React Router
-- **Architecture**: No backend, pure client-side, offline-capable PWA, IndexedDB for persistence. DM role is local (no authentication), campaigns are local data with join codes as local import mechanism.
+- **App**: D&D Character Forge — full-stack Django + React web application for D&D 5e character creation and management
+- **Tech Stack**: React 18+, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (server state), Zustand (UI state), Django REST Framework, PostgreSQL, React Router
+- **Architecture**: Django REST API backend, React SPA frontend, PostgreSQL persistence, Django session auth. DM role authenticated via Django User model, campaigns have owner FK with join codes for player association.
 - **Prior Phases Available**: Phase 1-4 (full character creation, sheet display, session play features including dice roller, HP tracker, spell slots, conditions, rest, level up)
 
 This story creates the main combat tracker view — the core DM tool for running combat encounters.
@@ -74,7 +74,7 @@ interface Encounter {
 - Skip turn shows strikethrough on skipped combatants
 - Delay/Ready action allows repositioning in initiative order
 - Removing a combatant removes from order with optional XP logging
-- Encounter state persists to IndexedDB (survives page refresh)
+- Encounter state persists via the API (survives page refresh)
 
 ## Testing Requirements
 
@@ -106,12 +106,12 @@ _For critical user journeys, multi-step flows, full-page interactions_
 
 - `should run through a full combat round cycling through all combatants and advancing to Round 2`
 - `should skip a combatant, remove a defeated monster, and verify turn order updates correctly`
-- `should persist encounter state to IndexedDB and survive a page refresh`
+- `should persist encounter state via the API and survive a page refresh`
 - `should navigate to combat tracker at /campaign/:id/encounter/:encounterId`
 
 ### Test Dependencies
 - Mock encounter with 5+ combatants sorted by initiative
-- Mock Zustand encounter store with persistence to IndexedDB
+- Mock Zustand encounter store with persistence via the API
 - Combatant fixtures with varied types (player, monster, NPC)
 - Mock React Router for route parameter testing
 
@@ -133,6 +133,6 @@ _For critical user journeys, multi-step flows, full-page interactions_
 ## Notes
 
 - The combat tracker is the most complex and time-sensitive DM tool. Performance and responsiveness are critical — every interaction should feel instant.
-- Persisting encounter state to IndexedDB is essential. If the DM accidentally refreshes the page, combat should resume exactly where it left off.
+- Persisting encounter state via the API is essential. If the DM accidentally refreshes the page, combat should resume exactly where it left off.
 - The "Remove & Log XP" action feeds into Story 35.6 (End Encounter & XP Distribution).
 - Consider a combat log panel (append-only log of actions) as mentioned in Open Question 5 of the source spec.
