@@ -1,0 +1,45 @@
+# Version control
+.git
+.gitignore
+
+# Node
+frontend/node_modules
+frontend/.env*
+
+# Python
+backend/__pycache__
+backend/**/__pycache__
+backend/*.pyc
+backend/.env
+backend/db.sqlite3
+backend/staticfiles
+backend/media
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker
+docker-compose*.yml
+Dockerfile
+Dockerfile.prod
+backend/Dockerfile.prod
+frontend/Dockerfile.prod
+
+# CI/CD
+.github
+
+# Testing
+frontend/coverage
+frontend/playwright-report
+frontend/test-results
+.playwright-mcp
+
+# Misc
+*.md
+*.png
+*.jpg
+LICENSE
+data_export.json

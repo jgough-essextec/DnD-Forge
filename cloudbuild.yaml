@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/dnd-forge/dnd-forge:v1'
+      - '-f'
+      - 'Dockerfile.cloudrun'
+      - '.'
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/dnd-forge/dnd-forge:v1'
+timeout: 1200s
+options:
+  machineType: 'E2_HIGHCPU_8'
