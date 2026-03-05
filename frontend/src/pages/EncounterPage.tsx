@@ -128,7 +128,7 @@ export default function EncounterPage() {
       // Navigate back to campaign after a brief delay
       setTimeout(() => {
         if (campaignId) {
-          navigate(`/campaigns/${campaignId}`)
+          navigate(`/campaign/${campaignId}`)
         }
       }, 1500)
     },
@@ -141,7 +141,7 @@ export default function EncounterPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => {
-            if (campaignId) navigate(`/campaigns/${campaignId}`)
+            if (campaignId) navigate(`/campaign/${campaignId}`)
           }}
           className="flex items-center gap-1.5 text-sm text-parchment/50 hover:text-parchment/70 transition-colors"
         >

@@ -23,8 +23,9 @@ import {
   ChevronRight,
   Award,
   TrendingUp,
+  Swords,
 } from 'lucide-react'
-import { useCampaign, useJoinCampaign } from '@/hooks/useCampaigns'
+import { useCampaign, useJoinCampaign, useUpdateCampaign } from '@/hooks/useCampaigns'
 import { useCharacters } from '@/hooks/useCharacters'
 import { useCampaignCharacters } from '@/hooks/useCampaignCharacters'
 import { useCurrentUser } from '@/hooks/useAuth'
@@ -42,10 +43,21 @@ import { PartyComposition } from '@/components/dm/dashboard/PartyComposition'
 import { XPAward } from '@/components/dm/xp/XPAward'
 import { MilestoneLevelUp } from '@/components/dm/xp/MilestoneLevelUp'
 import { XPThresholdTable } from '@/components/dm/xp/XPThresholdTable'
+import { SessionLog } from '@/components/dm/notes/SessionLog'
+import { DMNotesPanel } from '@/components/dm/notes/DMNotesPanel'
+import { NPCTracker } from '@/components/dm/notes/NPCTracker'
+import { LootTracker } from '@/components/dm/notes/LootTracker'
 import { updateCharacter } from '@/api/characters'
 import { useQueryClient } from '@tanstack/react-query'
 import { CHARACTERS_KEY, CHARACTER_KEY } from '@/hooks/useCharacters'
 import type { Character } from '@/types/character'
+import type { SessionNote } from '@/types/campaign'
+import type {
+  CharacterDMNote,
+  DMNoteTag,
+  NPCEntry,
+  LootTrackerEntry,
+} from '@/utils/dm-notes'
 
 export default function CampaignDashboardPage() {
   const { id } = useParams<{ id: string }>()
@@ -55,6 +67,7 @@ export default function CampaignDashboardPage() {
   const { data: currentUser } = useCurrentUser()
   const { data: allCharacters } = useCharacters()
   const joinCampaign = useJoinCampaign()
+  const updateCampaign = useUpdateCampaign()
   const addToast = useUIStore((s) => s.addToast)
 
   const characterIds = useMemo(
@@ -73,6 +86,34 @@ export default function CampaignDashboardPage() {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
   const xpTrackingMode = campaign?.settings?.xpTracking ?? 'xp'
+
+  // Derive CharacterDMNote[] from campaign characters
+  const characterNotes = useMemo<CharacterDMNote[]>(() => {
+    return campaignCharacters.map((c) => {
+      let content = ''
+      let tags: DMNoteTag[] = []
+      if (c.dmNotes) {
+        try {
+          const parsed = JSON.parse(c.dmNotes) as { content: string; tags: DMNoteTag[] }
+          if (typeof parsed.content === 'string') {
+            content = parsed.content
+            tags = Array.isArray(parsed.tags) ? parsed.tags : []
+          } else {
+            content = c.dmNotes
+          }
+        } catch {
+          content = c.dmNotes
+        }
+      }
+      return {
+        characterId: c.id,
+        characterName: c.name,
+        content,
+        tags,
+        updatedAt: c.updatedAt ?? new Date().toISOString(),
+      }
+    })
+  }, [campaignCharacters])
 
   const handleCopyCode = async () => {
     if (!campaign) return
@@ -121,7 +162,6 @@ export default function CampaignDashboardPage() {
         )
       )
 
-      // Invalidate character queries to refresh data
       void queryClient.invalidateQueries({ queryKey: CHARACTERS_KEY })
       for (const u of updates) {
         void queryClient.invalidateQueries({ queryKey: CHARACTER_KEY(u.id) })
@@ -152,7 +192,6 @@ export default function CampaignDashboardPage() {
         )
       )
 
-      // Invalidate character queries to refresh data
       void queryClient.invalidateQueries({ queryKey: CHARACTERS_KEY })
       for (const c of targets) {
         void queryClient.invalidateQueries({ queryKey: CHARACTER_KEY(c.id) })
@@ -164,6 +203,73 @@ export default function CampaignDashboardPage() {
       })
     },
     [campaignCharacters, queryClient, addToast],
+  )
+
+  // Session handlers
+  const handleSaveSession = useCallback(
+    (session: SessionNote) => {
+      if (!campaign) return
+      const existing = campaign.sessions.find((s) => s.id === session.id)
+      const updated = existing
+        ? campaign.sessions.map((s) => (s.id === session.id ? session : s))
+        : [...campaign.sessions, session]
+      void updateCampaign.mutateAsync({ id: campaign.id, data: { sessions: updated } })
+    },
+    [campaign, updateCampaign],
+  )
+
+  const handleDeleteSession = useCallback(
+    (sessionId: string) => {
+      if (!campaign) return
+      const updated = campaign.sessions.filter((s) => s.id !== sessionId)
+      void updateCampaign.mutateAsync({ id: campaign.id, data: { sessions: updated } })
+    },
+    [campaign, updateCampaign],
+  )
+
+  // DM Notes handler
+  const handleSaveDMNote = useCallback(
+    async (characterId: string, content: string, tags: DMNoteTag[]) => {
+      const char = campaignCharacters.find((c) => c.id === characterId)
+      if (!char) return
+      await updateCharacter(characterId, {
+        version: char.version,
+        dmNotes: JSON.stringify({ content, tags }),
+      })
+      void queryClient.invalidateQueries({ queryKey: CHARACTER_KEY(characterId) })
+    },
+    [campaignCharacters, queryClient],
+  )
+
+  // NPC handlers
+  const handleNPCChange = useCallback(
+    (action: 'add' | 'update' | 'delete', npc: NPCEntry) => {
+      if (!campaign) return
+      let updated: NPCEntry[]
+      if (action === 'add') {
+        updated = [...campaign.npcs, npc]
+      } else if (action === 'update') {
+        updated = campaign.npcs.map((n) => (n.id === npc.id ? npc : n))
+      } else {
+        updated = campaign.npcs.filter((n) => n.id !== npc.id)
+      }
+      void updateCampaign.mutateAsync({ id: campaign.id, data: { npcs: updated } })
+    },
+    [campaign, updateCampaign],
+  )
+
+  // Loot handlers
+  const handleLootChange = useCallback(
+    (action: 'add' | 'delete', entry: LootTrackerEntry) => {
+      if (!campaign) return
+      const current = campaign.lootEntries ?? []
+      const updated =
+        action === 'add'
+          ? [...current, entry]
+          : current.filter((e) => e.id !== entry.id)
+      void updateCampaign.mutateAsync({ id: campaign.id, data: { lootEntries: updated } })
+    },
+    [campaign, updateCampaign],
   )
 
   // Characters available to add (not already in campaign)
@@ -371,13 +477,32 @@ export default function CampaignDashboardPage() {
           />
         )}
         {activeTab === 'sessions' && (
-          <PlaceholderTab label="Sessions" description="Session logs and notes will appear here." />
+          <SessionsTabContent
+            campaignId={campaign.id}
+            sessions={campaign.sessions}
+            knownNPCs={campaign.npcs.map((n) => n.name)}
+            onSaveSession={handleSaveSession}
+            onDeleteSession={handleDeleteSession}
+          />
         )}
         {activeTab === 'encounters' && (
-          <PlaceholderTab label="Encounters" description="Combat encounters and initiative tracking will appear here." />
+          <EncountersTabContent
+            campaignId={campaign.id}
+            onNavigate={navigate}
+          />
         )}
         {activeTab === 'notes' && (
-          <PlaceholderTab label="Notes" description="DM notes and NPC tracking will appear here." />
+          <NotesTabContent
+            campaignId={campaign.id}
+            characterNotes={characterNotes}
+            npcs={campaign.npcs}
+            lootEntries={campaign.lootEntries ?? []}
+            sessions={campaign.sessions}
+            characters={campaignCharacters}
+            onSaveDMNote={handleSaveDMNote}
+            onNPCChange={handleNPCChange}
+            onLootChange={handleLootChange}
+          />
         )}
       </div>
 
@@ -482,22 +607,135 @@ function PartyTabContent({ characters, isLoading: _isLoading, onAddCharacter, xp
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder for tabs that will be filled by other agents
+// Sessions Tab Content
 // ---------------------------------------------------------------------------
 
-function PlaceholderTab({
-  label,
-  description,
-}: {
-  label: string
-  description: string
-}) {
+interface SessionsTabContentProps {
+  campaignId: string
+  sessions: SessionNote[]
+  knownNPCs: string[]
+  onSaveSession: (session: SessionNote) => void
+  onDeleteSession: (sessionId: string) => void
+}
+
+function SessionsTabContent({
+  campaignId,
+  sessions,
+  knownNPCs,
+  onSaveSession,
+  onDeleteSession,
+}: SessionsTabContentProps) {
   return (
-    <div
-      className="text-center py-12 rounded-lg border border-dashed border-parchment/10 bg-bg-primary"
-      data-testid={`placeholder-${label.toLowerCase()}`}
-    >
-      <p className="text-parchment/40 text-sm">{description}</p>
+    <div data-testid="sessions-tab">
+      <SessionLog
+        campaignId={campaignId}
+        sessions={sessions}
+        onSaveSession={onSaveSession}
+        onDeleteSession={onDeleteSession}
+        knownNPCs={knownNPCs}
+      />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Encounters Tab Content
+// ---------------------------------------------------------------------------
+
+interface EncountersTabContentProps {
+  campaignId: string
+  onNavigate: (path: string) => void
+}
+
+function EncountersTabContent({ campaignId, onNavigate }: EncountersTabContentProps) {
+  return (
+    <div className="text-center py-12 rounded-lg border border-parchment/10 bg-bg-primary" data-testid="encounters-tab">
+      <Swords className="w-12 h-12 text-parchment/20 mx-auto mb-4" />
+      <h3 className="font-heading text-lg text-parchment mb-2">Combat Encounters</h3>
+      <p className="text-parchment/50 text-sm mb-6">
+        Launch a full combat tracker with initiative, HP management, and conditions.
+      </p>
+      <button
+        onClick={() => onNavigate(`/campaign/${campaignId}/encounter/${Date.now()}`)}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors font-medium"
+        data-testid="start-encounter-button"
+      >
+        <Swords className="w-4 h-4" />
+        Start Encounter
+      </button>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Notes Tab Content
+// ---------------------------------------------------------------------------
+
+interface NotesTabContentProps {
+  campaignId: string
+  characterNotes: CharacterDMNote[]
+  npcs: NPCEntry[]
+  lootEntries: LootTrackerEntry[]
+  sessions: SessionNote[]
+  characters: Character[]
+  onSaveDMNote: (characterId: string, content: string, tags: DMNoteTag[]) => void
+  onNPCChange: (action: 'add' | 'update' | 'delete', npc: NPCEntry) => void
+  onLootChange: (action: 'add' | 'delete', entry: LootTrackerEntry) => void
+}
+
+function NotesTabContent({
+  campaignId,
+  characterNotes,
+  npcs,
+  lootEntries,
+  sessions,
+  characters,
+  onSaveDMNote,
+  onNPCChange,
+  onLootChange,
+}: NotesTabContentProps) {
+  // Ensure all NPCs have required NPCEntry fields
+  const normalizedNPCs: NPCEntry[] = npcs.map((n) => ({
+    roles: [],
+    status: 'Alive' as const,
+    ...n,
+  }))
+
+  const characterSummaries = characters.map((c) => ({ id: c.id, name: c.name }))
+
+  return (
+    <div className="space-y-10" data-testid="notes-tab">
+      <section>
+        <DMNotesPanel
+          campaignId={campaignId}
+          characterNotes={characterNotes}
+          onSaveNote={onSaveDMNote}
+          isDMView={true}
+        />
+      </section>
+
+      <section>
+        <NPCTracker
+          campaignId={campaignId}
+          npcs={normalizedNPCs}
+          onAddNPC={(npc) => onNPCChange('add', npc)}
+          onUpdateNPC={(npc) => onNPCChange('update', npc)}
+          onDeleteNPC={(id) => onNPCChange('delete', { id } as NPCEntry)}
+        />
+      </section>
+
+      <section>
+        <LootTracker
+          campaignId={campaignId}
+          lootEntries={lootEntries}
+          characters={characterSummaries}
+          sessions={sessions}
+          onAddEntry={(entry) => onLootChange('add', entry)}
+          onDeleteEntry={(id) =>
+            onLootChange('delete', { id } as LootTrackerEntry)
+          }
+        />
+      </section>
     </div>
   )
 }

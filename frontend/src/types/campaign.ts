@@ -5,7 +5,10 @@
  * and encounter management.
  */
 
-import type { Character } from './character';
+import type { Character } from './character'
+import type { NPCEntry, LootTrackerEntry } from '@/utils/dm-notes'
+
+export type { NPCEntry, LootTrackerEntry };
 
 // ---------------------------------------------------------------------------
 // Ability Score Method (campaign-level)
@@ -203,7 +206,9 @@ export interface Campaign {
   /** Session notes for this campaign */
   sessions: SessionNote[];
   /** NPCs tracked by the DM */
-  npcs: NPC[];
+  npcs: NPCEntry[];
+  /** Loot entries tracked by the DM */
+  lootEntries?: LootTrackerEntry[];
   /** Whether this campaign is archived (soft-deleted) */
   isArchived: boolean;
   /** Number of characters in this campaign */

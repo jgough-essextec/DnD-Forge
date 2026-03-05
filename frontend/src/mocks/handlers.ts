@@ -173,8 +173,9 @@ interface MockCampaign {
       encumbranceVariant: boolean
     }
   }
-  sessions: never[]
-  npcs: never[]
+  sessions: Record<string, unknown>[]
+  npcs: Record<string, unknown>[]
+  lootEntries?: Record<string, unknown>[]
   isArchived: boolean
   characterCount: number
   createdAt: string
@@ -201,8 +202,32 @@ const mockCampaigns: MockCampaign[] = [
         encumbranceVariant: false,
       },
     },
-    sessions: [],
-    npcs: [],
+    sessions: [
+      {
+        id: 'session-001',
+        campaignId: 'camp-001',
+        sessionNumber: 1,
+        date: '2024-05-15',
+        title: 'The Adventure Begins',
+        content: 'The party met in Phandalin and accepted a quest.',
+        tags: ['combat', 'exploration'],
+        xpAwarded: 300,
+      },
+    ],
+    npcs: [
+      {
+        id: 'npc-001',
+        campaignId: 'camp-001',
+        name: 'Gundren Rockseeker',
+        description: 'A dwarf merchant who hired the party.',
+        location: 'Phandalin',
+        relationship: 'Patron',
+        roles: ['Patron'],
+        status: 'Alive',
+        dmNotes: '',
+      },
+    ],
+    lootEntries: [],
     isArchived: false,
     characterCount: 2,
     createdAt: '2024-05-01T10:00:00Z',
